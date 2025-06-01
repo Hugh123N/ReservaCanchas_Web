@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'reservaCanchas_Web' title`, () => {
+  it(`should have the 'court-reservation-public' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('reservaCanchas_Web');
+    expect(app.title).toEqual('court-reservation-public');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, reservaCanchas_Web');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, court-reservation-public');
   });
 });

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "reservaCanchas_Web": {
+    "court-reservation-public": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/reserva-canchas-web",
+            "outputPath": "dist/court-reservation-public",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "reservaCanchas_Web:build:production"
+              "buildTarget": "court-reservation-public:build:production"
             },
             "development": {
-              "buildTarget": "reservaCanchas_Web:build:development"
+              "buildTarget": "court-reservation-public:build:development"
             }
           },
           "defaultConfiguration": "development"
