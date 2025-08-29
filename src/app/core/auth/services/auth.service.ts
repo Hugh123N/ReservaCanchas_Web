@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { User } from '@base/users/models/user';
-import { UsersService } from '@base/users/services/users.service';
+import { User } from 'app/features/auth/models/user';
+import { UsersService } from 'app/features/auth/services/users.service';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { environment } from '@environments/environment';
 
@@ -77,8 +77,8 @@ export class AuthService {
       let logId = userClaims.LogId ?? userClaims.logId;
       if (logId) {
         this.usersService.logoutSession(logId).subscribe(
-          (_: any) => {},
-          (_: any) => {},
+          (_: any) => { },
+          (_: any) => { },
           () => {
             this.cleanAndRedirect();
           }
@@ -107,8 +107,8 @@ export class AuthService {
     return Array.isArray(claims.role)
       ? claims.role
       : claims.role
-      ? [claims.role]
-      : [];
+        ? [claims.role]
+        : [];
   }
 
   public hasRole(roleName: string) {

@@ -1,0 +1,57 @@
+<div class="login-wrapper">
+  <mat-card class="login-card">
+
+    <!-- Título -->
+    <h2 class="login-title">Bienvenido a CanchaReservas</h2>
+    <p class="login-subtitle">Ingresa o regístrate con tu cuenta</p>
+
+    <!-- Formulario -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="ejemplo@correo.com">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error>{{ getEmailErrorMessage() }}</mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Tu contraseña">
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error>{{ getPasswordErrorMessage() }}</mat-error>
+      </mat-form-field>
+
+      <!-- Botón principal -->
+      <button mat-raised-button type="submit" class="login-button full-width" [disabled]="loginForm.invalid">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <!-- Links -->
+    <div class="links">
+      <button mat-button (click)="onForgotPassword()">¿Olvidaste tu contraseña?</button>
+      <span>¿No tienes cuenta? <a (click)="onRegister()">Regístrate aquí</a></span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Botones sociales -->
+    <div class="social-login">
+      <button mat-stroked-button class="google-btn full-width" (click)="onGoogleLogin()">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
+        Continuar con Google
+      </button>
+
+      <button mat-stroked-button class="apple-btn full-width">
+        <mat-icon>apple</mat-icon>
+        Continuar con Apple
+      </button>
+    </div>
+
+  </mat-card>
+</div>

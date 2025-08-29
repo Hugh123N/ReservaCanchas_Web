@@ -1,0 +1,35 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <div class="header-container">
+    <div class="logo-section">
+      <mat-icon class="logo-icon">sports_soccer</mat-icon>
+      <span class="logo-text">CanchaReservas</span>
+    </div>
+    
+    <div class="header-actions" fxHide.xs>
+      <button mat-button (click)="onIniciarSesion()">
+        <mat-icon>login</mat-icon>
+        Iniciar Sesión
+      </button>
+      <button mat-raised-button color="accent" (click)="onRegistrarse()">
+        Registrarse
+      </button>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button mat-icon-button fxHide.gt-xs [matMenuTriggerFor]="mobileMenu">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<!-- Mobile Menu -->
+<mat-menu #mobileMenu="matMenu">
+  <button mat-menu-item (click)="onIniciarSesion()">
+    <mat-icon>login</mat-icon>
+    <span>Iniciar Sesión</span>
+  </button>
+  <button mat-menu-item (click)="onRegistrarse()">
+    <mat-icon>person_add</mat-icon>
+    <span>Registrarse</span>
+  </button>
+</mat-menu>

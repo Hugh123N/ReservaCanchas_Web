@@ -1,12 +1,13 @@
 export const environment = {
-	develop_server: '10.147.18.108',
-	production: false,
-	Requerido: 'Campo requerido',
+	develop_server: '10.147.18.108', 
+	production: true,
+	variableepesajeText: 'Reserva',
+	Requerido:'Campo requerido',
 	application: {
-		code: '',
-		version: '0.0.0',
+		code: 'pesaje',
+		version: '0.0.1',
 		versionPrefix: '',
-		header: '', //head title
+		header: 'Reserva',
 	},
 	frontend: {
 		developerMode: false,
@@ -15,10 +16,10 @@ export const environment = {
 	},
 	backend: {
 		baseApiUrl: 'https://{host}/api',
-    	baseApiSecurityUrl: 'https://{host}/securityApi/api'
 	},
 	security: {
 		externalProvider: false,
+		//Set this configuration if there is an external security provider
 		issuer: '',
 		redirectUri: '/.auth/callback',
 		postLogoutRedirectUri: '/.auth/logout',
@@ -26,6 +27,6 @@ export const environment = {
 		clientId: 'client.id',
 		scope: 'openid profile email role client.id.resource'
 	},
-	email: 'user@email.com',
-	password: 'password$'
+	USER: 'system@administrator',
+	PASSWORD: 'Creative2023$'
 };

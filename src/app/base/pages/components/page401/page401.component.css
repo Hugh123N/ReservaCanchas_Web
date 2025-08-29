@@ -1,0 +1,83 @@
+.error-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+    }
+
+    .error-card {
+        min-height: 80vh;
+      max-width: 600px;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .error-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+    }
+
+    .error-code {
+      font-size: 4rem;
+      font-weight: 700;
+      margin: 0;
+      color: #f44336;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .error-title {
+      font-size: 2rem;
+      font-weight: 500;
+      margin: 0;
+      color: #424242;
+    }
+
+    .error-description {
+      font-size: 1.1rem;
+      color: #666;
+      margin: 0;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .error-actions {
+      margin-top: 10px;
+    }
+
+    .error-actions button {
+      min-width: 150px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 599px) {
+      .error-card {
+        padding: 30px 20px;
+        margin: 10px;
+      }
+
+      .error-code {
+        font-size: 3rem;
+      }
+
+      .error-title {
+        font-size: 1.5rem;
+      }
+
+      .error-description {
+        font-size: 1rem;
+      }
+
+      .error-icon {
+        font-size: 60px;
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 399px) {
+      .error-code {
+        font-size: 2.5rem;
+      }
+    }

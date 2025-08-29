@@ -1,0 +1,109 @@
+/* Wrapper centrado */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4CAF50, #2196F3);
+  padding: 16px;
+}
+
+/* Card principal */
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.4s ease-in-out;
+  background: #fff;
+  text-align: center;
+}
+
+/* Títulos */
+.login-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+.login-subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+mat-form-field {
+  margin-bottom: 16px;
+}
+.full-width {
+  width: 100%;
+}
+
+/* Botón login */
+.login-button {
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 8px;
+}
+.login-button:hover {
+  background-color: #43a047;
+}
+
+/* Links */
+.links {
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+.links button {
+  font-size: 0.85rem;
+  color: #2196f3;
+}
+.links a {
+  color: #2196f3;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Social login */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.social-login button {
+  height: 46px;
+  border-radius: 8px;
+  justify-content: center;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+.apple-btn mat-icon {
+  font-size: 22px;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .login-card {
+    max-width: none;
+    border-radius: 12px;
+    padding: 20px;
+  }
+}

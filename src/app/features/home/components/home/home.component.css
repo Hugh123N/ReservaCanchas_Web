@@ -1,0 +1,282 @@
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 80px 16px;
+  text-align: center;
+}
+
+.hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 48px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.role-cards {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.role-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.full-width-btn {
+  width: 100%;
+}
+
+/* Featured Section */
+.featured-section {
+  padding: 80px 16px;
+  background-color: #f8f9fa;
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.section-header p {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+/* Cancha Cards */
+.canchas-grid {
+  justify-content: center;
+}
+
+.cancha-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cancha-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.cancha-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.cancha-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cancha-card:hover .cancha-image {
+  transform: scale(1.05);
+}
+
+.availability-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.availability-badge.disponible {
+  background-color: #4caf50;
+}
+
+.availability-badge.ocupada {
+  background-color: #f44336;
+}
+
+.subtitle-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star-icon {
+  color: #ffc107;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.cancha-info {
+  margin-bottom: 16px;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #666;
+}
+
+.location mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.price-label {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.price-amount {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.price-period {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.caracteristicas {
+  margin-top: 16px;
+}
+
+/* Features Section */
+.features-section {
+  padding: 80px 16px;
+  background-color: white;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 24px;
+}
+
+.feature-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.feature-item h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.feature-item p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 959px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .hero-section {
+    padding: 60px 16px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .featured-section,
+  .features-section {
+    padding: 60px 16px;
+  }
+
+  .section-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .role-cards {
+    gap: 16px;
+  }
+
+  .canchas-grid {
+    gap: 16px;
+  }
+}
+
+/* Angular Material Overrides */
+.mat-card {
+  border-radius: 12px !important;
+}
+
+.mat-raised-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+
+.mat-chip {
+  font-size: 0.75rem !important;
+}
