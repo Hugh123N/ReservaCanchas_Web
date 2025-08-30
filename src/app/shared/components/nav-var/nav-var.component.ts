@@ -4,6 +4,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-var',
@@ -13,15 +14,15 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class NavVarComponent {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   onIniciarSesion() {
     console.log("Iniciar sesión")
-    // Aquí iría la navegación al login
+    this.router.navigate(['/auth/login']);
   }
 
   onRegistrarse() {
     console.log("Registrarse")
-    // Aquí iría la navegación al registro
+    this.router.navigate(['/auth/register']);
   }
 }

@@ -1,1 +1,197 @@
-<p>register works!</p>
+<div
+  class="register-container"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutAlign="center center"
+>
+  <div
+    class="form-section"
+    fxFlex="50"
+    fxFlex.xs="100"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <mat-card class="register-card">
+      <mat-card-header>
+        <mat-card-title>
+          <div
+            class="mobile-logo"
+            fxHide.gt-xs
+            fxLayout="row"
+            fxLayoutAlign="center center"
+          >
+            <mat-icon class="mobile-logo-icon">sports_soccer</mat-icon>
+            <span>CanchaReservas</span>
+          </div>
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="user-type-selector" fxLayout="row" fxLayoutGap="8px">
+          <button
+            mat-stroked-button
+            [class.selected]="selectedUserType === 'cliente'"
+            [class.cliente-selected]="selectedUserType === 'cliente'"
+            (click)="onUserTypeChange('cliente')"
+            fxFlex="50"
+          >
+            <mat-icon>person</mat-icon>
+            Soy Cliente
+          </button>
+          <button
+            mat-stroked-button
+            [class.selected]="selectedUserType === 'proveedor'"
+            [class.proveedor-selected]="selectedUserType === 'proveedor'"
+            (click)="onUserTypeChange('proveedor')"
+            fxFlex="50"
+          >
+            <mat-icon>business</mat-icon>
+            Soy Proveedor
+          </button>
+        </div>
+
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+          class="register-form"
+        >
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre completo</mat-label>
+            <input
+              matInput
+              formControlName="nombre"
+              placeholder="Ingresa tu nombre completo"
+            />
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error
+              *ngIf="
+                registerForm.get('nombre')?.invalid &&
+                registerForm.get('nombre')?.touched
+              "
+            >
+              {{ getErrorMessage("nombre") }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+              type="email"
+            />
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error
+              *ngIf="
+                registerForm.get('email')?.invalid &&
+                registerForm.get('email')?.touched
+              "
+            >
+              {{ getErrorMessage("email") }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Teléfono</mat-label>
+            <input
+              matInput
+              formControlName="telefono"
+              placeholder="987654321"
+              type="tel"
+              maxlength="9"
+            />
+            <mat-icon matSuffix>phone</mat-icon>
+            <mat-error
+              *ngIf="
+                registerForm.get('telefono')?.invalid &&
+                registerForm.get('telefono')?.touched
+              "
+            >
+              {{ getErrorMessage("telefono") }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input
+              matInput
+              formControlName="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              placeholder="Mínimo 6 caracteres"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              type="button"
+            >
+              <mat-icon>{{
+                hidePassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="
+                registerForm.get('password')?.invalid &&
+                registerForm.get('password')?.touched
+              "
+            >
+              {{ getErrorMessage("password") }}
+            </mat-error>
+          </mat-form-field>
+
+          Botón de registro
+          <button
+            mat-raised-button
+            type="submit"
+            class="register-button full-width"
+            [class.cliente-button]="selectedUserType === 'cliente'"
+            [class.proveedor-button]="selectedUserType === 'proveedor'"
+            [disabled]="registerForm.invalid"
+          >
+            <mat-icon>person_add</mat-icon>
+            Crear cuenta como
+            {{ selectedUserType === "cliente" ? "Cliente" : "Proveedor" }}
+          </button>
+        </form>
+
+        <div
+          class="additional-links"
+          fxLayout="column"
+          fxLayoutAlign="center center"
+          fxLayoutGap="12px"
+        >
+          <button mat-button (click)="onLoginRedirect()" class="link-button">
+            ¿Ya tienes cuenta? Inicia sesión
+          </button>
+        </div>
+
+        Divider
+        <div
+          class="divider"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          fxLayoutGap="16px"
+        >
+          <mat-divider fxFlex></mat-divider>
+          <span class="divider-text">o</span>
+          <mat-divider fxFlex></mat-divider>
+        </div>
+
+        Registro con Google
+        <button
+          mat-stroked-button
+          (click)="onGoogleRegister()"
+          class="google-button full-width"
+        >
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google"
+            class="google-icon"
+          />
+          Registrarse con Google
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

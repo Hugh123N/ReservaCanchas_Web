@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
 
   onRegister(): void {
     console.log("Register as:", this.selectedUserType)
-    // Navegar a página de registro
+    this.router.navigate(['/auth/register']);
   }
 
   private markFormGroupTouched(): void {
