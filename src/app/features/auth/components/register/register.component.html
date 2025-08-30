@@ -27,27 +27,8 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="user-type-selector" fxLayout="row" fxLayoutGap="8px">
-          <button
-            mat-stroked-button
-            [class.selected]="selectedUserType === 'cliente'"
-            [class.cliente-selected]="selectedUserType === 'cliente'"
-            (click)="onUserTypeChange('cliente')"
-            fxFlex="50"
-          >
-            <mat-icon>person</mat-icon>
-            Soy Cliente
-          </button>
-          <button
-            mat-stroked-button
-            [class.selected]="selectedUserType === 'proveedor'"
-            [class.proveedor-selected]="selectedUserType === 'proveedor'"
-            (click)="onUserTypeChange('proveedor')"
-            fxFlex="50"
-          >
-            <mat-icon>business</mat-icon>
-            Soy Proveedor
-          </button>
+        <div class="form-header">
+          <h2>Registro</h2>
         </div>
 
         <form
@@ -140,7 +121,6 @@
             </mat-error>
           </mat-form-field>
 
-          Botón de registro
           <button
             mat-raised-button
             type="submit"
@@ -150,8 +130,7 @@
             [disabled]="registerForm.invalid"
           >
             <mat-icon>person_add</mat-icon>
-            Crear cuenta como
-            {{ selectedUserType === "cliente" ? "Cliente" : "Proveedor" }}
+            Crear cuenta
           </button>
         </form>
 
@@ -166,7 +145,6 @@
           </button>
         </div>
 
-        Divider
         <div
           class="divider"
           fxLayout="row"
@@ -178,7 +156,6 @@
           <mat-divider fxFlex></mat-divider>
         </div>
 
-        Registro con Google
         <button
           mat-stroked-button
           (click)="onGoogleRegister()"

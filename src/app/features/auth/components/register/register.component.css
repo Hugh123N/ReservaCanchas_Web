@@ -61,6 +61,7 @@
   align-items: center;
 }
 
+/*formulario */
 .register-card {
   width: 100%;
   max-width: 450px;
@@ -82,39 +83,6 @@
   margin-right: 8px;
 }
 
-.user-type-selector {
-  margin-bottom: 30px;
-}
-
-.user-type-selector button {
-  height: 50px;
-  border-radius: 12px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border: 2px solid #e0e0e0;
-}
-
-.user-type-selector button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.user-type-selector button.selected {
-  border-width: 2px;
-  font-weight: 600;
-}
-
-.user-type-selector button.cliente-selected {
-  border-color: #4caf50;
-  background-color: rgba(76, 175, 80, 0.1);
-  color: #4caf50;
-}
-
-.user-type-selector button.proveedor-selected {
-  border-color: #2196f3;
-  background-color: rgba(33, 150, 243, 0.1);
-  color: #2196f3;
-}
 
 .register-form {
   margin-bottom: 20px;

@@ -37,9 +37,6 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  onUserTypeChange(userType: string): void {
-    this.selectedUserType = userType
-  }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
