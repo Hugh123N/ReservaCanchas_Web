@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
     <!-- Logo (izquierda) -->
     <div class="flex items-center gap-2">
-      <mat-icon class="logo-icon text-secondary-400">sports_soccer</mat-icon>
+      <mat-icon class="logo-icon !text-secondary-400">sports_soccer</mat-icon>
       <span class="logo-text text-white">CanchaReservas</span>
     </div>
 
@@ -12,7 +12,7 @@
       <div class="hidden sm:flex items-center gap-4">
         <button
           mat-button
-          class="hover:text-secondary-200 transition"
+          class="hover:!text-secondary-200 transition"
           (click)="onIniciarSesion()"
         >
           <mat-icon>login</mat-icon>
@@ -21,7 +21,7 @@
 
         <button
           mat-raised-button
-          class="bg-secondary-500 hover:bg-secondary-600 text-gray-900 font-semibold shadow-md transition"
+          class="!bg-secondary-500 hover:!bg-secondary-600 text-gray-900 font-semibold shadow-md transition"
           (click)="onRegistrarse()"
         >
           Registrarse
@@ -31,7 +31,7 @@
       <!-- Mobile (<640px) -->
       <button
         mat-icon-button
-        class="sm:!hidden hover:text-secondary-200"
+        class="sm:!hidden hover:!text-secondary-200"
         [matMenuTriggerFor]="mobileMenu"
       >
         <mat-icon>menu</mat-icon>
