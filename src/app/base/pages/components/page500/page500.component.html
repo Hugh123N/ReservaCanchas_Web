@@ -1,109 +1,81 @@
-<div class="error-container" 
-         fxLayout="column" 
-         fxLayoutAlign="center center" 
-         fxFill>
+<div class="flex flex-col items-center justify-center min-h-screen px-5 bg-gradient-to-br from-red-400 to-orange-600">
+  <mat-card class="flex flex-col items-center justify-center w-[90%] sm:w-[70%] md:w-[50%] max-w-[650px] p-8 sm:p-10 rounded-2xl shadow-2xl bg-white text-center">
+    
+    <mat-card-content class="flex flex-col items-center justify-center gap-6 w-full">
       
-      <mat-card class="error-card" 
-                fxLayout="column" 
-                fxLayoutAlign="center center"
-                fxFlex="none"
-                fxFlex.xs="90"
-                fxFlex.sm="70"
-                fxFlex.md="50">
+      <!-- Icono y código de error -->
+      <div class="flex flex-col items-center justify-center gap-3">
+        <mat-icon class="error-icon text-red-500">warning</mat-icon>
+        <h1 class="text-5xl sm:text-6xl font-bold text-orange-600 drop-shadow-md">500</h1>
+      </div>
+      
+      <!-- Mensaje principal -->
+      <div class="flex flex-col items-center justify-center gap-4">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">Error Interno del Servidor</h2>
+        <p class="flex flex-col xs:flex-row items-center justify-center text-center gap-2 text-gray-600 text-base sm:text-lg leading-relaxed">
+          <span>Ups! Algo salió mal en nuestros servidores.</span>
+          <span class="hidden xs:inline">&nbsp;</span>
+          <span>Estamos trabajando para solucionarlo.</span>
+        </p>
+      </div>
+      
+      <!-- Estado de reconexión -->
+      <div class="w-full min-h-[50px] rounded-lg border px-4 py-3 flex flex-col items-center justify-center gap-2 bg-blue-50 border-blue-100"
+           [ngClass]="{'bg-yellow-50 border-yellow-400': isReconnecting}">
         
-        <mat-card-content fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="20px">
-          
-          <!-- Icono y código de error -->
-          <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
-            <mat-icon class="error-icon" color="warn">warning</mat-icon>
-            <h1 class="error-code">500</h1>
-          </div>
-          
-          <!-- Mensaje principal -->
-          <div class="error-content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="15px">
-            <h2 class="error-title">Error Interno del Servidor</h2>
-            <p class="error-description" fxLayout="column" fxLayout.gt-xs="row" fxLayoutAlign="center center">
-              <span>Ups! Algo salió mal en nuestros servidores.</span>
-              <span fxHide.xs fxShow.gt-xs>&nbsp;</span>
-              <span>Estamos trabajando para solucionarlo.</span>
-            </p>
-          </div>
-          
-          <!-- Estado de reconexión -->
-          <div class="reconnection-status" 
-               fxLayout="column" 
-               fxLayoutAlign="center center" 
-               fxLayoutGap="10px"
-               [ngClass]="{'reconnecting': isReconnecting}">
-            
-            <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px" *ngIf="isReconnecting">
-              <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
-              <span class="reconnecting-text">Reintentando conexión...</span>
-            </div>
-            
-            <div *ngIf="!isReconnecting" class="status-info">
-              <mat-icon color="accent">info</mat-icon>
-              <span>Última verificación: {{ lastCheck | date:'short' }}</span>
-            </div>
-            
-          </div>
-          
-          <!-- Información técnica -->
-          <div class="technical-info" fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="8px">
-            <h3>Información técnica:</h3>
-            <div class="info-grid" fxLayout="column" fxLayout.gt-xs="row" fxLayoutGap="20px">
-              <div fxFlex="50">
-                <strong>Error ID:</strong> {{ errorId }}
-              </div>
-              <div fxFlex="50">
-                <strong>Tiempo:</strong> {{ errorTime | date:'short' }}
-              </div>
-            </div>
-            <p class="tech-note">
-              Si el problema persiste, por favor contacta al equipo de soporte 
-              proporcionando el ID de error.
-            </p>
-          </div>
-          
-          <!-- Botones de acción -->
-          <div class="error-actions" 
-               fxLayout="column" 
-               fxLayout.gt-xs="row" 
-               fxLayoutAlign="center center" 
-               fxLayoutGap="15px"
-               fxLayoutGap.gt-xs="20px">
-            
-            <button mat-raised-button 
-                    color="primary" 
-                    (click)="retryConnection()"
-                    [disabled]="isReconnecting"
-                    fxFlex.xs="100"
-                    fxFlex.gt-xs="none">
-              <mat-icon>refresh</mat-icon>
-              Reintentar
-            </button>
-            
-            <button mat-stroked-button 
-                    color="accent" 
-                    (click)="goHome()"
-                    fxFlex.xs="100"
-                    fxFlex.gt-xs="none">
-              <mat-icon>home</mat-icon>
-              Ir al Inicio
-            </button>
-            
-            <button mat-stroked-button 
-                    color="warn" 
-                    (click)="reportError()"
-                    fxFlex.xs="100"
-                    fxFlex.gt-xs="none">
-              <mat-icon>bug_report</mat-icon>
-              Reportar Error
-            </button>
-            
-          </div>
-          
-        </mat-card-content>
-      </mat-card>
+        <div class="flex items-center justify-center gap-2" *ngIf="isReconnecting">
+          <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+          <span class="text-orange-600 font-medium">Reintentando conexión...</span>
+        </div>
+        
+        <div *ngIf="!isReconnecting" class="flex items-center gap-2 text-blue-600 text-sm">
+          <mat-icon color="accent">info</mat-icon>
+          <span>Última verificación: {{ lastCheck | date:'short' }}</span>
+        </div>
+      </div>
       
-    </div>
+      <!-- Información técnica -->
+      <div class="w-full bg-gray-50 rounded-xl border border-gray-200 p-5 sm:p-6 flex flex-col gap-3 text-left">
+        <h3 class="text-lg font-medium text-gray-800">Información técnica:</h3>
+        <div class="flex flex-col sm:flex-row gap-5">
+          <div class="sm:w-1/2"><strong class="text-gray-700">Error ID:</strong> {{ errorId }}</div>
+          <div class="sm:w-1/2"><strong class="text-gray-700">Tiempo:</strong> {{ errorTime | date:'short' }}</div>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          Si el problema persiste, por favor contacta al equipo de soporte proporcionando el ID de error.
+        </p>
+      </div>
+      
+      <!-- Botones de acción -->
+      <div class="flex flex-col xs:flex-row items-center justify-center gap-4 sm:gap-5 mt-3 w-full">
+        
+        <button mat-raised-button 
+                color="primary" 
+                (click)="retryConnection()" 
+                [disabled]="isReconnecting"
+                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+        
+        <button mat-stroked-button 
+                color="accent" 
+                (click)="goHome()"
+                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          <mat-icon>home</mat-icon>
+          Ir al Inicio
+        </button>
+        
+        <button mat-stroked-button 
+                color="warn" 
+                (click)="reportError()"
+                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          <mat-icon>bug_report</mat-icon>
+          Reportar Error
+        </button>
+        
+      </div>
+      
+    </mat-card-content>
+  </mat-card>
+</div>

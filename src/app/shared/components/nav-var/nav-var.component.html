@@ -1,24 +1,42 @@
-<mat-toolbar color="primary" class="header-toolbar">
-  <div class="header-container">
-    <div class="logo-section">
-      <mat-icon class="logo-icon">sports_soccer</mat-icon>
-      <span class="logo-text">CanchaReservas</span>
-    </div>
-    
-    <div class="header-actions" fxHide.xs>
-      <button mat-button (click)="onIniciarSesion()">
-        <mat-icon>login</mat-icon>
-        Iniciar Sesión
-      </button>
-      <button mat-raised-button color="accent" (click)="onRegistrarse()">
-        Registrarse
-      </button>
+<mat-toolbar class="header-toolbar !bg-primary-600 text-white">
+  <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
+    <!-- Logo (izquierda) -->
+    <div class="flex items-center gap-2">
+      <mat-icon class="logo-icon text-secondary-400">sports_soccer</mat-icon>
+      <span class="logo-text text-white">CanchaReservas</span>
     </div>
 
-    <!-- Mobile menu button -->
-    <button mat-icon-button fxHide.gt-xs [matMenuTriggerFor]="mobileMenu">
-      <mat-icon>menu</mat-icon>
-    </button>
+    <!-- Acciones (derecha) -->
+    <div class="flex items-center gap-4">
+      <!-- Desktop (>=640px) -->
+      <div class="hidden sm:flex items-center gap-4">
+        <button
+          mat-button
+          class="hover:text-secondary-200 transition"
+          (click)="onIniciarSesion()"
+        >
+          <mat-icon>login</mat-icon>
+          Iniciar Sesión
+        </button>
+
+        <button
+          mat-raised-button
+          class="bg-secondary-500 hover:bg-secondary-600 text-gray-900 font-semibold shadow-md transition"
+          (click)="onRegistrarse()"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Mobile (<640px) -->
+      <button
+        mat-icon-button
+        class="sm:!hidden hover:text-secondary-200"
+        [matMenuTriggerFor]="mobileMenu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
   </div>
 </mat-toolbar>
 

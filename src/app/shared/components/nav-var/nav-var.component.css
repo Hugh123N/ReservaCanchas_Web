@@ -1,25 +1,5 @@
-/* Header Styles */
 .header-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  @apply sticky top-0 z-50 shadow-md;
 }
 
 .logo-icon {
@@ -30,11 +10,5 @@
 
 .logo-text {
   font-size: 24px;
-  font-weight: 600;
-}
-
-.header-actions {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+  font-weight: 700;
 }

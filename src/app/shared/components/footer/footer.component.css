@@ -21,10 +21,6 @@
   margin: 0;
 }
 
-.footer ul li {
-  margin-bottom: 8px;
-}
-
 .footer ul li a {
   color: #ccc;
   text-decoration: none;
@@ -35,12 +31,7 @@
   color: white;
 }
 
-.social-icons {
-  margin-top: 16px;
-}
-
 .footer-bottom {
-  text-align: center;
-  padding-top: 24px;
-  color: #ccc;
+  color: #aaa;
+  font-size: 0.9rem;
 }

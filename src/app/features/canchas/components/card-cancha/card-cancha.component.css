@@ -1,0 +1,11 @@
+.field-card {
+  max-width: 350px;
+  margin: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+
+  .image-container.unavailable img {
+    filter: grayscale(100%) brightness(0.7);
+  }
+}

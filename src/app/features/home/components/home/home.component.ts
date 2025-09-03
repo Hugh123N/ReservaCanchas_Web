@@ -6,104 +6,135 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
-
-interface Cancha {
-  id: number
-  nombre: string
-  tipo: string
-  ubicacion: string
-  precio: number
-  imagen: string
-  disponible: boolean
-  calificacion: number
-  caracteristicas: string[]
-}
+import { CardCanchaComponent } from 'app/features/canchas/components/card-cancha/card-cancha.component';
+import { SearchCancha } from 'app/features/canchas/core/model/searchCancha.model';
 
 @Component({
   selector: 'app-home',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule, FlexLayoutModule,DecimalPipe,CommonModule, FooterComponent, NavVarComponent],
+  standalone: true,
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule, DecimalPipe, CommonModule, FooterComponent, NavVarComponent,
+    CardCanchaComponent
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  canchasEjemplo: Cancha[] = [
+  canchasEjemplo: SearchCancha[] = [
     {
-      id: 1,
-      nombre: "Cancha Fútbol Premium",
-      tipo: "Fútbol 11",
-      ubicacion: "Zona Norte, Ciudad",
-      precio: 80000,
-      imagen: "/placeholder.svg?height=200&width=300",
+      idCancha: 1,
+      nombre: "Arena Vóley Pro",
+      idTipoCancha: 1,
+      descripcion: "Cancha techada con arena especial para torneos de vóley.",
+      ubicacion: "Av. Javier Prado Este 1234",
+      direccion: "Av. Javier Prado Este 1234, Surco, Lima",
+      latitud: -12.105,
+      longitud: -76.963,
+      precioHora: 45,
+      idProveedor: "prov-001",
+      codigoUbigeo: "150141",
+      idEstadoCancha: 1,
       disponible: true,
-      calificacion: 4.8,
-      caracteristicas: ["Césped natural", "Iluminación LED", "Vestuarios", "Estacionamiento"],
+      calificacionPromedio: 4.8,
+      tipoCancha: { idTipoCancha: 1, nombre: "Vóley" },
+      imagenesCancha: [
+        {
+          idImagenCancha: 101,
+          idCancha: 1,
+          urlImagen: "https://picsum.photos/seed/voley/400/250",
+          esPrincipal: true,
+          activo: true
+        }
+      ],
+      estadoCancha: { idEstadoCancha: 1, codigo: "01", nombre: "Aprobado" },
+      faboritos: [],
+      ubigeo: {
+        codigoUbigeo: "150141",
+        departamento: "Lima",
+        provincia: "Lima",
+        distrito: "Surco"
+      },
+      horariosDisponibles: ["08:00", "10:00", "12:00"]
     },
     {
-      id: 2,
-      nombre: "Court Tenis Club",
-      tipo: "Tenis",
-      ubicacion: "Centro, Ciudad",
-      precio: 45000,
-      imagen: "/placeholder.svg?height=200&width=300",
-      disponible: true,
-      calificacion: 4.6,
-      caracteristicas: ["Superficie dura", "Iluminación nocturna", "Alquiler raquetas"],
-    },
-    {
-      id: 3,
-      nombre: "Basket Arena",
-      tipo: "Básquetbol",
-      ubicacion: "Zona Sur, Ciudad",
-      precio: 35000,
-      imagen: "/placeholder.svg?height=200&width=300",
+      idCancha: 2,
+      nombre: "Cancha Municipal",
+      idTipoCancha: 2,
+      descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
+      ubicacion: "Av. La Fontana 567",
+      direccion: "Av. La Fontana 567, La Molina, Lima",
+      latitud: -12.082,
+      longitud: -76.935,
+      precioHora: 70,
+      idProveedor: "prov-002",
+      codigoUbigeo: "150135",
+      idEstadoCancha: 5,
       disponible: false,
-      calificacion: 4.7,
-      caracteristicas: ["Cancha cubierta", "Piso de madera", "Gradas", "Aire acondicionado"],
+      calificacionPromedio: 4.1,
+      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 11" },
+      imagenesCancha: [
+        {
+          idImagenCancha: 102,
+          idCancha: 2,
+          urlImagen: "https://picsum.photos/seed/futbol/400/250",
+          esPrincipal: true,
+          activo: true
+        }
+      ],
+      estadoCancha: { idEstadoCancha: 5, codigo: "05", nombre: "Mantenimiento" },
+      faboritos: [],
+      ubigeo: {
+        codigoUbigeo: "150135",
+        departamento: "Lima",
+        provincia: "Lima",
+        distrito: "La Molina"
+      },
+      horariosDisponibles: ["14:00", "16:00", "18:00"]
     },
     {
-      id: 4,
-      nombre: "Padel Center",
-      tipo: "Pádel",
-      ubicacion: "Zona Este, Ciudad",
-      precio: 55000,
-      imagen: "/placeholder.svg?height=200&width=300",
-      disponible: true,
-      calificacion: 4.9,
-      caracteristicas: ["Cristal templado", "Césped sintético", "Climatizada"],
-    },
-    {
-      id: 5,
-      nombre: "Fútbol 5 Express",
-      tipo: "Fútbol 5",
-      ubicacion: "Zona Oeste, Ciudad",
-      precio: 40000,
-      imagen: "/placeholder.svg?height=200&width=300",
-      disponible: true,
-      calificacion: 4.4,
-      caracteristicas: ["Césped sintético", "Techada", "Vestuarios", "Buffet"],
-    },
-    {
-      id: 6,
-      nombre: "Volley Beach",
-      tipo: "Vóley Playa",
-      ubicacion: "Zona Costera, Ciudad",
-      precio: 30000,
-      imagen: "/placeholder.svg?height=200&width=300",
-      disponible: true,
-      calificacion: 4.5,
-      caracteristicas: ["Arena importada", "Al aire libre", "Duchas", "Bar"],
-    },
-  ]
+      idCancha: 3,
+      nombre: "Fútbol Club Junior",
+      idTipoCancha: 2,
+      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
+      ubicacion: "Av. San Luis 999",
+      direccion: "Av. San Luis 999, San Borja, Lima",
+      latitud: -12.095,
+      longitud: -76.995,
+      precioHora: 60,
+      idProveedor: "prov-003",
+      codigoUbigeo: "150120",
+      idEstadoCancha: 2,
+      disponible: false,
+      calificacionPromedio: 3.9,
+      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 7" },
+      imagenesCancha: [
+        {
+          idImagenCancha: 103,
+          idCancha: 3,
+          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
+          esPrincipal: true,
+          activo: true
+        }
+      ],
+      estadoCancha: { idEstadoCancha: 2, codigo: "02", nombre: "Pendiente" },
+      faboritos: [],
+      ubigeo: {
+        codigoUbigeo: "150120",
+        departamento: "Lima",
+        provincia: "Lima",
+        distrito: "San Borja"
+      },
+      horariosDisponibles: ["09:00", "11:00", "13:00"]
+    }
+  ];
 
   constructor() { }
 
-  onReservarCancha(cancha: Cancha) {
+  onReservarCancha(cancha: SearchCancha) {
     console.log("Reservar cancha:", cancha.nombre)
     // Aquí iría la lógica para reservar
   }
@@ -118,5 +149,5 @@ export class HomeComponent {
     // Aquí iría la navegación al panel de operador
   }
 
- 
+
 }

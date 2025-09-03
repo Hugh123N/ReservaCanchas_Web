@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-var',
-  imports: [MatIconModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, MatButtonModule],
+  imports: [MatIconModule, MatMenuModule, MatToolbarModule, MatButtonModule],
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'
 })

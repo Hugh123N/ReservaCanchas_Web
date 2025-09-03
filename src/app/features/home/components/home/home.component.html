@@ -3,72 +3,56 @@
 
 <!-- Hero Section -->
 <section class="hero-section">
-  <div class="hero-container">
-    <div class="hero-content">
-      <h1 class="hero-title">Reserva tu cancha deportiva favorita</h1>
-      <p class="hero-subtitle">
-        Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.
-        La plataforma más completa para deportistas y propietarios de canchas.
-      </p>
+  <div class="hero-container text-center">
+    <h1 class="hero-title">Reserva tu cancha deportiva favorita</h1>
+    <p class="hero-subtitle">
+      Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.
+      La plataforma más completa para deportistas y propietarios de canchas.
+    </p>
 
-      <!-- Role Cards -->
-      <div
-        class="role-cards"
-        fxLayout="row wrap"
-        fxLayoutGap="16px"
-        fxLayoutAlign="center center"
-      >
-        <mat-card class="role-card" fxFlex="100" fxFlex.gt-xs="30">
-          <mat-card-header>
-            <mat-icon mat-card-avatar color="primary">person</mat-icon>
-            <mat-card-title>Soy Cliente</mat-card-title>
-            <mat-card-subtitle>Quiero reservar una cancha</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-actions>
-            <button mat-raised-button color="primary" class="full-width-btn">
-              Ver Canchas Disponibles
-            </button>
-          </mat-card-actions>
-        </mat-card>
+    <!-- Role Cards -->
+    <div class="role-cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10 max-w-5xl mx-auto">
+      <!-- Cliente -->
+      <mat-card class="role-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="primary">person</mat-icon>
+          <mat-card-title>Soy Cliente</mat-card-title>
+          <mat-card-subtitle>Quiero reservar una cancha</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" class="full-width-btn">
+            Ver Canchas Disponibles
+          </button>
+        </mat-card-actions>
+      </mat-card>
 
-        <mat-card class="role-card" fxFlex="100" fxFlex.gt-xs="30">
-          <mat-card-header>
-            <mat-icon mat-card-avatar color="accent">business</mat-icon>
-            <mat-card-title>Soy Proveedor</mat-card-title>
-            <mat-card-subtitle>Quiero registrar mi cancha</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-actions>
-            <button
-              mat-raised-button
-              color="accent"
-              class="full-width-btn"
-              (click)="onRegistrarCancha()"
-            >
-              Registrar Mi Cancha
-            </button>
-          </mat-card-actions>
-        </mat-card>
+      <!-- Proveedor -->
+      <mat-card class="role-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="accent">business</mat-icon>
+          <mat-card-title>Soy Proveedor</mat-card-title>
+          <mat-card-subtitle>Quiero registrar mi cancha</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+          <button mat-raised-button color="accent" class="full-width-btn" (click)="onRegistrarCancha()">
+            Registrar Mi Cancha
+          </button>
+        </mat-card-actions>
+      </mat-card>
 
-        <mat-card class="role-card" fxFlex="100" fxFlex.gt-xs="30">
-          <mat-card-header>
-            <mat-icon mat-card-avatar color="warn"
-              >admin_panel_settings</mat-icon
-            >
-            <mat-card-title>Soy Operador</mat-card-title>
-            <mat-card-subtitle>Manejo canchas deportivas</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-actions>
-            <button
-              mat-raised-button
-              color="warn"
-              class="full-width-btn"
-              (click)="onAccesoOperador()"
-            >
-              Panel de Operador
-            </button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
+      <!-- Operador -->
+      <mat-card class="role-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="warn">admin_panel_settings</mat-icon>
+          <mat-card-title>Soy Operador</mat-card-title>
+          <mat-card-subtitle>Manejo canchas deportivas</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+          <button mat-raised-button color="warn" class="full-width-btn" (click)="onAccesoOperador()">
+            Panel de Operador
+          </button>
+        </mat-card-actions>
+      </mat-card>
     </div>
   </div>
 </section>
@@ -76,89 +60,14 @@
 <!-- Canchas Destacadas -->
 <section class="featured-section">
   <div class="section-container">
-    <div class="section-header">
+    <div class="section-header text-center">
       <h2>Canchas Destacadas</h2>
       <p>Descubre las mejores canchas deportivas disponibles</p>
     </div>
 
-    <div class="canchas-grid" fxLayout="row wrap" fxLayoutGap="24px">
-      <div
-        fxFlex="100"
-        fxFlex.gt-xs="50"
-        fxFlex.gt-md="33"
-        *ngFor="let cancha of canchasEjemplo"
-        class="cancha-item"
-      >
-        <mat-card class="cancha-card">
-          <div class="cancha-image-container">
-            <img
-              mat-card-image
-              [src]="cancha.imagen"
-              [alt]="cancha.nombre"
-              class="cancha-image"
-            />
-            <div
-              class="availability-badge"
-              [class.disponible]="cancha.disponible"
-              [class.ocupada]="!cancha.disponible"
-            >
-              {{ cancha.disponible ? "Disponible" : "Ocupada" }}
-            </div>
-          </div>
-
-          <mat-card-header>
-            <mat-card-title>{{ cancha.nombre }}</mat-card-title>
-            <mat-card-subtitle>
-              <div class="subtitle-info">
-                <span>{{ cancha.tipo }}</span>
-                <div class="rating">
-                  <mat-icon class="star-icon">star</mat-icon>
-                  <span>{{ cancha.calificacion }}</span>
-                </div>
-              </div>
-            </mat-card-subtitle>
-          </mat-card-header>
-
-          <mat-card-content>
-            <div class="cancha-info">
-              <div class="location">
-                <mat-icon>location_on</mat-icon>
-                <span>{{ cancha.ubicacion }}</span>
-              </div>
-              <div class="price">
-                <span class="price-label">Desde</span>
-                <span class="price-amount"
-                  >${{ cancha.precio | number : "1.0-0" }}</span
-                >
-                <span class="price-period">/hora</span>
-              </div>
-            </div>
-
-            <div class="caracteristicas">
-              <mat-chip-listbox>
-                <mat-chip
-                  *ngFor="
-                    let caracteristica of cancha.caracteristicas.slice(0, 3)
-                  "
-                >
-                  {{ caracteristica }}
-                </mat-chip>
-              </mat-chip-listbox>
-            </div>
-          </mat-card-content>
-
-          <mat-card-actions>
-            <button
-              mat-raised-button
-              color="primary"
-              [disabled]="!cancha.disponible"
-              (click)="onReservarCancha(cancha)"
-              class="full-width-btn"
-            >
-              {{ cancha.disponible ? "Reservar Ahora" : "No Disponible" }}
-            </button>
-          </mat-card-actions>
-        </mat-card>
+    <div class="canchas-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
+      <div *ngFor="let cancha of canchasEjemplo">
+        <app-card-cancha [field]="cancha"></app-card-cancha>
       </div>
     </div>
   </div>
@@ -167,53 +76,30 @@
 <!-- Features Section -->
 <section class="features-section">
   <div class="section-container">
-    <div class="section-header">
+    <div class="section-header text-center">
       <h2>¿Por qué elegir CanchaReservas?</h2>
     </div>
 
-    <div fxLayout="row wrap" fxLayoutGap="32px" fxLayoutAlign="center start">
-      <div
-        fxFlex="100"
-        fxFlex.gt-xs="50"
-        fxFlex.gt-md="25"
-        class="feature-item"
-      >
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <div class="feature-item">
         <mat-icon class="feature-icon" color="primary">schedule</mat-icon>
         <h3>Reservas 24/7</h3>
         <p>Reserva tu cancha favorita en cualquier momento del día</p>
       </div>
 
-      <div
-        fxFlex="100"
-        fxFlex.gt-xs="50"
-        fxFlex.gt-md="25"
-        class="feature-item"
-      >
+      <div class="feature-item">
         <mat-icon class="feature-icon" color="primary">verified</mat-icon>
         <h3>Canchas Verificadas</h3>
-        <p>
-          Todas nuestras canchas están verificadas y cumplen estándares de
-          calidad
-        </p>
+        <p>Todas nuestras canchas están verificadas y cumplen estándares de calidad</p>
       </div>
 
-      <div
-        fxFlex="100"
-        fxFlex.gt-xs="50"
-        fxFlex.gt-md="25"
-        class="feature-item"
-      >
+      <div class="feature-item">
         <mat-icon class="feature-icon" color="primary">payment</mat-icon>
         <h3>Pago Seguro</h3>
         <p>Múltiples métodos de pago seguros y confiables</p>
       </div>
 
-      <div
-        fxFlex="100"
-        fxFlex.gt-xs="50"
-        fxFlex.gt-md="25"
-        class="feature-item"
-      >
+      <div class="feature-item">
         <mat-icon class="feature-icon" color="primary">support_agent</mat-icon>
         <h3>Soporte 24/7</h3>
         <p>Nuestro equipo está disponible para ayudarte cuando lo necesites</p>

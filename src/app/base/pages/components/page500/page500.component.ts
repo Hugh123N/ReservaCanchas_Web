@@ -5,16 +5,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-page500',
+  standalone: true,
   imports: [CommonModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatProgressSpinnerModule,
-    FlexLayoutModule],
+    MatProgressSpinnerModule],
   templateUrl: './page500.component.html',
   styleUrl: './page500.component.css'
 })

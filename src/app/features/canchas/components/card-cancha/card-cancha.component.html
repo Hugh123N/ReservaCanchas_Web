@@ -1,0 +1,67 @@
+<mat-card class="field-card flex flex-col gap-3">
+  <!-- Imagen -->
+  <div
+    class="image-container relative h-44 overflow-hidden rounded-t-xl"
+    [class.unavailable]="!disponible"
+  >
+    <img
+      [src]="mainImage"
+      alt="{{ field?.nombre }}"
+      class="w-full h-full object-cover"
+    />
+    <span
+      *ngIf="estadoTexto"
+      class="status-badge absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium"
+    >
+      {{ estadoTexto }}
+    </span>
+  </div>
+
+  <!-- Contenido -->
+  <mat-card-content class="flex flex-col gap-2">
+    <!-- Título y rating -->
+    <div class="flex justify-between items-center">
+      <h3 class="font-semibold text-lg">{{ field?.nombre }}</h3>
+      <div class="flex items-center gap-1">
+        <mat-icon class="!text-yellow-400">star</mat-icon>
+        <span>{{ field?.calificacionPromedio || "N/A" }}</span>
+      </div>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="flex items-center text-gray-600 text-sm">
+      <mat-icon class="text-base mr-1">location_on</mat-icon>
+      <span>{{ ubicacion }}</span>
+    </div>
+
+    <!-- Deporte -->
+    <mat-chip color="primary" selected>{{ deporte }}</mat-chip>
+
+    <!-- Precio -->
+    <div class="price font-bold text-green-600 flex items-baseline gap-1">
+      <span class="amount text-xl">S/ {{ field?.precioHora }}</span>
+      <span class="text-sm">/hora</span>
+    </div>
+
+    <!-- Horarios -->
+    <div class="flex items-center text-gray-700 text-sm">
+      <mat-icon class="text-base mr-1">schedule</mat-icon>
+      <span>Horarios: {{ horarios.join(", ") }}</span>
+    </div>
+  </mat-card-content>
+
+  <!-- Botón -->
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      class="w-full"
+      *ngIf="disponible; else noDisponible"
+    >
+      Reservar Ahora
+    </button>
+    <ng-template #noDisponible>
+      <button mat-raised-button disabled class="w-full">No Disponible</button>
+    </ng-template>
+  </mat-card-actions>
+</mat-card>
