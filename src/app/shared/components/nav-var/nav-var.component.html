@@ -1,9 +1,9 @@
-<mat-toolbar class="header-toolbar !bg-primary-600 text-white">
+<mat-toolbar class="header-toolbar !bg-white-600 text-white">
   <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
     <!-- Logo (izquierda) -->
     <div class="flex items-center gap-2">
-      <mat-icon class="logo-icon !text-secondary-400">sports_soccer</mat-icon>
-      <span class="logo-text text-white">CanchaReservas</span>
+      <mat-icon class="logo-icon !text-primary-600">sports_soccer</mat-icon>
+      <span class="logo-text title-main">CanchaReservas</span>
     </div>
 
     <!-- Acciones (derecha) -->
@@ -12,18 +12,14 @@
       <div class="hidden sm:flex items-center gap-4">
         <button
           mat-button
-          class="hover:!text-secondary-200 transition"
+          class="btn-clean-primary hover:"
           (click)="onIniciarSesion()"
         >
-          <mat-icon>login</mat-icon>
+          <mat-icon >login</mat-icon>
           Iniciar Sesión
         </button>
 
-        <button
-          mat-raised-button
-          class="!bg-secondary-500 hover:!bg-secondary-600 text-gray-900 font-semibold shadow-md transition"
-          (click)="onRegistrarse()"
-        >
+        <button class="!bg-primary-500 !text-white hover:!bg-primary-600 transition " mat-button (click)="onRegistrarse()">
           Registrarse
         </button>
       </div>

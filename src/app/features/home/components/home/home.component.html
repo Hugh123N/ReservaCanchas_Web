@@ -61,7 +61,7 @@
 <section class="featured-section">
   <div class="section-container">
     <div class="section-header text-center">
-      <h2>Canchas Destacadas</h2>
+      <h2 class = "text-primary">Canchas Destacadas</h2>
       <p>Descubre las mejores canchas deportivas disponibles</p>
     </div>
 
@@ -77,36 +77,77 @@
 <section class="features-section">
   <div class="section-container">
     <div class="section-header text-center">
-      <h2>¿Por qué elegir CanchaReservas?</h2>
+      <h2 class="text-primary">¿Por qué elegir CanchaReservas?</h2>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
       <div class="feature-item">
-        <mat-icon class="feature-icon" color="primary">schedule</mat-icon>
-        <h3>Reservas 24/7</h3>
+        <mat-icon class="feature-icon icon-secondary">schedule</mat-icon>
+        <h3 class="text-secondary">Reservas 24/7</h3>
         <p>Reserva tu cancha favorita en cualquier momento del día</p>
       </div>
 
       <div class="feature-item">
-        <mat-icon class="feature-icon" color="primary">verified</mat-icon>
-        <h3>Canchas Verificadas</h3>
+        <mat-icon class="feature-icon icon-secondary">verified</mat-icon>
+        <h3 class="text-secondary">Canchas Verificadas</h3>
         <p>Todas nuestras canchas están verificadas y cumplen estándares de calidad</p>
       </div>
 
       <div class="feature-item">
-        <mat-icon class="feature-icon" color="primary">payment</mat-icon>
-        <h3>Pago Seguro</h3>
+        <mat-icon class="feature-icon icon-secondary">payment</mat-icon>
+        <h3 class="text-secondary">Pago Seguro</h3>
         <p>Múltiples métodos de pago seguros y confiables</p>
       </div>
 
       <div class="feature-item">
-        <mat-icon class="feature-icon" color="primary">support_agent</mat-icon>
-        <h3>Soporte 24/7</h3>
+        <mat-icon class="feature-icon icon-secondary">support_agent</mat-icon>
+        <h3 class="text-secondary">Soporte 24/7</h3>
         <p>Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
       </div>
     </div>
   </div>
 </section>
 
+<!-- CTA Section -->
+<section class="cta-section py-16">
+  <div class="section-container text-center">
+    <h2 class="h2 text-white mb-4">¿Listo para jugar?</h2>
+    <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Únete a miles de deportistas que ya disfrutan de nuestras canchas</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button mat-raised-button class="btn-white-primary text-lg px-8 py-3">
+        Explorar Canchas
+      </button>
+      <button mat-raised-button class="btn-white-secondary text-lg px-8 py-3">
+        Registrar Mi Cancha
+      </button>
+    </div>
+  </div>
+</section>
+
 <!-- Footer -->
 <app-footer></app-footer>
+
+
+<button class="btn-primary">Nueva Reserva</button>
+<button class="btn-secondary">Configurar</button>
+<button class="btn-accent">Pagar Ahora</button>
+<button class="btn-outline-primary">Ver más</button>
+
+<!-- Texto -->
+<h1 class="title-main">Reserva tu cancha deportiva favorita</h1>
+<p class="text-neutral-600">La plataforma más completa para gestionar espacios deportivos.</p>
+<h3 class="text-primary">Reserva tu cancha deportiva favorita</h3>
+
+<!-- Iconos -->
+<mat-icon class="icon-primary">sports_soccer</mat-icon>
+<mat-icon class="icon-secondary">check_circle</mat-icon>
+<mat-icon class="icon-accent">warning</mat-icon>
+
+<!-- Botón blanco que en hover pasa a primary -->
+<button class="btn-white-primary">Iniciar Sesión</button>
+<!-- Botón blanco que en hover pasa a secondary -->
+<button class="btn-white-secondary">Configuración</button>
+<!-- Botón blanco que en hover pasa a accent -->
+<button class="btn-white-accent">Cancelar Reserva</button>
+
+<button class="btn-clean-primary">Limpiar Filtros</button>

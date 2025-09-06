@@ -38,7 +38,7 @@
     <mat-chip color="primary" selected>{{ deporte }}</mat-chip>
 
     <!-- Precio -->
-    <div class="price font-bold text-green-600 flex items-baseline gap-1">
+    <div class="price font-bold text-primary flex items-baseline gap-1">
       <span class="amount text-xl">S/ {{ field?.precioHora }}</span>
       <span class="text-sm">/hora</span>
     </div>
@@ -54,8 +54,7 @@
   <mat-card-actions>
     <button
       mat-raised-button
-      color="primary"
-      class="w-full"
+      class="w-full btn-white-primary "
       *ngIf="disponible; else noDisponible"
     >
       Reservar Ahora

@@ -1,0 +1,138 @@
+<app-nav-var></app-nav-var>
+
+<div class="w-full max-w-5xl mx-auto bg-white shadow rounded-2xl overflow-hidden">
+  <!-- Imagen principal -->
+  <div class="relative">
+    <img src="https://via.placeholder.com/1200x400" 
+         alt="Cancha" 
+         class="w-full h-60 md:h-80 object-cover">
+    <div class="absolute bottom-3 left-3 bg-white px-4 py-2 rounded-xl shadow text-gray-800">
+      <h2 class="font-semibold text-lg">DeporPlaza Matamula</h2>
+      <p class="text-sm text-gray-500 flex items-center gap-1">
+        <mat-icon fontIcon="location_on" class="text-primary"></mat-icon>
+        Jr Belisario Flores #900 Lince, Lima
+      </p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <mat-tab-group class="mt-3">
+    <!-- Reservar -->
+    <mat-tab label="Reservar">
+      <form [formGroup]="reservaForm" (ngSubmit)="onReservar()" class="p-4 space-y-6">
+
+        <!-- Calendario horizontal -->
+        <div class="flex overflow-x-auto gap-3 pb-2">
+          <div *ngFor="let f of fechas" 
+               class="min-w-[70px] flex flex-col items-center justify-center rounded-xl p-2 
+                      text-sm cursor-pointer transition border"
+               [ngClass]="f.disponible ? 'bg-green-50 border-green-400 text-green-600 hover:bg-green-100' : 'bg-gray-100 text-gray-400 border-gray-200'"
+               (click)="reservaForm.patchValue({ fecha: f.fecha })">
+            <span class="font-semibold">{{ f.dia }}</span>
+            <span>{{ f.fecha }}</span>
+          </div>
+        </div>
+
+        <!-- Horarios -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <button *ngFor="let h of horarios"
+                  type="button"
+                  (click)="reservaForm.patchValue({ horario: h })"
+                  mat-raised-button
+                  class="!rounded-xl !py-6 !text-lg !font-semibold shadow-sm w-full"
+                  [color]="reservaForm.value.horario === h ? 'accent' : 'primary'">
+            {{ h }}
+          </button>
+        </div>
+
+        <!-- Datos del responsable -->
+        <mat-card class="p-6 rounded-xl shadow-sm space-y-4">
+          <h3 class="font-semibold text-lg mb-4">Datos del Responsable</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Nombre -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Nombre completo</mat-label>
+              <input matInput formControlName="nombre" placeholder="Ej: Juan Pérez">
+            </mat-form-field>
+
+            <!-- Teléfono -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" type="tel" placeholder="Ej: +51 999 123 456">
+            </mat-form-field>
+
+            <!-- Email -->
+            <mat-form-field appearance="outline" class="w-full md:col-span-2">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email" placeholder="Ej: juan@gmail.com">
+            </mat-form-field>
+
+            <!-- Observaciones -->
+            <mat-form-field appearance="outline" class="w-full md:col-span-2">
+              <mat-label>Observaciones (opcional)</mat-label>
+              <textarea matInput formControlName="observaciones" rows="3" placeholder="Alguna preferencia o comentario..."></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card>
+
+        <!-- Resumen de la reserva -->
+        <mat-card class="p-6 rounded-xl shadow-sm">
+          <h3 class="font-semibold text-lg mb-4">Resumen de la Reserva</h3>
+
+          <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
+            <span class="text-gray-600">Fecha</span>
+            <span class="font-medium text-gray-800">{{ reservaForm.value.fecha || '-' }}</span>
+          </div>
+
+          <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
+            <span class="text-gray-600">Hora seleccionada</span>
+            <span class="font-medium text-gray-800">{{ reservaForm.value.horario || '-' }}</span>
+          </div>
+
+          <div class="flex justify-between items-center border-b border-gray-200 pb-2 mb-3">
+            <span class="text-gray-600">Duración</span>
+            <span class="font-medium text-gray-800">{{ reservaForm.value.duracion }} h</span>
+          </div>
+
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-lg font-semibold">Total</span>
+            <span class="text-2xl font-bold text-green-600">S/ 50.00</span>
+          </div>
+
+          <button mat-raised-button color="primary" type="submit"
+                  [disabled]="reservaForm.invalid"
+                  class="w-full !rounded-xl !py-4 !text-lg font-semibold shadow-md">
+            Reservar y Pagar
+          </button>
+        </mat-card>
+      </form>
+    </mat-tab>
+
+    <!-- Info General -->
+    <mat-tab label="Info General">
+      <div class="p-4 space-y-6">
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Servicios</h3>
+          <ul class="grid grid-cols-2 gap-3 text-gray-700">
+            <li class="flex items-center gap-2"><mat-icon fontIcon="emoji_events" class="text-primary"></mat-icon> Torneos</li>
+            <li class="flex items-center gap-2"><mat-icon fontIcon="local_drink" class="text-primary"></mat-icon> Cafetería</li>
+            <li class="flex items-center gap-2"><mat-icon fontIcon="directions_car" class="text-primary"></mat-icon> Estacionamiento</li>
+            <li class="flex items-center gap-2"><mat-icon fontIcon="sports_soccer" class="text-primary"></mat-icon> Implementos</li>
+          </ul>
+        </div>
+
+        <!-- Mapa -->
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Ubicación</h3>
+          <div class="w-full h-64 bg-gray-200 rounded-xl overflow-hidden">
+            <iframe class="w-full h-full border-0"
+              src="https://maps.google.com/maps?q=Lima&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<app-footer></app-footer>

@@ -1,31 +1,140 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 
-@theme{
+@theme {
+  /* Primary (violeta / corporativo) */
+  --color-primary-50:  #F3E8FF;
+  --color-primary-100: #E9D5FF;
+  --color-primary-200: #D8B4FE;
+  --color-primary-300: #C084FC;
+  --color-primary-400: #A855F7;
+  --color-primary-500: #9333EA; /* base */
+  --color-primary-600: #7E22CE;
+  --color-primary-700: #6B21A8;
+  --color-primary-800: #581C87;
+  --color-primary-900: #3B0764;
 
-  --color-primary-50: #E3F2FD;
-  --color-primary-100: #BBDEFB;
-  --color-primary-200: #90CAF9;
-  --color-primary-300: #64B5F6;
-  --color-primary-400: #42A5F5;
-  --color-primary-500: #2196F3;
-  --color-primary-600: #1E88E5;
-  --color-primary-700: #1976D2;
-  --color-primary-800: #1565C0;
-  --color-primary-900: #0D47A1;
+  /* Secondary (aqua / energía deportiva) */
+  --color-secondary-50:  #ECFEFF;
+  --color-secondary-100: #CFFAFE;
+  --color-secondary-200: #A5F3FC;
+  --color-secondary-300: #67E8F9;
+  --color-secondary-400: #22D3EE;
+  --color-secondary-500: #06B6D4; /* base */
+  --color-secondary-600: #0891B2;
+  --color-secondary-700: #0E7490;
+  --color-secondary-800: #155E75;
+  --color-secondary-900: #164E63;
 
-  --color-secondary-50: #FFF8E1;
-  --color-secondary-100: #FFECB3;
-  --color-secondary-200: #FFE082;
-  --color-secondary-300: #FFD54F;
-  --color-secondary-400: #FFCA28;
-  --color-secondary-500: #FFC107;
-  --color-secondary-600: #FFB300;
-  --color-secondary-700: #FFA000;
-  --color-secondary-800: #FF8F00;
-  --color-secondary-900: #FF6F00;
+  /* Accent (naranja cálido para llamadas a la acción) */
+  --color-accent-50:  #FFF7ED;
+  --color-accent-100: #FFEDD5;
+  --color-accent-200: #FED7AA;
+  --color-accent-300: #FDBA74;
+  --color-accent-400: #FB923C;
+  --color-accent-500: #F97316; /* base */
+  --color-accent-600: #EA580C;
+  --color-accent-700: #C2410C;
+  --color-accent-800: #9A3412;
+  --color-accent-900: #7C2D12;
 
+  /* Neutral (grises para fondo, texto, bordes) */
+  --color-neutral-50:  #FAFAFA;
+  --color-neutral-100: #F4F4F5;
+  --color-neutral-200: #E4E4E7;
+  --color-neutral-300: #D4D4D8;
+  --color-neutral-400: #A1A1AA;
+  --color-neutral-500: #71717A;
+  --color-neutral-600: #52525B;
+  --color-neutral-700: #3F3F46;
+  --color-neutral-800: #27272A;
+  --color-neutral-900: #18181B;
 }
+
+
+/* Botones */
+.btn-primary {
+  @apply bg-primary-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-primary-600 transition;
+}
+
+.btn-secondary {
+  @apply bg-secondary-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-secondary-600 transition;
+}
+
+.btn-accent {
+  @apply bg-accent-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-accent-600 transition;
+}
+
+.btn-outline-primary {
+  @apply border border-primary-500 text-primary-500 px-4 py-2 rounded-lg hover:bg-primary-50 transition;
+}
+
+/* Texto */
+.text-primary {
+  @apply text-primary-500;
+}
+.text-secondary {
+  @apply text-secondary-500;
+}
+.text-accent {
+  @apply text-accent-500;
+}
+
+.h1 { @apply text-4xl font-bold text-neutral-900; }
+.h2 { @apply text-2xl font-semibold text-neutral-800; }
+.h3 { @apply text-lg font-medium text-neutral-700; }
+
+
+
+/* Iconos */
+.icon-primary {
+  @apply text-primary-500 hover:text-primary-600 transition;
+}
+.icon-secondary {
+  @apply text-secondary-500 hover:text-secondary-600 transition;
+}
+.icon-accent {
+  @apply text-accent-500 hover:text-accent-600 transition;
+}
+
+/* Títulos */
+.title-main {
+  @apply text-3xl font-bold text-primary-500;
+}
+.title-section {
+  @apply text-xl font-semibold text-neutral-800;
+}
+
+/* Blanco -> Primary */
+.btn-white-primary {
+  @apply bg-white border !border-primary-500 !text-primary-500 
+         font-medium px-4 py-2 rounded-lg shadow-sm 
+         hover:!bg-primary-500 hover:!text-white transition;
+}
+
+/* Blanco -> Secondary */
+.btn-white-secondary {
+  @apply bg-white border border-secondary-500 text-secondary-500 
+         font-medium px-4 py-2 rounded-lg shadow-sm 
+         hover:bg-secondary-500 hover:text-white transition;
+}
+
+/* Blanco -> Accent */
+.btn-white-accent {
+  @apply bg-white border border-accent-500 text-accent-500 
+         font-medium px-4 py-2 rounded-lg shadow-sm 
+         hover:bg-accent-500 hover:text-white transition;
+}
+
+
+.btn-clean-primary {
+  @apply bg-white text-black font-medium px-4 py-2 rounded-md transition hover:!bg-primary-500 hover:!text-white;
+}
+
+
+
+
+
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

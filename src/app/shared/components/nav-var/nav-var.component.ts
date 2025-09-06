@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-var',
+  standalone: true,
   imports: [MatIconModule, MatMenuModule, MatToolbarModule, MatButtonModule],
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'
