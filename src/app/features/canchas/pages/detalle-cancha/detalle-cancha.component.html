@@ -3,7 +3,7 @@
 <div class="w-full max-w-5xl mx-auto bg-white shadow rounded-2xl overflow-hidden">
   <!-- Imagen principal -->
   <div class="relative">
-    <img src="https://via.placeholder.com/1200x400" 
+    <img src="https://img.freepik.com/fotos-premium/cancha-futbol-atardecer-fondo_670382-6866.jpg?w=1060" 
          alt="Cancha" 
          class="w-full h-60 md:h-80 object-cover">
     <div class="absolute bottom-3 left-3 bg-white px-4 py-2 rounded-xl shadow text-gray-800">
@@ -50,28 +50,11 @@
           <h3 class="font-semibold text-lg mb-4">Datos del Responsable</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Nombre -->
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Nombre completo</mat-label>
-              <input matInput formControlName="nombre" placeholder="Ej: Juan Pérez">
-            </mat-form-field>
 
             <!-- Teléfono -->
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="telefono" type="tel" placeholder="Ej: +51 999 123 456">
-            </mat-form-field>
-
-            <!-- Email -->
-            <mat-form-field appearance="outline" class="w-full md:col-span-2">
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" type="email" placeholder="Ej: juan@gmail.com">
-            </mat-form-field>
-
-            <!-- Observaciones -->
-            <mat-form-field appearance="outline" class="w-full md:col-span-2">
-              <mat-label>Observaciones (opcional)</mat-label>
-              <textarea matInput formControlName="observaciones" rows="3" placeholder="Alguna preferencia o comentario..."></textarea>
             </mat-form-field>
           </div>
         </mat-card>

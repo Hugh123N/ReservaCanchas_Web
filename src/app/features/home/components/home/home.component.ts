@@ -66,7 +66,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       idProveedor: "prov-001",
       codigoUbigeo: "150141",
       idEstadoCancha: 1,
-      disponible: true,
       calificacionPromedio: 4.8,
       tipoCancha: { idTipoCancha: 1, nombre: "Vóley" },
       imagenesCancha: [
@@ -101,7 +100,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       idProveedor: "prov-002",
       codigoUbigeo: "150135",
       idEstadoCancha: 5,
-      disponible: false,
       calificacionPromedio: 4.1,
       tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 11" },
       imagenesCancha: [
@@ -136,7 +134,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       idProveedor: "prov-003",
       codigoUbigeo: "150120",
       idEstadoCancha: 2,
-      disponible: false,
       calificacionPromedio: 3.9,
       tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 7" },
       imagenesCancha: [
@@ -287,12 +284,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Filtrar ubigeos basado en el texto ingresado
   private _filterUbigeos(value: string): Ubigeo[] {
-    const filterValue = value.toLowerCase();
-    return this.ubigeos.filter(ubigeo =>
-      ubigeo.distrito.toLowerCase().includes(filterValue) ||
-      ubigeo.provincia.toLowerCase().includes(filterValue) ||
-      ubigeo.departamento.toLowerCase().includes(filterValue)
-    );
+    if (!value) return [];
+
+    const searchTerms = value.toLowerCase().split(/\s|,/).filter(v => v); // ["lima"], ["lima","ate"]
+
+    const filtered = this.ubigeos.filter(ubigeo => {
+      const target = `${ubigeo.distrito} ${ubigeo.provincia} ${ubigeo.departamento}`.toLowerCase();
+      return searchTerms.every(term => target.includes(term));
+    });
+
+    // Eliminar duplicados por distrito (o puedes elegir provincia si prefieres)
+    const unique = new Map<string, Ubigeo>();
+    filtered.forEach(ub => {
+      if (!unique.has(ub.distrito.toLowerCase())) {
+        unique.set(ub.distrito.toLowerCase(), ub);
+      }
+    });
+
+    return Array.from(unique.values());
   }
 
   // Función para mostrar el valor en el autocomplete

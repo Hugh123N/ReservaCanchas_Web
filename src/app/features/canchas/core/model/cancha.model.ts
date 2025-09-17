@@ -11,6 +11,5 @@ export interface Cancha {
   codigoUbigeo?: string;
   idEstadoCancha: number;
 
-  disponible: boolean;
   calificacionPromedio?: number;
 }

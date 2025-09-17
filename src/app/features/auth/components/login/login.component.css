@@ -37,6 +37,7 @@
 mat-form-field {
   margin-bottom: 16px;
 }
+
 .full-width {
   width: 100%;
 }
@@ -107,3 +108,4 @@ mat-form-field {
     padding: 20px;
   }
 }
+

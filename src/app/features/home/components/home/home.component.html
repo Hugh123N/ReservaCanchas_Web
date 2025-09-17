@@ -39,7 +39,7 @@
     <mat-card class="search-card glass-effect rounded-2xl shadow-xl p-6 max-w-5xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
         
-        <mat-form-field appearance="outline" class="search-field">
+        <mat-form-field appearance="outline" >
           <mat-label>
             <mat-icon class="icon-primary inline mr-1">location_city</mat-icon>
             Ciudad
@@ -51,7 +51,11 @@
                  placeholder="Escribe tu ciudad...">
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUbigeo">
             <mat-option *ngFor="let ubigeo of filteredUbigeos | async" [value]="ubigeo">
-              {{ ubigeo.distrito }}, {{ ubigeo.provincia }}, {{ ubigeo.departamento }}
+              <mat-icon class="mr-2 icon-primary">location_on</mat-icon>
+              <strong>{{ ubigeo.distrito }}</strong>
+              <small *ngIf="ubigeo.provincia && ubigeo.departamento">
+                {{ ubigeo.departamento }}
+              </small>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>

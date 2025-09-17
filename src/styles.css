@@ -1,5 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
+/*@import "tailwindcss";*/
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
   /* Primary (violeta / corporativo) */
@@ -50,7 +52,6 @@
   --color-neutral-800: #27272A;
   --color-neutral-900: #18181B;
 }
-
 
 /* Botones */
 .btn-primary {
@@ -130,6 +131,32 @@
 .btn-clean-primary {
   @apply bg-white text-black font-medium px-4 py-2 rounded-md transition hover:!bg-primary-500 hover:!text-white;
 }
+
+
+/* Ajustes globales profesionales para form-field */
+.mat-form-field-appearance-outline {
+  .mat-form-field-outline {
+    border-radius: 0.5rem; /* radio coherente con Tailwind rounded-lg */
+  }
+  .mat-form-field-flex {
+    padding: 0.5rem 0.75rem; /* más espacio, mejor touch target */
+    min-height: 3.25rem;
+    align-items: center;
+  }
+  .mat-input-element {
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.2rem 0;
+    color: var(--text-primary);
+  }
+  .mat-form-field-label {
+    transform: translateY(-6px);
+    font-weight: 600;
+  }
+}
+
+
+
 
 /* Estilos para el contenedor principal  CLOUDE HOME =====================================================*/ 
 

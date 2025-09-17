@@ -54,13 +54,7 @@ export class DetalleCanchaComponent {
 
   constructor(private fb: FormBuilder) {
     this.reservaForm = this.fb.group({
-      fecha: ['', Validators.required],
-      horario: ['', Validators.required],
-      duracion: [1, Validators.required], // ahora es numérico
-      nombre: ['', Validators.required],
       telefono: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      observaciones: ['']
     });
   }
 
