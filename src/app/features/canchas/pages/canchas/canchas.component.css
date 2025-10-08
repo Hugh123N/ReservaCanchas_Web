@@ -1,0 +1,100 @@
+@reference "../../../../../styles.css";
+
+/* Search Section */
+.search-section {
+  @apply relative;
+}
+
+.search-card.glass-effect {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Results Header */
+.results-header {
+  @apply bg-white rounded-xl p-6 shadow-sm border border-neutral-100;
+}
+
+/* Sort Options */
+.sort-options .mat-mdc-form-field {
+  @apply text-sm;
+}
+
+/* Grid Classes */
+.grid-medium {
+  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+/* Results Grid */
+.cancha-item {
+  @apply transition-all duration-300;
+}
+
+.enhanced-card-hover:hover {
+  @apply transform -translate-y-2 shadow-xl;
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
+}
+
+/* Empty State */
+.empty-state {
+  @apply bg-white rounded-xl shadow-sm border border-neutral-100;
+}
+
+/* Pagination */
+.custom-paginator {
+  @apply bg-white rounded-xl shadow-sm border border-neutral-100 mt-8;
+}
+
+.custom-paginator .mat-mdc-paginator-navigation-previous,
+.custom-paginator .mat-mdc-paginator-navigation-next {
+  @apply text-primary-600 hover:bg-primary-50;
+}
+
+.custom-paginator .mat-mdc-paginator-page-size-select {
+  @apply text-primary-600;
+}
+
+.custom-paginator .mat-mdc-button-base:hover {
+  @apply bg-primary-50;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Material Overrides */
+.mat-mdc-form-field-outline {
+  @apply rounded-xl;
+}
+
+.mat-mdc-card {
+  @apply rounded-2xl border-0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-card {
+    @apply mx-2 p-4;
+  }
+  
+  .results-header {
+    @apply p-4;
+  }
+
+  .cancha-item {
+    animation-delay: 0ms !important;
+  }
+}

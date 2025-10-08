@@ -3,6 +3,7 @@ import { ApplicationMessage } from './application-message.dto';
 export class ResponseBaseDto<T = any> {
   isValid: boolean = false;
   messages: ApplicationMessage[] = [];
+  Messages?: ApplicationMessage[];
   data!: T;
 
   static getMessages(response: ResponseBaseDto<any>): string {

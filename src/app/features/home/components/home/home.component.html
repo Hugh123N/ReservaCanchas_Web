@@ -65,14 +65,13 @@
             <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
             Deporte
           </mat-label>
-          <mat-select [(ngModel)]="selectedSport">
+          <mat-select [(ngModel)]="idTipoCancha">
             <mat-option value="">Todos los deportes</mat-option>
-            <mat-option value="futbol11">Fútbol 11</mat-option>
-            <mat-option value="futbol7">Fútbol 7</mat-option>
-            <mat-option value="basquet">Básquetbol</mat-option>
-            <mat-option value="tenis">Tenis</mat-option>
-            <mat-option value="voley">Vóley</mat-option>
-            <mat-option value="padel">Pádel</mat-option>
+            @for (tipo of canchaTipos; track tipo.idTipoCancha) {
+              <mat-option [value]="tipo.idTipoCancha">
+                {{ tipo.nombre }}
+              </mat-option>
+              }
           </mat-select>
         </mat-form-field>
 
@@ -130,7 +129,7 @@
     </div>
 
     <div class="text-center mt-12">
-      <button mat-raised-button class="btn-outline-primary text-lg px-8 py-3">
+      <button mat-raised-button class="btn-outline-primary text-lg px-8 py-3" (click)= "onExplorarCanchas()">
         Ver Todas las Canchas
       </button>
     </div>

@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SearchCancha } from '../../core/model/searchCancha.model';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { ESTADO_CANCHA } from '@core/constants/constants.constant';
 
 @Component({
   selector: 'app-card-cancha',
@@ -24,6 +26,8 @@ export class CardCanchaComponent {
   @Input() field!: SearchCancha;
 
   //constructor(@Inject(PLATFORM_ID) private platformId: any) {}
+  constructor(private router: Router,) { }
+
 
   ngOnInit() {
   }
@@ -53,13 +57,17 @@ export class CardCanchaComponent {
   }
 
   get disponible(): boolean {
-    return this.field?.estadoCancha?.nombre?.toLowerCase() === 'aprobado';
+    return this.field?.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO;
   }
 
   get estadoTexto(): string {
-    const estado = this.field?.estadoCancha?.nombre?.toLowerCase();
-    if (estado === 'mantenimiento') return 'En Mantenimiento';
-    if (estado !== 'aprobado') return 'No Disponible';
+    const estado = this.field?.estadoCancha?.codigo;
+    if (estado === ESTADO_CANCHA.MANTENIMIENTO) return 'En Mantenimiento';
+    if (estado !== ESTADO_CANCHA.APROBADO) return 'No Disponible';
     return '';
+  }
+
+  verDetalle(id: number) {
+    this.router.navigate(['/cancha', id]);
   }
 }

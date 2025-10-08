@@ -1,0 +1,390 @@
+@reference "../../../../../styles.css";
+/* Estilos para el contenedor principal  CLOUDE HOME =====================================================*/ 
+
+/* Section Containers */
+.section-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.search-field {
+  @apply w-full;
+}
+
+.search-btn {
+  @apply transform hover:scale-105 transition-all duration-300 shadow-lg;
+}
+
+
+
+/* Enhanced Cards */
+.enhanced-card {
+  @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+}
+
+.enhanced-card-hover {
+  @apply transition-all duration-300 transform hover:scale-105;
+}
+
+/* Role Cards */
+.role-card {
+  @apply p-6 text-center border-2 border-transparent;
+}
+
+.role-card:hover {
+  @apply border-primary-200;
+}
+
+.role-avatar {
+  @apply w-20 h-20 rounded-full flex items-center justify-center mx-auto;
+}
+
+
+/* Feature Items */
+.feature-hover {
+  @apply transition-all duration-300 cursor-default;
+}
+
+.feature-hover:hover {
+  @apply transform -translate-y-2 shadow-lg;
+}
+
+.feature-icon-container {
+  @apply transition-all duration-300;
+}
+
+.feature-hover:hover .feature-icon-container {
+  @apply transform scale-110;
+}
+
+/* Utility Classes */
+.full-width-btn {
+  @apply w-full font-semibold py-3 px-6 text-base;
+}
+
+
+
+/* Material Design enhancements */
+.mat-mdc-card {
+  @apply rounded-xl overflow-hidden;
+}
+
+.mat-mdc-card-header .mat-mdc-card-title {
+  @apply text-xl font-semibold mb-2;
+}
+
+.mat-mdc-card-header .mat-mdc-card-subtitle {
+  @apply text-neutral-600 leading-relaxed;
+}
+
+/* Form field customizations */
+.mat-mdc-form-field {
+  @apply w-full;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-label {
+  @apply flex items-center;
+}
+
+/* Button enhancements */
+.mat-mdc-raised-button {
+  @apply font-medium transition-all duration-300;
+}
+
+.mat-mdc-raised-button:hover {
+  @apply transform -translate-y-1 shadow-lg;
+}
+
+
+
+/* ===== NUEVAS CLASES PARA DETALLE DE CANCHA ===== */
+
+/* Hero Section */
+.cancha-hero {
+  background: linear-gradient(135deg, rgb(243 232 255) 0%, rgb(236 254 255) 100%);
+}
+
+.cancha-info-card {
+  @apply transition-all duration-300 hover:shadow-xl border-2 border-transparent;
+}
+
+.cancha-info-card:hover {
+  @apply border-primary-200;
+}
+
+/* Sport Icons */
+.sport-chip {
+  @apply font-semibold text-sm;
+}
+
+/* Status Classes */
+.status-disponible {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-mantenimiento {
+  @apply bg-red-100 text-red-700;
+}
+
+.status-ocupado {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+/* Enhanced Tabs */
+.enhanced-tabs {
+  @apply bg-white rounded-2xl shadow-sm overflow-hidden;
+}
+
+.enhanced-tabs .mat-mdc-tab-header {
+  @apply border-b border-neutral-200;
+}
+
+.enhanced-tabs .mat-mdc-tab {
+  @apply font-semibold;
+}
+
+/* Tab Content */
+.tab-content {
+  @apply min-h-[400px];
+}
+
+/* Date Selection */
+.date-picker-container {
+  @apply bg-white rounded-xl p-4 shadow-sm border border-neutral-100;
+}
+
+.date-card {
+  @apply bg-white hover:bg-primary-50 border-neutral-200 text-center transition-all duration-300;
+}
+
+.date-card.selected {
+  @apply bg-primary-500 text-white border-primary-500 transform scale-105 shadow-lg;
+}
+
+.date-card.unavailable {
+  @apply bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed;
+  opacity: 0.6;
+}
+
+.date-card:hover:not(.unavailable):not(.selected) {
+  @apply border-primary-300 shadow-md transform -translate-y-1;
+}
+
+
+/* Time Selection */
+.time-btn {
+@apply h-16 min-w-0;
+}
+
+.time-btn.available {
+@apply bg-white border-2 border-primary-200 text-primary-600 hover:bg-primary-50 hover:border-primary-400;
+}
+
+.time-btn.selected {
+@apply bg-primary-500 text-white border-primary-500 transform scale-105 shadow-lg;
+}
+
+.time-btn:hover:not([disabled]) {
+@apply shadow-md transform -translate-y-1;
+}
+
+
+/* Summary Card 
+.summary-card {
+  @apply bg-gradient-to-br from-white to-primary-25;
+}
+
+.summary-row {
+  @apply transition-colors duration-200;
+}
+
+.summary-row:hover {
+  @apply bg-primary-25 rounded px-2 -mx-2;
+}*/
+
+
+.total-row {
+  @apply bg-primary-50 rounded-xl p-4 -mx-2;
+}
+
+/* Services Grid */
+.service-item {
+  @apply transition-all duration-300 hover:bg-primary-50 border-2 border-transparent;
+}
+
+.service-item:hover {
+  @apply border-primary-200 transform -translate-y-1;
+}
+
+/* Form Fields Enhancement */
+.mat-mdc-form-field {
+  @apply w-full;
+}
+
+.mat-mdc-form-field-outline {
+  @apply rounded-xl;
+}
+
+/* WhatsApp Checkbox */
+.whatsapp-checkbox .mat-mdc-checkbox-frame {
+  @apply border-2 border-green-400;
+}
+
+.whatsapp-checkbox.mat-mdc-checkbox-checked .mat-mdc-checkbox-background {
+  @apply bg-green-500;
+}
+
+/* Review Cards */
+.review-card {
+  @apply transition-all duration-300 hover:shadow-md border border-neutral-100;
+}
+
+.review-card:hover {
+  @apply border-primary-200;
+}
+
+/* Action Buttons */
+.action-buttons .mat-mdc-raised-button {
+  @apply transition-all duration-300 transform hover:scale-105;
+}
+
+/* Map Container */
+.map-container iframe {
+  @apply transition-all duration-300 hover:brightness-110;
+}
+
+/* Scrollbar Hide */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Price Section */
+.price-section {
+  @apply transition-all duration-300 hover:bg-primary-100;
+}
+
+/* Contact Info */
+.contact-info {
+  @apply transition-all duration-300 hover:bg-primary-50;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cancha-hero .container {
+    @apply px-2;
+  }
+  
+  .date-card {
+    min-width: 80px;
+  }
+  
+  .time-btn {
+    @apply text-sm px-2;
+  }
+  
+  .summary-card {
+    @apply mx-2;
+  }
+}
+
+/* Material Overrides */
+.mat-mdc-card {
+  @apply rounded-2xl border-0 shadow-sm;
+}
+
+.mat-mdc-raised-button {
+  @apply shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+.mat-mdc-tab-group {
+  @apply rounded-2xl overflow-hidden;
+}
+
+.mat-mdc-tab-header {
+  @apply bg-neutral-50;
+}
+
+.mat-mdc-tab-body-content {
+  @apply bg-white;
+}
+
+/* Fab Button */
+.mat-mdc-fab {
+  @apply transition-all duration-300;
+}
+
+.mat-mdc-fab:hover {
+  @apply shadow-2xl;
+}
+
+/* Chip Enhancement */
+.mat-mdc-chip.sport-chip {
+  @apply px-4 py-2 font-semibold;
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.pulse-animation {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Loading States */
+.loading-skeleton {
+  @apply bg-neutral-200 animate-pulse rounded;
+}
+
+/* Gallery Hover Effects */
+.gallery-thumbnail {
+  @apply transition-all duration-300 hover:scale-110 hover:shadow-lg;
+}
+
+/* Success States */
+.success-message {
+  @apply bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl;
+}
+
+.error-message {
+  @apply bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl;
+}
+
+/* Utility Classes */
+.glass-morphism {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, rgb(147 51 234), rgb(6 182 212));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

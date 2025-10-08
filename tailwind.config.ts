@@ -4,13 +4,13 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    "./src/**/*.{html,ts}"
+    "./src/**/*.{html,ts,css}"
   ],
   theme: {
     extend: {
       colors: {
         primary: {
-          50:  '#E8F5E9',
+          50: '#E8F5E9',
           100: '#C8E6C9',
           200: '#A5D6A7',
           300: '#81C784',
@@ -22,7 +22,7 @@ const config: Config = {
           900: '#1B5E20',
         },
         secondary: {
-          50:  '#E3F2FD',
+          50: '#E3F2FD',
           100: '#BBDEFB',
           200: '#90CAF9',
           300: '#64B5F6',

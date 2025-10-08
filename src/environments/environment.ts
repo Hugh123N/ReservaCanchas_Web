@@ -14,8 +14,9 @@ export const environment = {
 		baseUrl: 'http://localhost:4200'
 	},
 	backend: {
-		baseApiUrl: 'https://{host}/api',
-    	baseApiSecurityUrl: 'https://{host}/securityApi/api'
+		host: "10.147.18.108:9090",
+		baseApiUrl: 'http://10.147.18.108:9090/api',
+		baseApiSecurityUrl: 'https://{host}/seguridadApi/api'
 	},
 	security: {
 		externalProvider: false,

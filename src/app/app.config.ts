@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 
 export const appConfig: ApplicationConfig = {
@@ -19,6 +20,6 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(CommonModule,
       FormsModule
     ),
-    
+    provideHttpClient()
   ]
 };
