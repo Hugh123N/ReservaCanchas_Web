@@ -3,6 +3,7 @@ export class User {
     username: string = '';
     password: string = '';
     email: string = '';
+    telefono: string = '';
     accessToken: string = '';
     refreshToken: string = '';
     roles: number[] = [];
@@ -17,6 +18,7 @@ export class User {
         this.username = '';
         this.password = '';
         this.email = '';
+        this.telefono = '';
         this.roles = [];
         this.fullname = '';
         this.accessToken = 'access-token-' + Math.random();

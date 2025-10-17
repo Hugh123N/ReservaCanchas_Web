@@ -33,7 +33,6 @@ import { GetEstadoCancha } from 'app/features/cancha-estado/core/model/getEstado
 import { CanchaTipoService } from 'app/features/cancha-tipo/core/services/cancha-tipo.service';
 import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
 import { UbigeoService } from '../../core/services/ubigeo.service';
-import { ESTADO_CANCHA } from '@core/constants/constants.constant';
 
 
 @Component({
@@ -54,7 +53,6 @@ export class CanchasComponent extends BaseSearchComponent {
   // States
   isLoading: boolean = false;
   isSearching: boolean = false;
-  ESTADO_CANCHA = ESTADO_CANCHA;
 
   // Date
   minDate = new Date();

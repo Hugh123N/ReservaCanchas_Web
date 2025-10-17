@@ -1,0 +1,442 @@
+<!-- Header -->
+<app-nav-var></app-nav-var>
+
+<!-- Payment Wrapper -->
+<div class="payment-wrapper">
+  <div class="payment-container">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <button mat-icon-button (click)="onBack()" class="text-neutral-600 hover:text-primary-600">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="h1 text-primary">Finalizar Pago</h1>
+          <p class="text-neutral-600">Completa tu reserva de forma segura</p>
+        </div>
+      </div>
+      
+      <!-- Progress Steps -->
+      <div class="flex items-center justify-center gap-2 mt-6">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">
+            <mat-icon class="text-sm">check</mat-icon>
+          </div>
+          <span class="ml-2 text-sm font-medium text-green-600">Selección</span>
+        </div>
+        <div class="w-16 h-1 bg-green-500"></div>
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold">
+            2
+          </div>
+          <span class="ml-2 text-sm font-medium text-primary-600">Pago</span>
+        </div>
+        <div class="w-16 h-1 bg-neutral-200"></div>
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-neutral-200 text-neutral-500 flex items-center justify-center font-semibold">
+            3
+          </div>
+          <span class="ml-2 text-sm font-medium text-neutral-500">Confirmación</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="payment-loading">
+      <mat-spinner diameter="60" color="primary"></mat-spinner>
+      <p class="payment-loading-text">Cargando información de pago...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !reservaData" class="payment-empty">
+      <mat-icon>receipt_long</mat-icon>
+      <h3>No hay reserva pendiente</h3>
+      <p>No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
+      <button mat-raised-button class="btn-primary" (click)="onBack()">
+        Volver al Inicio
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading && reservaData" class="payment-grid">
+      
+      <!-- Left Column - Payment Methods & Details -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Reservation Details Card -->
+        <div class="payment-card">
+          <div class="payment-card-header">
+            <div class="payment-card-title">
+              <mat-icon>event_available</mat-icon>
+              <h3>Detalles de la Reserva</h3>
+            </div>
+            <span class="payment-card-badge pending">Pendiente de Pago</span>
+          </div>
+
+          <div class="payment-detail-card">
+            <div class="payment-detail-row">
+              <div class="payment-detail-icon">
+                <mat-icon>sports_soccer</mat-icon>
+              </div>
+              <div class="payment-detail-content">
+                <h4>{{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}</h4>
+                <p>{{ reservaData.cancha?.ubicacion || 'Lima, Perú' }}</p>
+              </div>
+            </div>
+
+            <div class="payment-detail-row">
+              <div class="payment-detail-icon">
+                <mat-icon>calendar_today</mat-icon>
+              </div>
+              <div class="payment-detail-content">
+                <h4>Fecha y Hora</h4>
+                <p>{{ formatDate(reservaData.fecha) }} • {{ reservaData.selectedTime?.hora }}</p>
+              </div>
+            </div>
+
+            <div class="payment-detail-row">
+              <div class="payment-detail-icon">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <div class="payment-detail-content">
+                <h4>Duración</h4>
+                <p>{{ reservaData.duracion }} hora(s)</p>
+              </div>
+            </div>
+
+            <div class="payment-detail-row" *ngIf="reservaData.telefono">
+              <div class="payment-detail-icon">
+                <mat-icon>phone</mat-icon>
+              </div>
+              <div class="payment-detail-content">
+                <h4>Teléfono de Contacto</h4>
+                <p>{{ reservaData.telefono }}</p>
+                <span *ngIf="phoneNeedsUpdate" class="text-xs text-yellow-600">
+                  <mat-icon class="text-xs">warning</mat-icon>
+                  Actualizaremos tu número en el perfil
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Methods Card -->
+        <div class="payment-card">
+          <div class="payment-card-header">
+            <div class="payment-card-title">
+              <mat-icon>payment</mat-icon>
+              <h3>Método de Pago</h3>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            
+            <!-- Tarjeta de Crédito/Débito (Niubiz) -->
+            <div class="payment-method" 
+                 [class.selected]="selectedPaymentMethod === 'card'"
+                 (click)="selectPaymentMethod('card')">
+              <mat-radio-button 
+                [checked]="selectedPaymentMethod === 'card'" 
+                color="primary"
+                class="payment-method-radio">
+              </mat-radio-button>
+              <div class="payment-method-icon bg-blue-50">
+                <mat-icon class="text-blue-600">credit_card</mat-icon>
+              </div>
+              <div class="payment-method-content">
+                <div class="payment-method-title">Tarjeta de Crédito/Débito</div>
+                <div class="payment-method-description">Pago seguro con Niubiz</div>
+              </div>
+              <span class="payment-method-badge">Recomendado</span>
+            </div>
+
+            <!-- Yape -->
+            <div class="payment-method"
+                 [class.selected]="selectedPaymentMethod === 'yape'"
+                 (click)="selectPaymentMethod('yape')">
+              <mat-radio-button 
+                [checked]="selectedPaymentMethod === 'yape'" 
+                color="primary"
+                class="payment-method-radio">
+              </mat-radio-button>
+              <div class="payment-method-icon">
+                <img src="https://seeklogo.com/images/Y/yape-logo-11F2E8E811-seeklogo.com.png" alt="Yape">
+              </div>
+              <div class="payment-method-content">
+                <div class="payment-method-title">Yape</div>
+                <div class="payment-method-description">Pago instantáneo con QR</div>
+              </div>
+            </div>
+
+            <!-- Plin -->
+            <div class="payment-method"
+                 [class.selected]="selectedPaymentMethod === 'plin'"
+                 (click)="selectPaymentMethod('plin')">
+              <mat-radio-button 
+                [checked]="selectedPaymentMethod === 'plin'" 
+                color="primary"
+                class="payment-method-radio">
+              </mat-radio-button>
+              <div class="payment-method-icon">
+                <img src="https://seeklogo.com/images/P/plin-logo-90845E0C23-seeklogo.com.png" alt="Plin">
+              </div>
+              <div class="payment-method-content">
+                <div class="payment-method-title">Plin</div>
+                <div class="payment-method-description">Pago instantáneo con QR</div>
+              </div>
+            </div>
+
+            <!-- Transferencia Bancaria -->
+            <div class="payment-method"
+                 [class.selected]="selectedPaymentMethod === 'transfer'"
+                 (click)="selectPaymentMethod('transfer')">
+              <mat-radio-button 
+                [checked]="selectedPaymentMethod === 'transfer'" 
+                color="primary"
+                class="payment-method-radio">
+              </mat-radio-button>
+              <div class="payment-method-icon bg-purple-50">
+                <mat-icon class="text-purple-600">account_balance</mat-icon>
+              </div>
+              <div class="payment-method-content">
+                <div class="payment-method-title">Transferencia Bancaria</div>
+                <div class="payment-method-description">Pago con cualquier banco</div>
+              </div>
+            </div>
+
+            <!-- Pagar en Local -->
+            <div class="payment-method"
+                 [class.selected]="selectedPaymentMethod === 'local'"
+                 (click)="selectPaymentMethod('local')">
+              <mat-radio-button 
+                [checked]="selectedPaymentMethod === 'local'" 
+                color="primary"
+                class="payment-method-radio">
+              </mat-radio-button>
+              <div class="payment-method-icon bg-green-50">
+                <mat-icon class="text-green-600">store</mat-icon>
+              </div>
+              <div class="payment-method-content">
+                <div class="payment-method-title">Pagar en el Local</div>
+                <div class="payment-method-description">Pago en efectivo al llegar</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method Details -->
+          <div class="mt-6" *ngIf="selectedPaymentMethod">
+            
+            <!-- Card Payment Form (Niubiz) -->
+            <div *ngIf="selectedPaymentMethod === 'card'" class="payment-form">
+              <div class="payment-confirmation">
+                <div class="flex items-start gap-3">
+                  <mat-icon>info</mat-icon>
+                  <p class="payment-confirmation-text">
+                    Serás redirigido a la pasarela de pago segura de Niubiz para completar tu transacción.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Yape QR -->
+            <div *ngIf="selectedPaymentMethod === 'yape'" class="qr-section">
+              <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Yape</h4>
+              <div class="qr-code-container">
+                <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape" class="w-48 h-48">
+              </div>
+              <p class="qr-instructions">
+                1. Abre tu app Yape<br>
+                2. Escanea este código QR<br>
+                3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+              </p>
+              <div class="qr-timer">
+                <mat-icon>timer</mat-icon>
+                <span>Código válido por: {{ paymentTimer }}</span>
+              </div>
+            </div>
+
+            <!-- Plin QR -->
+            <div *ngIf="selectedPaymentMethod === 'plin'" class="qr-section">
+              <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Plin</h4>
+              <div class="qr-code-container">
+                <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin" class="w-48 h-48">
+              </div>
+              <p class="qr-instructions">
+                1. Abre tu app Plin<br>
+                2. Escanea este código QR<br>
+                3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+              </p>
+              <div class="qr-timer">
+                <mat-icon>timer</mat-icon>
+                <span>Código válido por: {{ paymentTimer }}</span>
+              </div>
+            </div>
+
+            <!-- Bank Transfer -->
+            <div *ngIf="selectedPaymentMethod === 'transfer'" class="bank-info">
+              <p class="text-sm text-neutral-600 mb-4">
+                Realiza la transferencia a la siguiente cuenta y envía el comprobante:
+              </p>
+              
+              <div class="bank-account">
+                <div>
+                  <div class="bank-account-label">Banco</div>
+                  <div class="bank-account-value">BCP</div>
+                </div>
+              </div>
+
+              <div class="bank-account">
+                <div>
+                  <div class="bank-account-label">Número de Cuenta</div>
+                  <div class="bank-account-value">191-123456789-0-01</div>
+                </div>
+                <button mat-icon-button class="bank-copy-btn" (click)="copyToClipboard('191-123456789-0-01')">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+
+              <div class="bank-account">
+                <div>
+                  <div class="bank-account-label">CCI</div>
+                  <div class="bank-account-value">002-191-001234567890-01</div>
+                </div>
+                <button mat-icon-button class="bank-copy-btn" (click)="copyToClipboard('002-191-001234567890-01')">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+
+              <div class="bank-account">
+                <div>
+                  <div class="bank-account-label">Titular</div>
+                  <div class="bank-account-value">CANCHA RESERVAS SAC</div>
+                </div>
+              </div>
+
+              <!-- Upload Voucher -->
+              <div class="mt-6">
+                <label class="block text-sm font-medium text-neutral-700 mb-2">
+                  Subir Comprobante de Pago
+                </label>
+                <input type="file" 
+                       accept="image/*,.pdf"
+                       (change)="onVoucherUpload($event)"
+                       class="block w-full text-sm text-neutral-500
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-full file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-primary-50 file:text-primary-700
+                              hover:file:bg-primary-100">
+                <p class="mt-2 text-xs text-neutral-500">Formatos: JPG, PNG, PDF (Max 5MB)</p>
+              </div>
+            </div>
+
+            <!-- Pay at Local -->
+            <div *ngIf="selectedPaymentMethod === 'local'" class="payment-confirmation">
+              <div class="flex items-start gap-3">
+                <mat-icon>store</mat-icon>
+                <div class="payment-confirmation-text">
+                  <p class="font-semibold mb-2">Instrucciones:</p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li>Presenta tu código de reserva al llegar</li>
+                    <li>Pago en efectivo o tarjeta disponible</li>
+                    <li>Llega 10 minutos antes de tu hora reservada</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Badges -->
+        <div class="security-badges">
+          <div class="security-badge">
+            <mat-icon>lock</mat-icon>
+            <span>Pago Seguro</span>
+          </div>
+          <div class="security-badge">
+            <mat-icon>verified_user</mat-icon>
+            <span>Datos Protegidos</span>
+          </div>
+          <div class="security-badge">
+            <mat-icon>shield</mat-icon>
+            <span>Encriptación SSL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Summary -->
+      <div class="lg:col-span-1">
+        <div class="payment-summary">
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <div class="payment-card-title">
+                <mat-icon>receipt</mat-icon>
+                <h3>Resumen</h3>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="summary-row">
+                <span class="summary-label">Precio por hora</span>
+                <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
+              </div>
+
+              <div class="summary-row">
+                <span class="summary-label">Duración</span>
+                <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
+              </div>
+
+              <div class="summary-row">
+                <span class="summary-label">Subtotal</span>
+                <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
+              </div>
+
+              <div class="summary-row" *ngIf="hasDiscount()">
+                <span class="summary-label text-green-600">Descuento</span>
+                <span class="summary-value text-green-600">- S/ {{ getDiscountAmount() }}</span>
+              </div>
+            </div>
+
+            <div class="summary-discount" *ngIf="hasDiscount()">
+              <mat-icon>local_offer</mat-icon>
+              <span class="summary-discount-text">¡Descuento aplicado!</span>
+            </div>
+
+            <div class="summary-total">
+              <span class="summary-total-label">Total a Pagar</span>
+              <span class="summary-total-value">S/ {{ reservaData.total }}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="payment-actions">
+              <button mat-raised-button 
+                      class="btn-primary payment-btn-primary"
+                      [disabled]="!selectedPaymentMethod || isProcessing"
+                      (click)="onConfirmPayment()">
+                <mat-spinner *ngIf="isProcessing" diameter="20" class="mr-2"></mat-spinner>
+                <span *ngIf="!isProcessing">Confirmar Pago</span>
+                <span *ngIf="isProcessing">Procesando...</span>
+              </button>
+              
+              <button mat-stroked-button 
+                      class="btn-outline-primary payment-btn-secondary"
+                      (click)="onCancel()">
+                Cancelar
+              </button>
+            </div>
+
+            <!-- Help Text -->
+            <p class="text-xs text-center text-neutral-500 mt-4">
+              ¿Necesitas ayuda? 
+              <a href="/ayuda" class="text-primary-600 hover:underline">Contáctanos</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<app-footer></app-footer>

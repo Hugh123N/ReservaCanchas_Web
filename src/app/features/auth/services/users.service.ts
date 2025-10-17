@@ -17,14 +17,16 @@ import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { QueryResultsModel } from '@base/models/query/query-results.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UsersService extends BaseService {
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiSecurityUrl}/user`);
+    super(http, `${environment.backend.baseApiUrl}/Usuario`);
   }
 
   createUser(body: CreateUserModel): Observable<ResponseDto<ApplicationUserModel>> {
-    return this.postRequest<CreateUserModel, ResponseDto<ApplicationUserModel>>(``, body);
+    return this.postRequest<CreateUserModel, ResponseDto<ApplicationUserModel>>(`/register/cliente`, body);
   }
 
   updateUser(body: UpdateUserModel): Observable<ResponseDto<ApplicationUserModel>> {

@@ -6,11 +6,13 @@ import { ResponseBaseDto } from "@base/models/api/response-base.dto";
 import Swal from "sweetalert2";
 import { ApplicationMessage } from "@base/models/api/application-message.dto";
 import { PERMISSIONS } from "@core/config/permissions/permissions";
+import { ESTADO_CANCHA } from "@core/constants/constants.constant";
 
 const DEFAULT_DELAY = 5000;
 
 @Inject("BaseComponent")
 export abstract class BaseComponent implements OnDestroy {
+  readonly ESTADO_CANCHA = ESTADO_CANCHA;
   public PERMISSIONS: Record<string, string>;
   protected viewContainerRef: ViewContainerRef;
   protected subscriptions: Subscription[] = [];

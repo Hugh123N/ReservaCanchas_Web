@@ -2,6 +2,7 @@
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
+@import './auth-shared.css';
 
 @theme {
   /* Primary (violeta / corporativo) */
@@ -155,31 +156,384 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
+
+
+
+
+
+
+
+
+
+
+
+/* ===== PAYMENT MODULE - ESTILOS COMPARTIDOS ===== */
+/* Agregar este archivo al style.css global o crear payment-shared.css */
+
+/* ========== LAYOUT CONTAINERS ========== */
+
+.payment-wrapper {
+  @apply min-h-screen bg-neutral-50 py-8;
+}
+
+.payment-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.payment-grid {
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+}
+
+/* ========== CARDS ========== */
+
+.payment-card {
+  @apply bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 transition-all duration-300;
+}
+
+.payment-card:hover {
+  @apply shadow-md;
+}
+
+.payment-card-header {
+  @apply flex items-center justify-between mb-6 pb-4 border-b border-neutral-200;
+}
+
+.payment-card-title {
+  @apply flex items-center gap-3;
+}
+
+.payment-card-title .mat-icon {
+  @apply text-primary-500;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.payment-card-title h3 {
+  @apply text-xl font-semibold text-neutral-800;
+}
+
+.payment-card-badge {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.payment-card-badge.pending {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.payment-card-badge.confirmed {
+  @apply bg-green-100 text-green-700;
+}
+
+/* ========== PAYMENT METHODS ========== */
+
+.payment-methods {
+  @apply space-y-3;
+}
+
+.payment-method {
+  @apply relative flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-300;
+}
+
+.payment-method:not(.selected) {
+  @apply border-neutral-200 hover:border-primary-300 hover:bg-primary-50/50;
+}
+
+.payment-method.selected {
+  @apply border-primary-500 bg-primary-50;
+}
+
+.payment-method-radio {
+  @apply mr-4;
+}
+
+.payment-method-icon {
+  @apply w-12 h-12 mr-4 rounded-lg flex items-center justify-center;
+}
+
+.payment-method-icon img {
+  @apply w-full h-full object-contain;
+}
+
+.payment-method-content {
+  @apply flex-1;
+}
+
+.payment-method-title {
+  @apply font-semibold text-neutral-800 mb-1;
+}
+
+.payment-method-description {
+  @apply text-sm text-neutral-600;
+}
+
+.payment-method-badge {
+  @apply ml-auto px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium;
+}
+
+/* ========== SUMMARY SECTION ========== */
+
+.payment-summary {
+  @apply sticky top-8;
+}
+
+.summary-row {
+  @apply flex justify-between items-center py-3 border-b border-neutral-200;
+}
+
+.summary-row:last-child {
+  @apply border-b-0;
+}
+
+.summary-label {
+  @apply text-neutral-600;
+}
+
+.summary-value {
+  @apply font-medium text-neutral-800;
+}
+
+.summary-total {
+  @apply flex justify-between items-center pt-4 mt-4 border-t-2 border-neutral-300;
+}
+
+.summary-total-label {
+  @apply text-lg font-bold text-neutral-800;
+}
+
+.summary-total-value {
+  @apply text-3xl font-bold text-primary-600;
+}
+
+.summary-discount {
+  @apply flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl mt-4;
+}
+
+.summary-discount .mat-icon {
+  @apply text-green-600;
+}
+
+.summary-discount-text {
+  @apply text-sm text-green-700 font-medium;
+}
+
+/* ========== PAYMENT DETAILS ========== */
+
+.payment-detail-card {
+  @apply bg-neutral-50 rounded-xl p-4 mb-4;
+}
+
+.payment-detail-row {
+  @apply flex items-start gap-3 mb-3;
+}
+
+.payment-detail-row:last-child {
+  @apply mb-0;
+}
+
+.payment-detail-icon {
+  @apply flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center;
+}
+
+.payment-detail-icon .mat-icon {
+  @apply text-primary-600;
+}
+
+.payment-detail-content h4 {
+  @apply font-semibold text-neutral-800 mb-1;
+}
+
+.payment-detail-content p {
+  @apply text-sm text-neutral-600;
+}
+
+/* ========== PAYMENT FORM ========== */
+
+.payment-form {
+  @apply space-y-4 mt-6;
+}
+
+.payment-form-row {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+/* ========== QR CODE SECTION ========== */
+
+.qr-section {
+  @apply text-center p-6 bg-white rounded-xl border-2 border-dashed border-primary-300;
+}
+
+.qr-code-container {
+  @apply inline-block p-4 bg-white rounded-xl shadow-lg mb-4;
+}
+
+.qr-instructions {
+  @apply text-sm text-neutral-600 mb-4;
+}
+
+.qr-timer {
+  @apply flex items-center justify-center gap-2 text-accent-600 font-semibold;
+}
+
+/* ========== BANK TRANSFER ========== */
+
+.bank-info {
+  @apply space-y-4 mt-6;
+}
+
+.bank-account {
+  @apply flex items-center justify-between p-4 bg-neutral-50 rounded-xl;
+}
+
+.bank-account-label {
+  @apply text-sm text-neutral-600;
+}
+
+.bank-account-value {
+  @apply font-mono font-semibold text-neutral-800;
+}
+
+.bank-copy-btn {
+  @apply ml-4;
+}
+
+/* ========== CONFIRMATION SECTION ========== */
+
+.payment-confirmation {
+  @apply p-4 bg-blue-50 border border-blue-200 rounded-xl;
+}
+
+.payment-confirmation .mat-icon {
+  @apply text-blue-600;
+}
+
+.payment-confirmation-text {
+  @apply text-sm text-blue-700;
+}
+
+/* ========== SECURITY BADGES ========== */
+
+.security-badges {
+  @apply flex items-center justify-center gap-4 mt-6 pt-6 border-t border-neutral-200;
+}
+
+.security-badge {
+  @apply flex items-center gap-2 text-sm text-neutral-600;
+}
+
+.security-badge .mat-icon {
+  @apply text-green-600;
+}
+
+/* ========== ACTION BUTTONS ========== */
+
+.payment-actions {
+  @apply flex flex-col sm:flex-row gap-4 mt-8;
+}
+
+.payment-btn-primary {
+  @apply flex-1 h-14 text-lg font-semibold;
+}
+
+.payment-btn-secondary {
+  @apply flex-1 h-14 text-lg;
+}
+
+/* ========== LOADING STATE ========== */
+
+.payment-loading {
+  @apply flex flex-col items-center justify-center py-12;
+}
+
+.payment-loading .mat-spinner {
+  @apply mb-4;
+}
+
+.payment-loading-text {
+  @apply text-lg text-neutral-600;
+}
+
+/* ========== EMPTY STATE ========== */
+
+.payment-empty {
+  @apply text-center py-16;
+}
+
+.payment-empty .mat-icon {
+  @apply text-neutral-400 mb-4;
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+}
+
+.payment-empty h3 {
+  @apply text-xl font-semibold text-neutral-700 mb-2;
+}
+
+.payment-empty p {
+  @apply text-neutral-600 mb-6;
+}
+
+/* ========== RESPONSIVE ========== */
+
+@media (max-width: 1024px) {
+  .payment-summary {
+    @apply static;
+  }
+  
+  .payment-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (max-width: 640px) {
+  .payment-wrapper {
+    @apply py-4;
+  }
+  
+  .payment-card {
+    @apply p-4 rounded-xl;
+  }
+  
+  .payment-method {
+    @apply p-3;
+  }
+  
+  .payment-method-icon {
+    @apply w-10 h-10 mr-3;
+  }
+  
+  .payment-actions {
+    @apply flex-col;
+  }
+  
+  .summary-total-value {
+    @apply text-2xl;
+  }
+}
+
+/* ========== ANIMATIONS ========== */
+
+@keyframes paymentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-card,
+.payment-method {
+  animation: paymentFadeIn 0.4s ease-out;
+}
+
+.payment-card:nth-child(1) { animation-delay: 0.1s; }
+.payment-card:nth-child(2) { animation-delay: 0.2s; }
+.payment-card:nth-child(3) { animation-delay: 0.3s; }

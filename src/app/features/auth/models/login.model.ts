@@ -1,7 +1,7 @@
 export class LoginModel {
-  //applicationCode: string = '';
+  applicationCode: string = '';
   userName: string = '';
   password: string = '';
   rememberMe: boolean = false;
-  //returnUrl: string = '';
+  //userType?: string;
 }

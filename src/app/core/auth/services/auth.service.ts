@@ -8,7 +8,9 @@ import { UsersService } from 'app/features/auth/services/users.service';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { environment } from '@environments/environment';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
   user$: Subject<User>;
   access_token_key = `access_token_${environment.application.code}`;
@@ -26,9 +28,13 @@ export class AuthService {
       user.email = claims.Email == 'no_information' ? '' : claims.Email;
       user.username = claims.UserName;
       user.fullname = claims.DisplayName;
+      user.telefono = claims.PhoneNumber == 'no_information' ? '' : claims.PhoneNumber;
 
       this.user$.next(user);
+
+      return user;
     }
+    return null;
   }
 
   public getUserClaims(): any {
@@ -44,7 +50,7 @@ export class AuthService {
   public isAuthenticated(): boolean {
     let claims = this.getUserClaims();
     var isValid = claims != null && claims != undefined;
-    if (isValid && claims.ApplicationCode == environment.application.code) {
+    if (isValid /*&& claims.ApplicationCode == environment.application.code*/) {
       return isValid;
     } else {
       return false;

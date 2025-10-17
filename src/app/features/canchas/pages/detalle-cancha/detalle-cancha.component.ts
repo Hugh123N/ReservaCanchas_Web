@@ -27,6 +27,8 @@ import { CanchaService } from '../../core/services/cancha.service';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { DisponibilidadService } from '../../core/services/disponibilidad.service';
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
+import { AuthService } from '@core/auth/services/auth.service';
+import test from 'node:test';
 
 interface DateOption {
   dia: string;
@@ -160,14 +162,12 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private canchasService: CanchaService,
     private disponibilidadService: DisponibilidadService,
+    private authService: AuthService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
     this.reservaForm = this.fb.group({
-      nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, Validators.pattern(/^(\+51|51)?[9][0-9]{8}$/)]],
-      duracion: [1, [Validators.required, Validators.min(1), Validators.max(4)]],
       recordatorioWhatsApp: [true]
     });
   }
@@ -179,9 +179,10 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       this.canchaId = +params['id'];
       this.loadCanchaData();
     });
-
     // Generate available dates
     this.generateAvailableDates();
+    var telefono = this.authService.loadUserProfile()?.telefono ?? null;
+    this.reservaForm.patchValue({ telefono: telefono });
   }
 
   loadCanchaData() {
@@ -197,7 +198,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     });
   }
 
-  // Generate next 7 days
   generateAvailableDates() {
     const today = new Date();
     this.fechasDisponibles = [];
@@ -280,9 +280,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     return classes;
   }
 
-  // Event handlers
   selectDate(fecha: DateOption) {
-    debugger;
     if (fecha.disponible) {
       this.selectedDate = fecha;
       this.selectedTime = null; // Reset selected time
@@ -378,33 +376,26 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  saveDraft() {
-    const draft = {
-      canchaId: this.canchaId,
-      selectedDate: this.selectedDate,
-      selectedTime: this.selectedTime,
-      formData: this.reservaForm.value,
-      timestamp: new Date().toISOString()
-    };
-
-    localStorage.setItem(`reserva_draft_${this.canchaId}`, JSON.stringify(draft));
-    alert('Borrador guardado exitosamente');
-  }
-
   onReservar() {
     if (this.reservaForm.valid && this.selectedDate && this.selectedTime) {
       const reservaData = {
-        canchaId: this.canchaId,
+        canchaId: this.canchaData.idCancha,
         fecha: this.selectedDate.fecha,
-        //hora: this.selectedTime.hora,
+        selectedTime: this.selectedTime,
         duracion: this.reservaForm.value.duracion,
-        total: this.calculateTotal(),
-        datosUsuario: this.reservaForm.value
+        telefono: this.reservaForm.value.telefono,
+        recordatorioWhatsApp: this.reservaForm.value.recordatorioWhatsApp,
+        precioHora: this.canchaData.precioHora,
+        total: this.calculateTotal()
       };
+      localStorage.setItem(`reserva_draft_${this.canchaData.idCancha}`, JSON.stringify(reservaData));
+      if (!this.authService.isAuthenticated()) {
+        // Guardamos la URL a donde debe volver luego del login
+        sessionStorage.setItem('redirect_after_login', `/pago?reserva=true`);
+        this.router.navigate(['/auth/login']);
+        return;
+      }
 
-      console.log('Reserva confirmada:', reservaData);
-
-      // Navigate to payment page
       this.router.navigate(['/pago'], {
         state: { reservaData }
       });
@@ -412,6 +403,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       alert('Por favor completa todos los campos requeridos');
     }
   }
+
 
   // Toggle favorite status
   toggleFavorite() {

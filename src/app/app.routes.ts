@@ -7,6 +7,7 @@ export const routes: Routes = [
     { path: '', title: "Inicio",component: HomeComponent, pathMatch: 'full' },
     { path: 'cancha', loadChildren: () => import('./features/canchas/cancha.routes').then(m => m.canchaRoutes) },
     { path: 'auth', loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes) },
+    { path: 'pago', loadChildren: () => import('./features/pago/pago.routes').then(m => m.pagoRoutes) },
     ...pagesRoutes,
     { path: '**', redirectTo: '404' }
 ];
