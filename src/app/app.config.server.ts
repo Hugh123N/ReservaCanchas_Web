@@ -1,16 +1,11 @@
+import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
-import { provideServerRendering } from '@angular/platform-server';
-import { provideServerRouting } from '@angular/ssr';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 const serverConfig: ApplicationConfig = {
-  providers: [
-    provideServerRendering(),
-    //provideNoopAnimations(), //deshabilita las animaciones en el servidor
-    provideServerRouting(serverRoutes)
-  ]
+  providers: [provideServerRendering(withRoutes(serverRoutes))]
 };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);
