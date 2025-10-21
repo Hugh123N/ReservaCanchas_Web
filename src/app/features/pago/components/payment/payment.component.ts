@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -44,7 +44,6 @@ type PaymentMethod = 'card' | 'yape' | 'plin';
 @Component({
   selector: 'app-payment',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
@@ -56,7 +55,7 @@ type PaymentMethod = 'card' | 'yape' | 'plin';
     MatFormFieldModule,
     ReactiveFormsModule,
     MatInputModule
-  ],
+],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })

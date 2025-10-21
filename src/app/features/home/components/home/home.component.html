@@ -24,7 +24,7 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Floating Sports Icons -->
   <div class="floating-icons">
     <mat-icon class="floating-icon floating-icon-1">sports_soccer</mat-icon>
@@ -38,232 +38,238 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <mat-card class="search-card glass-effect rounded-2xl shadow-xl p-6 max-w-5xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-        
+
         <mat-form-field appearance="outline" >
           <mat-label>
             <mat-icon class="icon-primary inline mr-1">location_city</mat-icon>
             Ciudad
           </mat-label>
-          <input matInput 
-                 type="text"
-                 [formControl]="cityControl"
-                 [matAutocomplete]="auto"
-                 placeholder="Escribe tu ciudad...">
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUbigeo">
-            <mat-option *ngFor="let ubigeo of filteredUbigeos | async" [value]="ubigeo">
-              <mat-icon class="mr-2 icon-primary">location_on</mat-icon>
-              <strong>{{ ubigeo.distrito }}</strong>
-              <small *ngIf="ubigeo.provincia && ubigeo.departamento">
-                {{ ubigeo.departamento }}
-              </small>
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>
-            <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
-            Deporte
-          </mat-label>
-          <mat-select [(ngModel)]="idTipoCancha">
-            <mat-option value="">Todos los deportes</mat-option>
-            @for (tipo of canchaTipos; track tipo.idTipoCancha) {
-              <mat-option [value]="tipo.idTipoCancha">
-                {{ tipo.nombre }}
-              </mat-option>
+          <input matInput
+            type="text"
+            [formControl]="cityControl"
+            [matAutocomplete]="auto"
+            placeholder="Escribe tu ciudad...">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUbigeo">
+              @for (ubigeo of filteredUbigeos | async; track ubigeo) {
+                <mat-option [value]="ubigeo">
+                  <mat-icon class="mr-2 icon-primary">location_on</mat-icon>
+                  <strong>{{ ubigeo.distrito }}</strong>
+                  @if (ubigeo.provincia && ubigeo.departamento) {
+                    <small>
+                      {{ ubigeo.departamento }}
+                    </small>
+                  }
+                </mat-option>
               }
-          </mat-select>
-        </mat-form-field>
+            </mat-autocomplete>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>
-            <mat-icon class="icon-primary inline mr-1">event</mat-icon>
-            Fecha
-          </mat-label>
-          <input matInput 
-                 [matDatepicker]="picker" 
-                 [(ngModel)]="selectedDate"
-                 [min]="minDate"
-                 readonly>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>
+              <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
+              Deporte
+            </mat-label>
+            <mat-select [(ngModel)]="idTipoCancha">
+              <mat-option value="">Todos los deportes</mat-option>
+              @for (tipo of canchaTipos; track tipo.idTipoCancha) {
+                <mat-option [value]="tipo.idTipoCancha">
+                  {{ tipo.nombre }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>
-            <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
-            Hora
-          </mat-label>
-          <mat-select [(ngModel)]="selectedTime">
-            <mat-option value="08:00">08:00 AM</mat-option>
-            <mat-option value="10:00">10:00 AM</mat-option>
-            <mat-option value="12:00">12:00 PM</mat-option>
-            <mat-option value="14:00">02:00 PM</mat-option>
-            <mat-option value="16:00">04:00 PM</mat-option>
-            <mat-option value="18:00">06:00 PM</mat-option>
-            <mat-option value="20:00">08:00 PM</mat-option>
-          </mat-select>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>
+              <mat-icon class="icon-primary inline mr-1">event</mat-icon>
+              Fecha
+            </mat-label>
+            <input matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="selectedDate"
+              [min]="minDate"
+              readonly>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
 
-        <button mat-raised-button class="btn-primary search-btn text-lg h-14 px-6" (click)="onBuscarCanchas()">
-          <mat-icon class="mr-2">search</mat-icon>
-          Buscar
-        </button>
-      </div>
-    </mat-card>
-  </div>
-</section>
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>
+                <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
+                Hora
+              </mat-label>
+              <mat-select [(ngModel)]="selectedTime">
+                <mat-option value="08:00">08:00 AM</mat-option>
+                <mat-option value="10:00">10:00 AM</mat-option>
+                <mat-option value="12:00">12:00 PM</mat-option>
+                <mat-option value="14:00">02:00 PM</mat-option>
+                <mat-option value="16:00">04:00 PM</mat-option>
+                <mat-option value="18:00">06:00 PM</mat-option>
+                <mat-option value="20:00">08:00 PM</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-<!-- Canchas Destacadas -->
-<section class="featured-section py-16 bg-neutral-50">
-  <div class="section-container">
-    <div class="section-header text-center mb-12">
-      <h2 class="h2 text-primary mb-4">Canchas Destacadas</h2>
-      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Descubre las mejores canchas deportivas disponibles en tu zona</p>
-    </div>
-
-    <div class="canchas-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-      <div *ngFor="let cancha of canchasEjemplo" class="cancha-wrapper">
-        <app-card-cancha [field]="cancha" class="enhanced-card-hover"></app-card-cancha>
-      </div>
-    </div>
-
-    <div class="text-center mt-12">
-      <button mat-raised-button class="btn-outline-primary text-lg px-8 py-3" (click)= "onExplorarCanchas()">
-        Ver Todas las Canchas
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- Role Cards -->
-<section class="role-section py-16 bg-white">
-  <div class="section-container">
-    <div class="section-header text-center mb-12">
-      <h2 class="h2 mb-4">¿Cómo quieres usar CanchaReservas?</h2>
-      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Elige tu perfil y comienza a disfrutar de nuestros servicios</p>
-    </div>
-
-    <div class="role-cards grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-      <!-- Cliente -->
-      <mat-card class="role-card enhanced-card">
-        <mat-card-header>
-          <div mat-card-avatar class="role-avatar bg-primary-100">
-            <mat-icon class="icon-primary text-3xl">person</mat-icon>
+            <button mat-raised-button class="btn-primary search-btn text-lg h-14 px-6" (click)="onBuscarCanchas()">
+              <mat-icon class="mr-2">search</mat-icon>
+              Buscar
+            </button>
           </div>
-          <mat-card-title class="h3">Soy Cliente</mat-card-title>
-          <mat-card-subtitle>Quiero reservar una cancha deportiva para jugar</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-actions>
-          <button mat-raised-button class="btn-primary full-width-btn">
-            Ver Canchas Disponibles
-          </button>
-        </mat-card-actions>
-      </mat-card>
+        </mat-card>
+      </div>
+    </section>
 
-      <!-- Proveedor -->
-      <mat-card class="role-card enhanced-card">
-        <mat-card-header>
-          <div mat-card-avatar class="role-avatar bg-secondary-100">
-            <mat-icon class="icon-secondary text-3xl">business</mat-icon>
+    <!-- Canchas Destacadas -->
+    <section class="featured-section py-16 bg-neutral-50">
+      <div class="section-container">
+        <div class="section-header text-center mb-12">
+          <h2 class="h2 text-primary mb-4">Canchas Destacadas</h2>
+          <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Descubre las mejores canchas deportivas disponibles en tu zona</p>
+        </div>
+
+        <div class="canchas-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+          @for (cancha of canchasEjemplo; track cancha) {
+            <div class="cancha-wrapper">
+              <app-card-cancha [field]="cancha" class="enhanced-card-hover"></app-card-cancha>
+            </div>
+          }
+        </div>
+
+        <div class="text-center mt-12">
+          <button mat-raised-button class="btn-outline-primary text-lg px-8 py-3" (click)= "onExplorarCanchas()">
+            Ver Todas las Canchas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Cards -->
+    <section class="role-section py-16 bg-white">
+      <div class="section-container">
+        <div class="section-header text-center mb-12">
+          <h2 class="h2 mb-4">¿Cómo quieres usar CanchaReservas?</h2>
+          <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Elige tu perfil y comienza a disfrutar de nuestros servicios</p>
+        </div>
+
+        <div class="role-cards grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- Cliente -->
+          <mat-card class="role-card enhanced-card">
+            <mat-card-header>
+              <div mat-card-avatar class="role-avatar bg-primary-100">
+                <mat-icon class="icon-primary text-3xl">person</mat-icon>
+              </div>
+              <mat-card-title class="h3">Soy Cliente</mat-card-title>
+              <mat-card-subtitle>Quiero reservar una cancha deportiva para jugar</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-raised-button class="btn-primary full-width-btn">
+                Ver Canchas Disponibles
+              </button>
+            </mat-card-actions>
+          </mat-card>
+
+          <!-- Proveedor -->
+          <mat-card class="role-card enhanced-card">
+            <mat-card-header>
+              <div mat-card-avatar class="role-avatar bg-secondary-100">
+                <mat-icon class="icon-secondary text-3xl">business</mat-icon>
+              </div>
+              <mat-card-title class="h3">Soy Proveedor</mat-card-title>
+              <mat-card-subtitle>Tengo canchas y quiero generar ingresos extras</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-raised-button class="btn-secondary full-width-btn" (click)="onRegistrarCancha()">
+                Registrar Mi Cancha
+              </button>
+            </mat-card-actions>
+          </mat-card>
+
+          <!-- Operador -->
+          <mat-card class="role-card enhanced-card">
+            <mat-card-header>
+              <div mat-card-avatar class="role-avatar bg-accent-100">
+                <mat-icon class="icon-accent text-3xl">admin_panel_settings</mat-icon>
+              </div>
+              <mat-card-title class="h3">Soy Operador</mat-card-title>
+              <mat-card-subtitle>Administro y gestiono complejos deportivos</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-raised-button class="btn-accent full-width-btn" (click)="onAccesoOperador()">
+                Panel de Operador
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section py-16 bg-white">
+      <div class="section-container">
+        <div class="section-header text-center mb-12">
+          <h2 class="h2 text-primary mb-4">¿Por qué elegir CanchaReservas?</h2>
+          <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Ofrecemos la mejor experiencia para reservar canchas deportivas</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="feature-item text-center feature-hover p-6 rounded-xl">
+            <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="icon-secondary text-2xl">schedule</mat-icon>
+            </div>
+            <h3 class="h3 text-secondary mb-3">Reservas 24/7</h3>
+            <p class="text-neutral-600 leading-relaxed">Reserva tu cancha favorita en cualquier momento del día, los 365 días del año</p>
           </div>
-          <mat-card-title class="h3">Soy Proveedor</mat-card-title>
-          <mat-card-subtitle>Tengo canchas y quiero generar ingresos extras</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-actions>
-          <button mat-raised-button class="btn-secondary full-width-btn" (click)="onRegistrarCancha()">
-            Registrar Mi Cancha
-          </button>
-        </mat-card-actions>
-      </mat-card>
 
-      <!-- Operador -->
-      <mat-card class="role-card enhanced-card">
-        <mat-card-header>
-          <div mat-card-avatar class="role-avatar bg-accent-100">
-            <mat-icon class="icon-accent text-3xl">admin_panel_settings</mat-icon>
+          <div class="feature-item text-center feature-hover p-6 rounded-xl">
+            <div class="feature-icon-container w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="icon-primary text-2xl">verified</mat-icon>
+            </div>
+            <h3 class="h3 text-primary mb-3">Canchas Verificadas</h3>
+            <p class="text-neutral-600 leading-relaxed">Todas nuestras canchas están verificadas y cumplen altos estándares de calidad</p>
           </div>
-          <mat-card-title class="h3">Soy Operador</mat-card-title>
-          <mat-card-subtitle>Administro y gestiono complejos deportivos</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-actions>
-          <button mat-raised-button class="btn-accent full-width-btn" (click)="onAccesoOperador()">
-            Panel de Operador
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
-  </div>
-</section>
 
-<!-- Features Section -->
-<section class="features-section py-16 bg-white">
-  <div class="section-container">
-    <div class="section-header text-center mb-12">
-      <h2 class="h2 text-primary mb-4">¿Por qué elegir CanchaReservas?</h2>
-      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Ofrecemos la mejor experiencia para reservar canchas deportivas</p>
-    </div>
+          <div class="feature-item text-center feature-hover p-6 rounded-xl">
+            <div class="feature-icon-container w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="icon-accent text-2xl">payment</mat-icon>
+            </div>
+            <h3 class="h3 text-accent mb-3">Pago Seguro</h3>
+            <p class="text-neutral-600 leading-relaxed">Múltiples métodos de pago seguros: tarjetas, Yape, Plin y pago en local</p>
+          </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div class="feature-item text-center feature-hover p-6 rounded-xl">
-        <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="icon-secondary text-2xl">schedule</mat-icon>
+          <div class="feature-item text-center feature-hover p-6 rounded-xl">
+            <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <mat-icon class="icon-secondary text-2xl">support_agent</mat-icon>
+            </div>
+            <h3 class="h3 text-secondary mb-3">Soporte 24/7</h3>
+            <p class="text-neutral-600 leading-relaxed">Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
+          </div>
         </div>
-        <h3 class="h3 text-secondary mb-3">Reservas 24/7</h3>
-        <p class="text-neutral-600 leading-relaxed">Reserva tu cancha favorita en cualquier momento del día, los 365 días del año</p>
       </div>
+    </section>
 
-      <div class="feature-item text-center feature-hover p-6 rounded-xl">
-        <div class="feature-icon-container w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="icon-primary text-2xl">verified</mat-icon>
-        </div>
-        <h3 class="h3 text-primary mb-3">Canchas Verificadas</h3>
-        <p class="text-neutral-600 leading-relaxed">Todas nuestras canchas están verificadas y cumplen altos estándares de calidad</p>
-      </div>
-
-      <div class="feature-item text-center feature-hover p-6 rounded-xl">
-        <div class="feature-icon-container w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="icon-accent text-2xl">payment</mat-icon>
-        </div>
-        <h3 class="h3 text-accent mb-3">Pago Seguro</h3>
-        <p class="text-neutral-600 leading-relaxed">Múltiples métodos de pago seguros: tarjetas, Yape, Plin y pago en local</p>
-      </div>
-
-      <div class="feature-item text-center feature-hover p-6 rounded-xl">
-        <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <mat-icon class="icon-secondary text-2xl">support_agent</mat-icon>
-        </div>
-        <h3 class="h3 text-secondary mb-3">Soporte 24/7</h3>
-        <p class="text-neutral-600 leading-relaxed">Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Footer -->
-<app-footer></app-footer>
+    <!-- Footer -->
+    <app-footer></app-footer>
 
 
-<button class="btn-primary">Nueva Reserva</button>
-<button class="btn-secondary">Configurar</button>
-<button class="btn-accent">Pagar Ahora</button>
-<button class="btn-outline-primary">Ver más</button>
+    <button class="btn-primary">Nueva Reserva</button>
+    <button class="btn-secondary">Configurar</button>
+    <button class="btn-accent">Pagar Ahora</button>
+    <button class="btn-outline-primary">Ver más</button>
 
-<!-- Texto -->
-<h1 class="title-main">Reserva tu cancha deportiva favorita</h1>
-<p class="text-neutral-600">La plataforma más completa para gestionar espacios deportivos.</p>
-<h3 class="text-primary">Reserva tu cancha deportiva favorita</h3>
+    <!-- Texto -->
+    <h1 class="title-main">Reserva tu cancha deportiva favorita</h1>
+    <p class="text-neutral-600">La plataforma más completa para gestionar espacios deportivos.</p>
+    <h3 class="text-primary">Reserva tu cancha deportiva favorita</h3>
 
-<!-- Iconos -->
-<mat-icon class="icon-primary">sports_soccer</mat-icon>
-<mat-icon class="icon-secondary">check_circle</mat-icon>
-<mat-icon class="icon-accent">warning</mat-icon>
+    <!-- Iconos -->
+    <mat-icon class="icon-primary">sports_soccer</mat-icon>
+    <mat-icon class="icon-secondary">check_circle</mat-icon>
+    <mat-icon class="icon-accent">warning</mat-icon>
 
-<!-- Botón blanco que en hover pasa a primary -->
-<button class="btn-white-primary">Iniciar Sesión</button>
-<!-- Botón blanco que en hover pasa a secondary -->
-<button class="btn-white-secondary">Configuración</button>
-<!-- Botón blanco que en hover pasa a accent -->
-<button class="btn-white-accent">Cancelar Reserva</button>
+    <!-- Botón blanco que en hover pasa a primary -->
+    <button class="btn-white-primary">Iniciar Sesión</button>
+    <!-- Botón blanco que en hover pasa a secondary -->
+    <button class="btn-white-secondary">Configuración</button>
+    <!-- Botón blanco que en hover pasa a accent -->
+    <button class="btn-white-accent">Cancelar Reserva</button>
 
-<button class="btn-clean-primary">Limpiar Filtros</button>
+    <button class="btn-clean-primary">Limpiar Filtros</button>

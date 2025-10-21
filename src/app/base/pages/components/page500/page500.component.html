@@ -1,14 +1,14 @@
 <div class="flex flex-col items-center justify-center min-h-screen px-5 bg-gradient-to-br from-red-400 to-orange-600">
   <mat-card class="flex flex-col items-center justify-center w-[90%] sm:w-[70%] md:w-[50%] max-w-[650px] p-8 sm:p-10 rounded-2xl shadow-2xl bg-white text-center">
-    
+
     <mat-card-content class="flex flex-col items-center justify-center gap-6 w-full">
-      
+
       <!-- Icono y código de error -->
       <div class="flex flex-col items-center justify-center gap-3">
         <mat-icon class="error-icon text-red-500">warning</mat-icon>
         <h1 class="text-5xl sm:text-6xl font-bold text-orange-600 drop-shadow-md">500</h1>
       </div>
-      
+
       <!-- Mensaje principal -->
       <div class="flex flex-col items-center justify-center gap-4">
         <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">Error Interno del Servidor</h2>
@@ -18,22 +18,26 @@
           <span>Estamos trabajando para solucionarlo.</span>
         </p>
       </div>
-      
+
       <!-- Estado de reconexión -->
       <div class="w-full min-h-[50px] rounded-lg border px-4 py-3 flex flex-col items-center justify-center gap-2 bg-blue-50 border-blue-100"
-           [ngClass]="{'bg-yellow-50 border-yellow-400': isReconnecting}">
-        
-        <div class="flex items-center justify-center gap-2" *ngIf="isReconnecting">
-          <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
-          <span class="text-orange-600 font-medium">Reintentando conexión...</span>
-        </div>
-        
-        <div *ngIf="!isReconnecting" class="flex items-center gap-2 text-blue-600 text-sm">
-          <mat-icon color="accent">info</mat-icon>
-          <span>Última verificación: {{ lastCheck | date:'short' }}</span>
-        </div>
+        [ngClass]="{'bg-yellow-50 border-yellow-400': isReconnecting}">
+
+        @if (isReconnecting) {
+          <div class="flex items-center justify-center gap-2">
+            <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+            <span class="text-orange-600 font-medium">Reintentando conexión...</span>
+          </div>
+        }
+
+        @if (!isReconnecting) {
+          <div class="flex items-center gap-2 text-blue-600 text-sm">
+            <mat-icon color="accent">info</mat-icon>
+            <span>Última verificación: {{ lastCheck | date:'short' }}</span>
+          </div>
+        }
       </div>
-      
+
       <!-- Información técnica -->
       <div class="w-full bg-gray-50 rounded-xl border border-gray-200 p-5 sm:p-6 flex flex-col gap-3 text-left">
         <h3 class="text-lg font-medium text-gray-800">Información técnica:</h3>
@@ -45,37 +49,37 @@
           Si el problema persiste, por favor contacta al equipo de soporte proporcionando el ID de error.
         </p>
       </div>
-      
+
       <!-- Botones de acción -->
       <div class="flex flex-col xs:flex-row items-center justify-center gap-4 sm:gap-5 mt-3 w-full">
-        
-        <button mat-raised-button 
-                color="primary" 
-                (click)="retryConnection()" 
-                [disabled]="isReconnecting"
-                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+
+        <button mat-raised-button
+          color="primary"
+          (click)="retryConnection()"
+          [disabled]="isReconnecting"
+          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
           <mat-icon>refresh</mat-icon>
           Reintentar
         </button>
-        
-        <button mat-stroked-button 
-                color="accent" 
-                (click)="goHome()"
-                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+
+        <button mat-stroked-button
+          color="accent"
+          (click)="goHome()"
+          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
           <mat-icon>home</mat-icon>
           Ir al Inicio
         </button>
-        
-        <button mat-stroked-button 
-                color="warn" 
-                (click)="reportError()"
-                class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+
+        <button mat-stroked-button
+          color="warn"
+          (click)="reportError()"
+          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
           <mat-icon>bug_report</mat-icon>
           Reportar Error
         </button>
-        
+
       </div>
-      
+
     </mat-card-content>
   </mat-card>
 </div>

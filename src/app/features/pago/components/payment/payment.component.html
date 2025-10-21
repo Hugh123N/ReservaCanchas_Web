@@ -2,7 +2,7 @@
 <!-- Payment Wrapper -->
 <div class="payment-wrapper">
   <div class="payment-container">
-    
+
     <!-- Page Header -->
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-4">
@@ -17,273 +17,271 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="payment-loading">
-      <mat-spinner diameter="60" color="primary"></mat-spinner>
-      <p class="payment-loading-text">Cargando información de pago...</p>
-    </div>
+    @if (isLoading) {
+      <div class="payment-loading">
+        <mat-spinner diameter="60" color="primary"></mat-spinner>
+        <p class="payment-loading-text">Cargando información de pago...</p>
+      </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && !reservaData" class="payment-empty">
-      <mat-icon>receipt_long</mat-icon>
-      <h3>No hay reserva pendiente</h3>
-      <p>No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
-      <button mat-raised-button class="btn-primary" (click)="onBack()">
-        Volver al Inicio
-      </button>
-    </div>
+    @if (!isLoading && !reservaData) {
+      <div class="payment-empty">
+        <mat-icon>receipt_long</mat-icon>
+        <h3>No hay reserva pendiente</h3>
+        <p>No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
+        <button mat-raised-button class="btn-primary" (click)="onBack()">
+          Volver al Inicio
+        </button>
+      </div>
+    }
 
     <!-- Main Content -->
-    <div *ngIf="!isLoading && reservaData" class="payment-grid">
-      
-      <!-- Left Column - Payment Methods & Details -->
-      <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Reservation Details Card -->
-        <div class="payment-card">
-          <div class="payment-card-header">
-            <div class="payment-card-title">
-              <mat-icon>event_available</mat-icon>
-              <h3>Detalles de la Reserva</h3>
-            </div>
-            <span class="payment-card-badge pending">Pendiente de Pago</span>
-          </div>
-
-          <div class="payment-detail-card">
-            <div class="payment-detail-row">
-              <div class="payment-detail-icon">
-                <mat-icon>sports_soccer</mat-icon>
-              </div>
-              <div class="payment-detail-content">
-                <h4>{{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}</h4>
-                <p>{{ reservaData.cancha?.ubicacion || 'Lima, Perú' }}</p>
-              </div>
-            </div>
-
-            <div class="payment-detail-row">
-              <div class="payment-detail-icon">
-                <mat-icon>calendar_today</mat-icon>
-              </div>
-              <div class="payment-detail-content">
-                <h4>Fecha y Hora</h4>
-                <p>{{ formatDate(reservaData.fecha) }} • {{ reservaData.selectedTime?.hora }}</p>
-              </div>
-            </div>
-
-            <div class="payment-detail-row">
-              <div class="payment-detail-icon">
-                <mat-icon>schedule</mat-icon>
-              </div>
-              <div class="payment-detail-content">
-                <h4>Duración</h4>
-                <p>{{ reservaData.duracion }} hora(s)</p>
-              </div>
-            </div>
-
-            <div class="payment-detail-row" *ngIf="reservaData.telefono">
-              <div class="payment-detail-icon">
-                <mat-icon>phone</mat-icon>
-              </div>
-              <div class="payment-detail-content">
-                <h4>Teléfono de Contacto</h4>
-                <p>{{ reservaData.telefono }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment Methods Card -->
-        <div class="payment-card">
-          <div class="payment-card-header">
-            <div class="payment-card-title">
-              <mat-icon>payment</mat-icon>
-              <h3>Método de Pago</h3>
-            </div>
-          </div>
-
-          <div class="payment-methods">
-            
-            <!-- Tarjeta de Crédito/Débito (Niubiz) -->
-            <div class="payment-method" 
-                 [class.selected]="selectedMethod === 'card'"
-                 (click)="selectPaymentMethod('card')">
-              <mat-radio-button 
-                [checked]="selectedMethod === 'card'" 
-                color="primary"
-                class="payment-method-radio">
-              </mat-radio-button>
-              <div class="payment-method-icon bg-blue-50">
-                <mat-icon class="text-blue-600">credit_card</mat-icon>
-              </div>
-              <div class="payment-method-content">
-                <div class="payment-method-title">Tarjeta de Crédito/Débito</div>
-                <div class="payment-method-description">Pago seguro con Niubiz</div>
-              </div>
-              <span class="payment-method-badge">Recomendado</span>
-            </div>
-
-            <!-- Yape -->
-            <div class="payment-method"
-                 [class.selected]="selectedMethod === 'yape'"
-                 (click)="selectPaymentMethod('yape')">
-              <mat-radio-button 
-                [checked]="selectedMethod === 'yape'" 
-                color="primary"
-                class="payment-method-radio">
-              </mat-radio-button>
-              <div class="payment-method-icon">
-                <img src="https://seeklogo.com/images/Y/yape-logo-11F2E8E811-seeklogo.com.png" alt="Yape">
-              </div>
-              <div class="payment-method-content">
-                <div class="payment-method-title">Yape</div>
-                <div class="payment-method-description">Pago instantáneo con QR</div>
-              </div>
-            </div>
-
-            <!-- Plin -->
-            <div class="payment-method"
-                 [class.selected]="selectedMethod === 'plin'"
-                 (click)="selectPaymentMethod('plin')">
-              <mat-radio-button 
-                [checked]="selectedMethod === 'plin'" 
-                color="primary"
-                class="payment-method-radio">
-              </mat-radio-button>
-              <div class="payment-method-icon">
-                <img src="https://seeklogo.com/images/P/plin-logo-90845E0C23-seeklogo.com.png" alt="Plin">
-              </div>
-              <div class="payment-method-content">
-                <div class="payment-method-title">Plin</div>
-                <div class="payment-method-description">Pago instantáneo con QR</div>
-              </div>
-            </div>
-
-          <!-- Payment Method Details -->
-          <div class="mt-6" *ngIf="selectedMethod">
-            
-            <!-- Card Payment Form (Niubiz) -->
-            <div *ngIf="selectedMethod === 'card'" class="payment-form">
-              <div class="payment-confirmation">
-                <div class="flex items-start gap-3">
-                  <mat-icon>info</mat-icon>
-                  <p class="payment-confirmation-text">
-                    Serás redirigido a la pasarela de pago segura de Niubiz para completar tu transacción.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Yape QR -->
-            <div *ngIf="selectedMethod === 'yape'" class="qr-section">
-              <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Yape</h4>
-              <div class="qr-code-container">
-                <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape" class="w-48 h-48">
-              </div>
-              <p class="qr-instructions">
-                1. Abre tu app Yape<br>
-                2. Escanea este código QR<br>
-                3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-              </p>
-              <div class="qr-timer">
-                <mat-icon>timer</mat-icon>
-                <span>Código válido por: {{ paymentTimer }}</span>
-              </div>
-            </div>
-
-            <!-- Plin QR -->
-            <div *ngIf="selectedMethod === 'plin'" class="qr-section">
-              <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Plin</h4>
-              <div class="qr-code-container">
-                <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin" class="w-48 h-48">
-              </div>
-              <p class="qr-instructions">
-                1. Abre tu app Plin<br>
-                2. Escanea este código QR<br>
-                3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-              </p>
-              <div class="qr-timer">
-                <mat-icon>timer</mat-icon>
-                <span>Código válido por: {{ paymentTimer }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Security Badges -->
-        <div class="security-badges">
-          <div class="security-badge">
-            <mat-icon>lock</mat-icon>
-            <span>Pago Seguro</span>
-          </div>
-          <div class="security-badge">
-            <mat-icon>verified_user</mat-icon>
-            <span>Datos Protegidos</span>
-          </div>
-          <div class="security-badge">
-            <mat-icon>shield</mat-icon>
-            <span>Encriptación SSL</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column - Summary -->
-      <div class="lg:col-span-1">
-        <div class="payment-summary">
+    @if (!isLoading && reservaData) {
+      <div class="payment-grid">
+        <!-- Left Column - Payment Methods & Details -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Reservation Details Card -->
           <div class="payment-card">
             <div class="payment-card-header">
               <div class="payment-card-title">
-                <mat-icon>receipt</mat-icon>
-                <h3>Resumen</h3>
+                <mat-icon>event_available</mat-icon>
+                <h3>Detalles de la Reserva</h3>
+              </div>
+              <span class="payment-card-badge pending">Pendiente de Pago</span>
+            </div>
+            <div class="payment-detail-card">
+              <div class="payment-detail-row">
+                <div class="payment-detail-icon">
+                  <mat-icon>sports_soccer</mat-icon>
+                </div>
+                <div class="payment-detail-content">
+                  <h4>{{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}</h4>
+                  <p>{{ reservaData.cancha?.ubicacion || 'Lima, Perú' }}</p>
+                </div>
+              </div>
+              <div class="payment-detail-row">
+                <div class="payment-detail-icon">
+                  <mat-icon>calendar_today</mat-icon>
+                </div>
+                <div class="payment-detail-content">
+                  <h4>Fecha y Hora</h4>
+                  <p>{{ formatDate(reservaData.fecha) }} • {{ reservaData.selectedTime?.hora }}</p>
+                </div>
+              </div>
+              <div class="payment-detail-row">
+                <div class="payment-detail-icon">
+                  <mat-icon>schedule</mat-icon>
+                </div>
+                <div class="payment-detail-content">
+                  <h4>Duración</h4>
+                  <p>{{ reservaData.duracion }} hora(s)</p>
+                </div>
+              </div>
+              @if (reservaData.telefono) {
+                <div class="payment-detail-row">
+                  <div class="payment-detail-icon">
+                    <mat-icon>phone</mat-icon>
+                  </div>
+                  <div class="payment-detail-content">
+                    <h4>Teléfono de Contacto</h4>
+                    <p>{{ reservaData.telefono }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Payment Methods Card -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <div class="payment-card-title">
+                <mat-icon>payment</mat-icon>
+                <h3>Método de Pago</h3>
               </div>
             </div>
-
-            <div class="space-y-2">
-              <div class="summary-row">
-                <span class="summary-label">Precio por hora</span>
-                <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
+            <div class="payment-methods">
+              <!-- Tarjeta de Crédito/Débito (Niubiz) -->
+              <div class="payment-method"
+                [class.selected]="selectedMethod === 'card'"
+                (click)="selectPaymentMethod('card')">
+                <mat-radio-button
+                  [checked]="selectedMethod === 'card'"
+                  color="primary"
+                  class="payment-method-radio">
+                </mat-radio-button>
+                <div class="payment-method-icon bg-blue-50">
+                  <mat-icon class="text-blue-600">credit_card</mat-icon>
+                </div>
+                <div class="payment-method-content">
+                  <div class="payment-method-title">Tarjeta de Crédito/Débito</div>
+                  <div class="payment-method-description">Pago seguro con Niubiz</div>
+                </div>
+                <span class="payment-method-badge">Recomendado</span>
               </div>
-
-              <div class="summary-row">
-                <span class="summary-label">Duración</span>
-                <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
+              <!-- Yape -->
+              <div class="payment-method"
+                [class.selected]="selectedMethod === 'yape'"
+                (click)="selectPaymentMethod('yape')">
+                <mat-radio-button
+                  [checked]="selectedMethod === 'yape'"
+                  color="primary"
+                  class="payment-method-radio">
+                </mat-radio-button>
+                <div class="payment-method-icon">
+                  <img src="https://seeklogo.com/images/Y/yape-logo-11F2E8E811-seeklogo.com.png" alt="Yape">
+                </div>
+                <div class="payment-method-content">
+                  <div class="payment-method-title">Yape</div>
+                  <div class="payment-method-description">Pago instantáneo con QR</div>
+                </div>
               </div>
-
-              <div class="summary-row">
-                <span class="summary-label">Subtotal</span>
-                <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
+              <!-- Plin -->
+              <div class="payment-method"
+                [class.selected]="selectedMethod === 'plin'"
+                (click)="selectPaymentMethod('plin')">
+                <mat-radio-button
+                  [checked]="selectedMethod === 'plin'"
+                  color="primary"
+                  class="payment-method-radio">
+                </mat-radio-button>
+                <div class="payment-method-icon">
+                  <img src="https://seeklogo.com/images/P/plin-logo-90845E0C23-seeklogo.com.png" alt="Plin">
+                </div>
+                <div class="payment-method-content">
+                  <div class="payment-method-title">Plin</div>
+                  <div class="payment-method-description">Pago instantáneo con QR</div>
+                </div>
+              </div>
+              <!-- Payment Method Details -->
+              @if (selectedMethod) {
+                <div class="mt-6">
+                  <!-- Card Payment Form (Niubiz) -->
+                  @if (selectedMethod === 'card') {
+                    <div class="payment-form">
+                      <div class="payment-confirmation">
+                        <div class="flex items-start gap-3">
+                          <mat-icon>info</mat-icon>
+                          <p class="payment-confirmation-text">
+                            Serás redirigido a la pasarela de pago segura de Niubiz para completar tu transacción.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                  <!-- Yape QR -->
+                  @if (selectedMethod === 'yape') {
+                    <div class="qr-section">
+                      <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Yape</h4>
+                      <div class="qr-code-container">
+                        <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape" class="w-48 h-48">
+                      </div>
+                      <p class="qr-instructions">
+                        1. Abre tu app Yape<br>
+                        2. Escanea este código QR<br>
+                        3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+                      </p>
+                      <div class="qr-timer">
+                        <mat-icon>timer</mat-icon>
+                        <span>Código válido por: {{ paymentTimer }}</span>
+                      </div>
+                    </div>
+                  }
+                  <!-- Plin QR -->
+                  @if (selectedMethod === 'plin') {
+                    <div class="qr-section">
+                      <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Plin</h4>
+                      <div class="qr-code-container">
+                        <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin" class="w-48 h-48">
+                      </div>
+                      <p class="qr-instructions">
+                        1. Abre tu app Plin<br>
+                        2. Escanea este código QR<br>
+                        3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+                      </p>
+                      <div class="qr-timer">
+                        <mat-icon>timer</mat-icon>
+                        <span>Código válido por: {{ paymentTimer }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            <!-- Security Badges -->
+            <div class="security-badges">
+              <div class="security-badge">
+                <mat-icon>lock</mat-icon>
+                <span>Pago Seguro</span>
+              </div>
+              <div class="security-badge">
+                <mat-icon>verified_user</mat-icon>
+                <span>Datos Protegidos</span>
+              </div>
+              <div class="security-badge">
+                <mat-icon>shield</mat-icon>
+                <span>Encriptación SSL</span>
               </div>
             </div>
-
-            <div class="summary-total">
-              <span class="summary-total-label">Total a Pagar</span>
-              <span class="summary-total-value">S/ {{ reservaData.total }}</span>
+          </div>
+          <!-- Right Column - Summary -->
+          <div class="lg:col-span-1">
+            <div class="payment-summary">
+              <div class="payment-card">
+                <div class="payment-card-header">
+                  <div class="payment-card-title">
+                    <mat-icon>receipt</mat-icon>
+                    <h3>Resumen</h3>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="summary-row">
+                    <span class="summary-label">Precio por hora</span>
+                    <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">Duración</span>
+                    <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">Subtotal</span>
+                    <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
+                  </div>
+                </div>
+                <div class="summary-total">
+                  <span class="summary-total-label">Total a Pagar</span>
+                  <span class="summary-total-value">S/ {{ reservaData.total }}</span>
+                </div>
+                <!-- Action Buttons -->
+                <div class="payment-actions">
+                  <button mat-raised-button
+                    class="btn-primary payment-btn-primary"
+                    [disabled]="!selectedMethod || isProcessing"
+                    (click)="onConfirmPayment()">
+                    @if (isProcessing) {
+                      <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                    }
+                    @if (!isProcessing) {
+                      <span>Confirmar Pago</span>
+                    }
+                    @if (isProcessing) {
+                      <span>Procesando...</span>
+                    }
+                  </button>
+                  <button mat-stroked-button
+                    class="btn-outline-primary payment-btn-secondary"
+                    (click)="onCancel()">
+                    Cancelar
+                  </button>
+                </div>
+                <!-- Help Text -->
+                <p class="text-xs text-center text-neutral-500 mt-4">
+                  ¿Necesitas ayuda?
+                  <a href="/ayuda" class="text-primary-600 hover:underline">Contáctanos</a>
+                </p>
+              </div>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="payment-actions">
-              <button mat-raised-button 
-                      class="btn-primary payment-btn-primary"
-                      [disabled]="!selectedMethod || isProcessing"
-                      (click)="onConfirmPayment()">
-                <mat-spinner *ngIf="isProcessing" diameter="20" class="mr-2"></mat-spinner>
-                <span *ngIf="!isProcessing">Confirmar Pago</span>
-                <span *ngIf="isProcessing">Procesando...</span>
-              </button>
-              
-              <button mat-stroked-button 
-                      class="btn-outline-primary payment-btn-secondary"
-                      (click)="onCancel()">
-                Cancelar
-              </button>
-            </div>
-
-            <!-- Help Text -->
-            <p class="text-xs text-center text-neutral-500 mt-4">
-              ¿Necesitas ayuda? 
-              <a href="/ayuda" class="text-primary-600 hover:underline">Contáctanos</a>
-            </p>
           </div>
         </div>
       </div>
-    </div>
+    }
   </div>
-</div>

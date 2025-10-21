@@ -5,20 +5,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SearchCancha } from '../../core/model/searchCancha.model';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { ESTADO_CANCHA } from '@core/constants/constants.constant';
 
 @Component({
   selector: 'app-card-cancha',
   standalone: true,
-  imports: [MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatTooltipModule,
-    CommonModule
-  ],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatTooltipModule],
   templateUrl: './card-cancha.component.html',
   styleUrl: './card-cancha.component.css'
 })

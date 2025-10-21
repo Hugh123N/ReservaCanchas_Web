@@ -4,7 +4,7 @@
 <!-- Search Section -->
 <section
   class="search-section bg-gradient-to-br from-primary-50 to-secondary-50 py-8"
->
+  >
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title -->
     <div class="text-center mb-8">
@@ -14,7 +14,7 @@
     <!-- Search Card -->
     <mat-card
       class="search-card glass-effect rounded-2xl shadow-xl p-6 max-w-6xl mx-auto"
-    >
+      >
       <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-stretch">
           <!-- Ciudad -->
@@ -22,228 +22,234 @@
             <mat-label>
               <mat-icon class="icon-primary inline mr-1"
                 >location_city</mat-icon
-              >
-              Ciudad
-            </mat-label>
-            <input
-              matInput
-              type="text"
-              [formControl]="cityControl"
-              [matAutocomplete]="auto"
-              placeholder="Escribe tu ciudad..."
-            />
-            <mat-autocomplete
-              #auto="matAutocomplete"
-              [displayWith]="displayUbigeo"
-            >
-              <mat-option
-                *ngFor="let ubigeo of filteredUbigeos | async"
-                [value]="ubigeo"
-              >
-                <mat-icon class="mr-2 icon-primary text-sm"
-                  >location_on</mat-icon
                 >
-                <strong>{{ ubigeo.distrito }}</strong>
-                <small *ngIf="ubigeo.provincia && ubigeo.departamento">
-                  {{ ubigeo.departamento }}
-                </small>
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+                Ciudad
+              </mat-label>
+              <input
+                matInput
+                type="text"
+                [formControl]="cityControl"
+                [matAutocomplete]="auto"
+                placeholder="Escribe tu ciudad..."
+                />
+                <mat-autocomplete
+                  #auto="matAutocomplete"
+                  [displayWith]="displayUbigeo"
+                  >
+                  @for (ubigeo of filteredUbigeos | async; track ubigeo) {
+                    <mat-option
+                      [value]="ubigeo"
+                      >
+                      <mat-icon class="mr-2 icon-primary text-sm"
+                        >location_on</mat-icon
+                        >
+                        <strong>{{ ubigeo.distrito }}</strong>
+                        @if (ubigeo.provincia && ubigeo.departamento) {
+                          <small>
+                            {{ ubigeo.departamento }}
+                          </small>
+                        }
+                      </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
 
-          <!-- Deporte -->
-          <mat-form-field appearance="outline">
-            <mat-label>
-              <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
-              Deporte
-            </mat-label>
-            <mat-select formControlName="idTipoCancha">
-              <mat-option value="">Todos los deportes</mat-option>
-              @for (tipo of canchaTipos; track tipo.idTipoCancha) {
-              <mat-option [value]="tipo.idTipoCancha">
-                {{ tipo.nombre }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+                <!-- Deporte -->
+                <mat-form-field appearance="outline">
+                  <mat-label>
+                    <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
+                    Deporte
+                  </mat-label>
+                  <mat-select formControlName="idTipoCancha">
+                    <mat-option value="">Todos los deportes</mat-option>
+                    @for (tipo of canchaTipos; track tipo.idTipoCancha) {
+                      <mat-option [value]="tipo.idTipoCancha">
+                        {{ tipo.nombre }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-          <!-- Fecha -->
-          <mat-form-field appearance="outline">
-            <mat-label>
-              <mat-icon class="icon-primary inline mr-1">event</mat-icon>
-              Fecha
-            </mat-label>
-            <input
-              matInput
-              [matDatepicker]="picker"
-              [value]="fechaDate"
-              formControlName="fecha"
-              [min]="minDate"
-              readonly
-            />
-            <mat-datepicker-toggle
-              matIconSuffix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+                <!-- Fecha -->
+                <mat-form-field appearance="outline">
+                  <mat-label>
+                    <mat-icon class="icon-primary inline mr-1">event</mat-icon>
+                    Fecha
+                  </mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [value]="fechaDate"
+                    formControlName="fecha"
+                    [min]="minDate"
+                    readonly
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
 
-          <!-- Hora -->
-          <mat-form-field appearance="outline">
-            <mat-label>
-              <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
-              Hora
-            </mat-label>
-            <mat-select formControlName="hora">
-              <mat-option value="">Cualquier hora</mat-option>
-              <mat-option value="08:00">08:00 AM</mat-option>
-              <mat-option value="10:00">10:00 AM</mat-option>
-              <mat-option value="12:00">12:00 PM</mat-option>
-              <mat-option value="14:00">02:00 PM</mat-option>
-              <mat-option value="16:00">04:00 PM</mat-option>
-              <mat-option value="18:00">06:00 PM</mat-option>
-              <mat-option value="20:00">08:00 PM</mat-option>
-            </mat-select>
-          </mat-form-field>
+                  <!-- Hora -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>
+                      <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
+                      Hora
+                    </mat-label>
+                    <mat-select formControlName="hora">
+                      <mat-option value="">Cualquier hora</mat-option>
+                      <mat-option value="08:00">08:00 AM</mat-option>
+                      <mat-option value="10:00">10:00 AM</mat-option>
+                      <mat-option value="12:00">12:00 PM</mat-option>
+                      <mat-option value="14:00">02:00 PM</mat-option>
+                      <mat-option value="16:00">04:00 PM</mat-option>
+                      <mat-option value="18:00">06:00 PM</mat-option>
+                      <mat-option value="20:00">08:00 PM</mat-option>
+                    </mat-select>
+                  </mat-form-field>
 
-          <!-- Botones -->
-          <div class="flex gap-2 items-center">
-            <button
-              mat-raised-button
-              class="btn-primary flex-1 h-full"
-              type="submit"
-              [disabled]="isLoading"
-            >
-              <mat-icon class="mr-2">search</mat-icon>
-              Buscar
-            </button>
-            <button
-              mat-stroked-button
-              class="btn-outline-primary h-full px-4"
-              type="button"
-              (click)="onClear()"
-              [disabled]="isLoading"
-            >
-              <mat-icon>clear</mat-icon>
-            </button>
+                  <!-- Botones -->
+                  <div class="flex gap-2 items-center">
+                    <button
+                      mat-raised-button
+                      class="btn-primary flex-1 h-full"
+                      type="submit"
+                      [disabled]="isLoading"
+                      >
+                      <mat-icon class="mr-2">search</mat-icon>
+                      Buscar
+                    </button>
+                    <button
+                      mat-stroked-button
+                      class="btn-outline-primary h-full px-4"
+                      type="button"
+                      (click)="onClear()"
+                      [disabled]="isLoading"
+                      >
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </mat-card>
           </div>
-        </div>
-      </form>
-    </mat-card>
-  </div>
-</section>
+        </section>
 
-<!-- Filters and Results Section -->
-<section class="results-section py-8 bg-neutral-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-      <!-- Results Header -->
-      <div
-        class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
-      >
-        <div class="results-info">
-          <h2 class="h2 text-neutral-800 mb-2">
-            {{
-              isSearching
-                ? "Resultados de búsqueda"
-                : "Todas las canchas disponibles"
-            }}
-          </h2>
-        </div>
+        <!-- Filters and Results Section -->
+        <section class="results-section py-8 bg-neutral-50">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+              <!-- Results Header -->
+              <div
+                class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+                >
+                <div class="results-info">
+                  <h2 class="h2 text-neutral-800 mb-2">
+                    {{
+                    isSearching
+                    ? "Resultados de búsqueda"
+                    : "Todas las canchas disponibles"
+                    }}
+                  </h2>
+                </div>
 
-        <!-- Sort Options -->
-        <div class="sort-options flex items-center gap-3">
-          <span class="text-sm text-neutral-600">Ordenar por:</span>
-          <mat-form-field appearance="outline" class="w-48">
-            <mat-select
-              (selectionChange)="onSortChange()"
-              [disabled]="isLoading"
-            >
-              <mat-option value="nombre_asc">Nombre A-Z</mat-option>
-              <mat-option value="nombre_desc">Nombre Z-A</mat-option>
-              <mat-option value="precio_asc">Precio menor a mayor</mat-option>
-              <mat-option value="precio_desc">Precio mayor a menor</mat-option>
-              <mat-option value="calificacion_desc"
-                >Mejor calificados</mat-option
-              >
-              <mat-option value="distancia_asc">Más cercanos</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
+                <!-- Sort Options -->
+                <div class="sort-options flex items-center gap-3">
+                  <span class="text-sm text-neutral-600">Ordenar por:</span>
+                  <mat-form-field appearance="outline" class="w-48">
+                    <mat-select
+                      (selectionChange)="onSortChange()"
+                      [disabled]="isLoading"
+                      >
+                      <mat-option value="nombre_asc">Nombre A-Z</mat-option>
+                      <mat-option value="nombre_desc">Nombre Z-A</mat-option>
+                      <mat-option value="precio_asc">Precio menor a mayor</mat-option>
+                      <mat-option value="precio_desc">Precio mayor a menor</mat-option>
+                      <mat-option value="calificacion_desc"
+                        >Mejor calificados</mat-option
+                        >
+                        <mat-option value="distancia_asc">Más cercanos</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
 
-      <!-- Results Grid -->
-      <div class="lg:col-span-3">
-        <!-- Results Grid -->
-        <div *ngIf="!isLoading && canchas.length > 0" class="results-grid">
-          <div class="grid grid-medium">
-            <div
-              *ngFor="
-                let cancha of canchas;
-                let i = index;
-                trackBy: trackByCancha
-              "
-              class="cancha-item fade-in-up"
-              [style.animation-delay.ms]="i * 100"
-            >
-              <app-card-cancha
-                [field]="cancha"
-                (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
-                [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
-                class="enhanced-card-hover"
-              >
-              </app-card-cancha>
-            </div>
-          </div>
-        </div>
+                <!-- Results Grid -->
+                <div class="lg:col-span-3">
+                  <!-- Results Grid -->
+                  @if (!isLoading && canchas.length > 0) {
+                    <div class="results-grid">
+                      <div class="grid grid-medium">
+                        @for (
+                          cancha of canchas; track trackByCancha(i,
+                          cancha); let i = $index) {
+                          <div
+                            class="cancha-item fade-in-up"
+                            [style.animation-delay.ms]="i * 100"
+                            >
+                            <app-card-cancha
+                              [field]="cancha"
+                              (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
+                              [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
+                              class="enhanced-card-hover"
+                              >
+                            </app-card-cancha>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
 
-        <!-- Empty State -->
-        <div
-          *ngIf="!isLoading && canchas.length === 0"
-          class="empty-state text-center py-16"
-        >
-          <div class="max-w-md mx-auto">
-            <mat-icon class="text-6xl text-neutral-400 mb-4"
-              >search_off</mat-icon
-            >
-            <h3 class="h3 text-neutral-600 mb-4">No se encontraron canchas</h3>
-            <p class="text-neutral-500 mb-6">
-              {{
-                isSearching
-                  ? "Intenta ajustar tus filtros de búsqueda"
-                  : "No hay canchas disponibles en este momento"
-              }}
-            </p>
-            <button
-              mat-raised-button
-              class="btn-outline-primary"
-              (click)="onClear()"
-            >
-              {{ isSearching ? "Limpiar filtros" : "Recargar" }}
-            </button>
-          </div>
-        </div>
+                  <!-- Empty State -->
+                  @if (!isLoading && canchas.length === 0) {
+                    <div
+                      class="empty-state text-center py-16"
+                      >
+                      <div class="max-w-md mx-auto">
+                        <mat-icon class="text-6xl text-neutral-400 mb-4"
+                          >search_off</mat-icon
+                          >
+                          <h3 class="h3 text-neutral-600 mb-4">No se encontraron canchas</h3>
+                          <p class="text-neutral-500 mb-6">
+                            {{
+                            isSearching
+                            ? "Intenta ajustar tus filtros de búsqueda"
+                            : "No hay canchas disponibles en este momento"
+                            }}
+                          </p>
+                          <button
+                            mat-raised-button
+                            class="btn-outline-primary"
+                            (click)="onClear()"
+                            >
+                            {{ isSearching ? "Limpiar filtros" : "Recargar" }}
+                          </button>
+                        </div>
+                      </div>
+                    }
 
-        <!-- Pagination -->
-        <div
-          *ngIf="!isLoading && this.total > this.page.pageSize"
-          class="pagination-section mt-12"
-        >
-          <mat-paginator
-            [length]="this.total"
-            [pageSize]="this.page.pageSize"
-            [pageSizeOptions]="[12, 24, 48]"
-            [pageIndex]="this.page.page"
-            (page)="onPageChange($event)"
-            showFirstLastButtons
-            class="custom-paginator"
-          >
-          </mat-paginator>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                    <!-- Pagination -->
+                    @if (!isLoading && this.total > this.page.pageSize) {
+                      <div
+                        class="pagination-section mt-12"
+                        >
+                        <mat-paginator
+                          [length]="this.total"
+                          [pageSize]="this.page.pageSize"
+                          [pageSizeOptions]="[12, 24, 48]"
+                          [pageIndex]="this.page.page"
+                          (page)="onPageChange($event)"
+                          showFirstLastButtons
+                          class="custom-paginator"
+                          >
+                        </mat-paginator>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </section>
 
-<!-- Footer -->
-<app-footer></app-footer>
+            <!-- Footer -->
+            <app-footer></app-footer>
