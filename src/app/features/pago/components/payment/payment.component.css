@@ -1,0 +1,20 @@
+
+/*@reference "../../../../../styles.css";*/
+
+
+
+/* Spinner blanco dentro de botón */
+.spinner-white ::ng-deep circle {
+  stroke: white !important;
+}
+
+.payment-card {
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* Efecto hover para métodos de pago */
+.payment-method:hover:not(.selected) {
+  transform: translateX(4px);
+}
+
+/* Todo lo demás viene de payment-shared.css */

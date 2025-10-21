@@ -1,22 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../../auth/services/users.service';
 import { interval, Subject, takeUntil } from 'rxjs';
+import { MatFormField } from '@angular/material/select';
+import { MatLabel } from '@angular/material/select';
 
-
-
-
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 interface ReservaData {
   canchaId: number;
@@ -25,7 +25,6 @@ interface ReservaData {
   selectedTime: any;
   duracion: number;
   telefono: string;
-  recordatorioWhatsApp: boolean;
   precioHora: number;
   total: number;
 }
@@ -33,12 +32,12 @@ interface ReservaData {
 interface UserData {
   id: string;
   email: string;
-  telefono?: string;
+  telefono: string;
   firstName?: string;
   lastName?: string;
 }
 
-type PaymentMethod = 'card' | 'yape' | 'plin' | 'transfer' | 'local';
+type PaymentMethod = 'card' | 'yape' | 'plin';
 
 
 
@@ -52,70 +51,71 @@ type PaymentMethod = 'card' | 'yape' | 'plin' | 'transfer' | 'local';
     MatRadioModule,
     MatProgressSpinnerModule,
     MatDividerModule,
-    NavVarComponent,
-    FooterComponent
+    MatFormField,
+    MatLabel,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
-export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy{
-  
-  // Data
-  reservaData: ReservaData | null = null;
-  userData: UserData | null = null;
-  
-  // States
-  isLoading: boolean = true;
-  isProcessing: boolean = false;
-  selectedPaymentMethod: PaymentMethod | null = null;
-  phoneNeedsUpdate: boolean = false;
-  
-  // Timer for QR codes
-  paymentTimer: string = '15:00';
-  private timerSubscription: any;
-  
-  // Voucher
-  voucherFile: File | null = null;
-  
-  private unsubscribe: Subject<any>;
+export class PaymentComponent implements OnInit, OnDestroy {
 
-  constructor(
+  userData: UserData | null = null;
+  reservaData: ReservaData = {
+    canchaId: 0,
+    fecha: '',
+    selectedTime: null,
+    duracion: 1,
+    telefono: '',
+    precioHora: 0,
+    total: 0
+  };
+
+  // States
+  selectedMethod: PaymentMethod | null = null;
+  isLoading: boolean = false;
+  isProcessing: boolean = false;
+  paymentTimer: string = '15:00';
+  cardForm!: FormGroup;
+
+
+  private unsubscribe = new Subject<void>();
+
+  constructor(private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private usersService: UsersService,
-    // private paymentService: PaymentService,
-    // private reservaService: ReservaService,
-    @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
-    super("PAYMENT", viewContainerRef);
-    this.unsubscribe = new Subject<any>();
+    this.initializeCardForm();
   }
 
   ngOnInit(): void {
     this.loadReservationData();
   }
 
-  override ngOnDestroy(): void {
-    this.stopTimer();
-    this.unsubscribe.next(null);
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
     this.unsubscribe.complete();
   }
 
   private loadReservationData(): void {
     this.isLoading = true;
 
-    const navigationState = history.state;
+    // 1. Intentar obtener desde navigation state
+    const navigationState = typeof window !== 'undefined' ? window.history.state : null;
     if (navigationState?.reservaData) {
       this.reservaData = navigationState.reservaData;
       this.processReservationData();
       return;
     }
 
+    // 2. Si no, buscar en localStorage (viene del modal)
     this.route.queryParams.subscribe(params => {
       if (params['reserva'] === 'true') {
-        // Buscar la última reserva guardada
         const canchaId = this.findLatestReservation();
         if (canchaId) {
           const storedData = localStorage.getItem(`reserva_draft_${canchaId}`);
@@ -126,27 +126,13 @@ export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy
           }
         }
       }
-      
-      // No se encontró data de reserva
+
+      // No se encontró data
       this.isLoading = false;
       this.cdr.markForCheck();
     });
   }
 
-  private findLatestReservation(): number | null {
-    const keys = Object.keys(localStorage);
-    const reservaKeys = keys.filter(key => key.startsWith('reserva_draft_'));
-    
-    if (reservaKeys.length === 0) return null;
-    
-    // Retornar el más reciente (último guardado)
-    const lastKey = reservaKeys[reservaKeys.length - 1];
-    return parseInt(lastKey.replace('reserva_draft_', ''));
-  }
-
-  /**
-   * Process reservation data and check user phone
-   */
   private processReservationData(): void {
     if (!this.reservaData) {
       this.isLoading = false;
@@ -157,17 +143,16 @@ export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy
     this.loadUserData();
   }
 
-  /**
-   * Load current user data
-   */
   private loadUserData(): void {
     if (!this.authService.isAuthenticated()) {
       this.isLoading = false;
       return;
     }
 
-    // Aquí obtendrías los datos del usuario del servicio
-    // Por ahora simulamos
+    // AQUÍ: Obtener usuario actual
+    // this.usersService.getCurrentUser() ...
+
+    // Simulación para ejemplo
     this.userData = {
       id: 'user-123',
       email: 'user@email.com',
@@ -176,166 +161,127 @@ export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy
       lastName: 'Pérez'
     };
 
-    // Verificar si el teléfono necesita actualizarse
-    this.checkPhoneUpdate();
-    
+    // 3. Validar y actualizar teléfono si es necesario
+    this.checkAndUpdatePhone();
+
     this.isLoading = false;
     this.cdr.markForCheck();
-
-    /* Implementación real:
-    const subscription = this.usersService
-      .getCurrentUser()
-      .pipe(
-        tap((response) => {
-          if (response.isValid) {
-            this.userData = response.data;
-            this.checkPhoneUpdate();
-          }
-        }),
-        takeUntil(this.unsubscribe),
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe();
-    this.subscriptions.push(subscription);
-    */
   }
 
-  /**
-   * Check if phone needs to be updated
-   */
-  private checkPhoneUpdate(): void {
+  private checkAndUpdatePhone(): void {
     if (!this.reservaData || !this.userData) return;
 
     const reservaTelefono = this.reservaData.telefono?.replace(/\D/g, '');
     const userTelefono = this.userData.telefono?.replace(/\D/g, '');
 
-    this.phoneNeedsUpdate = reservaTelefono !== userTelefono;
+    if (reservaTelefono !== userTelefono) {
+      // AQUÍ: Llamar a servicio para actualizar teléfono
+      this.updateUserPhoneNumber(reservaTelefono);
+    }
   }
 
-  /**
-   * Update user phone if needed
-   */
-  private async updateUserPhone(): Promise<boolean> {
-    if (!this.phoneNeedsUpdate || !this.userData || !this.reservaData) {
-      return true;
-    }
+  private updateUserPhoneNumber(newPhone: string): void {
+    // IMPLEMENTACIÓN: Descomenta cuando tengas el endpoint
 
-    return new Promise((resolve) => {
-      // Simulación - reemplazar con llamada real
-      console.log('Actualizando teléfono del usuario:', this.reservaData!.telefono);
-      
-      setTimeout(() => {
-        this.userData!.telefono = this.reservaData!.telefono;
-        this.phoneNeedsUpdate = false;
-        resolve(true);
-      }, 500);
+    /*
+    const subscription = this.usersService
+      .updateUserPhone(this.userData.id, newPhone)
+      .pipe(
+        tap((response) => {
+          if (response.isValid) {
+            this.userData!.telefono = newPhone;
+            console.log('Teléfono actualizado:', newPhone);
+          }
+        }),
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe();
+    this.subscriptions.push(subscription);
+    */
 
-      /* Implementación real:
-      const subscription = this.usersService
-        .updateUserPhone(this.userData.id, this.reservaData.telefono)
-        .pipe(
-          tap((response) => {
-            if (response.isValid) {
-              this.userData!.telefono = this.reservaData!.telefono;
-              this.phoneNeedsUpdate = false;
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }),
-          takeUntil(this.unsubscribe)
-        )
-        .subscribe();
-      this.subscriptions.push(subscription);
-      */
+    // Simulación
+    console.log('Actualizando teléfono:', newPhone);
+    this.userData!.telefono = newPhone;
+  }
+
+  private findLatestReservation(): number | null {
+    const keys = Object.keys(localStorage);
+    const reservaKeys = keys.filter(key => key.startsWith('reserva_draft_'));
+
+    if (reservaKeys.length === 0) return null;
+
+    // Retornar el más reciente (último guardado)
+    const lastKey = reservaKeys[reservaKeys.length - 1];
+    return parseInt(lastKey.replace('reserva_draft_', ''));
+  }
+
+
+
+
+  private initializeCardForm(): void {
+    this.cardForm = this.fb.group({
+      cardNumber: ['', [Validators.required, Validators.minLength(16)]],
+      cardHolder: ['', [Validators.required, Validators.minLength(3)]],
+      cardExpiry: ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]],
+      cardCvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]]
     });
   }
-
-  // ===== PAYMENT METHODS =====
 
   /**
    * Select payment method
    */
   selectPaymentMethod(method: PaymentMethod): void {
-    this.selectedPaymentMethod = method;
-    
+    this.selectedMethod = method;
+
     // Start timer for QR methods
     if (method === 'yape' || method === 'plin') {
-      this.startTimer(15 * 60); // 15 minutos
+      this.startTimer(15 * 60);
     } else {
       this.stopTimer();
+      this.cardForm.reset();
     }
   }
 
   /**
-   * Start countdown timer
+   * Start countdown timer for QR
    */
   private startTimer(seconds: number): void {
     this.stopTimer();
-    
-    let remainingSeconds = seconds;
-    
-    this.timerSubscription = interval(1000)
+
+    let remaining = seconds;
+    interval(1000)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => {
-        remainingSeconds--;
-        
-        const minutes = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-        this.paymentTimer = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        
-        if (remainingSeconds <= 0) {
+        remaining--;
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        this.paymentTimer = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (remaining <= 0) {
           this.stopTimer();
-          this.handleTimerExpired();
         }
-        
-        this.cdr.markForCheck();
       });
   }
 
   /**
-   * Stop countdown timer
+   * Stop timer
    */
   private stopTimer(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
+    this.paymentTimer = '15:00';
   }
 
-  /**
-   * Handle timer expiration
-   */
-  private handleTimerExpired(): void {
-    alert('El código QR ha expirado. Por favor, genera uno nuevo.');
-    this.selectedPaymentMethod = null;
-  }
-
-  // ===== PAYMENT CONFIRMATION =====
-
-  /**
-   * Confirm payment
-   */
   async onConfirmPayment(): Promise<void> {
-    if (!this.selectedPaymentMethod || !this.reservaData) {
+    if (!this.selectedMethod || !this.reservaData) {
       return;
     }
 
     this.isProcessing = true;
-    this.cdr.markForCheck();
 
     try {
-      // 1. Actualizar teléfono si es necesario
-      const phoneUpdated = await this.updateUserPhone();
-      if (!phoneUpdated) {
-        throw new Error('No se pudo actualizar el teléfono');
-      }
+      // 1. El teléfono ya fue validado/actualizado en OnInit
 
       // 2. Procesar según método de pago
-      switch (this.selectedPaymentMethod) {
+      switch (this.selectedMethod) {
         case 'card':
           await this.processCardPayment();
           break;
@@ -343,137 +289,77 @@ export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy
         case 'plin':
           await this.processQRPayment();
           break;
-        case 'transfer':
-          await this.processBankTransfer();
-          break;
-        case 'local':
-          await this.processLocalPayment();
-          break;
       }
     } catch (error) {
-      console.error('Error al procesar pago:', error);
-      //this.openErrorAlert({ Messages: 'Error al procesar el pago. Intenta nuevamente.' });
+      console.error('Error:', error);
       this.isProcessing = false;
-      this.cdr.markForCheck();
     }
   }
 
-  /**
-   * Process card payment with Niubiz
-   */
   private async processCardPayment(): Promise<void> {
-    // Aquí integrarías con Niubiz
-    console.log('Procesando pago con tarjeta (Niubiz)...');
-    
+    // AQUÍ: Integrar con Niubiz
+    // 1. Enviar datos de tarjeta
+    // 2. Obtener respuesta de Niubiz
+    // 3. Crear reserva en backend
+
+    console.log('Procesando pago con tarjeta...');
+
     // Simulación
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Redirigir a Niubiz o procesar
-    // window.location.href = niubizUrl;
-    
     this.navigateToConfirmation('CARD-' + Date.now());
-
-    /* Implementación real:
-    const subscription = this.paymentService
-      .createNiubizSession(this.reservaData!)
-      .pipe(
-        tap((response) => {
-          if (response.isValid) {
-            // Redirigir a Niubiz
-            window.location.href = response.data.sessionUrl;
-          } else {
-            throw new Error(response.message);
-          }
-        }),
-        takeUntil(this.unsubscribe),
-        finalize(() => {
-          this.isProcessing = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe();
-    this.subscriptions.push(subscription);
-    */
   }
 
-  /**
-   * Process QR payment (Yape/Plin)
-   */
   private async processQRPayment(): Promise<void> {
-    console.log(`Procesando pago con ${this.selectedPaymentMethod}...`);
-    
-    // Aquí verificarías el pago con el servicio
+    // AQUÍ: Integrar con servicio de QR (Yape/Plin)
+    // 1. Generar QR
+    // 2. Esperar confirmación de pago
+    // 3. Crear reserva en backend
+
+    console.log(`Procesando pago con ${this.selectedMethod}...`);
+
+    // Simulación
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Crear reserva pendiente de confirmación
     this.navigateToConfirmation('QR-' + Date.now(), 'pending');
   }
 
-  /**
-   * Process bank transfer
-   */
-  private async processBankTransfer(): Promise<void> {
-    if (!this.voucherFile) {
-      alert('Por favor sube el comprobante de pago');
-      this.isProcessing = false;
-      return;
-    }
-
-    console.log('Procesando transferencia bancaria...');
-    
-    // Subir comprobante y crear reserva
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    this.navigateToConfirmation('TRANSFER-' + Date.now(), 'pending');
-  }
-
-  /**
-   * Process local payment
-   */
-  private async processLocalPayment(): Promise<void> {
-    console.log('Procesando pago en local...');
-    
-    // Crear reserva con estado pendiente de pago
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    this.navigateToConfirmation('LOCAL-' + Date.now(), 'pending');
-  }
-
-  /**
-   * Navigate to confirmation page
-   */
   private navigateToConfirmation(transactionId: string, status: 'confirmed' | 'pending' = 'confirmed'): void {
     // Limpiar localStorage
     if (this.reservaData?.canchaId) {
       localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
     }
-    
+
     this.router.navigate(['/reserva-confirmada'], {
       state: {
         transactionId,
         status,
         reservaData: this.reservaData,
-        paymentMethod: this.selectedPaymentMethod
+        paymentMethod: this.selectedMethod
       }
     });
   }
 
-  // ===== HELPER METHODS =====
+  onCancel(): void {
+    if (confirm('¿Estás seguro de cancelar esta reserva?')) {
+      // Limpiar localStorage
+      if (this.reservaData?.canchaId) {
+        localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
+      }
+      this.router.navigate(['/']);
+    }
+  }
 
   /**
-   * Format date for display
+   * Format date
    */
   formatDate(dateString: string): string {
     if (!dateString) return '-';
-    
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     };
-    
     return date.toLocaleDateString('es-PE', options);
   }
 
@@ -484,68 +370,7 @@ export class PaymentComponent extends BaseComponent implements OnInit, OnDestroy
     if (!this.reservaData) return 0;
     return this.reservaData.precioHora * this.reservaData.duracion;
   }
-
-  /**
-   * Check if has discount
-   */
-  hasDiscount(): boolean {
-    if (!this.reservaData) return false;
-    return this.calculateSubtotal() > this.reservaData.total;
-  }
-
-  /**
-   * Get discount amount
-   */
-  getDiscountAmount(): number {
-    if (!this.reservaData) return 0;
-    return this.calculateSubtotal() - this.reservaData.total;
-  }
-
-  /**
-   * Copy text to clipboard
-   */
-  copyToClipboard(text: string): void {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Copiado al portapapeles');
-    });
-  }
-
-  /**
-   * Handle voucher upload
-   */
-  onVoucherUpload(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // Validar tamaño (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('El archivo es muy grande. Máximo 5MB');
-        return;
-      }
-      
-      this.voucherFile = file;
-      console.log('Archivo seleccionado:', file.name);
-    }
-  }
-
-  // ===== NAVIGATION =====
-
-  /**
-   * Go back
-   */
   onBack(): void {
     this.router.navigate(['/']);
-  }
-
-  /**
-   * Cancel payment
-   */
-  onCancel(): void {
-    if (confirm('¿Estás seguro de cancelar esta reserva?')) {
-      // Limpiar localStorage
-      if (this.reservaData?.canchaId) {
-        localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
-      }
-      this.router.navigate(['/']);
-    }
   }
 }
