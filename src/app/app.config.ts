@@ -6,7 +6,6 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 
 
@@ -16,10 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideClientHydration(withEventReplay()),
-    importProvidersFrom(BrowserAnimationsModule),
-    importProvidersFrom(CommonModule,
-      FormsModule
-    ),
+    importProvidersFrom(CommonModule, FormsModule),
     provideHttpClient()
   ]
 };
