@@ -217,7 +217,7 @@
                           <div
                             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
                             >
-                            @for (h of getAvailableHours(); track h) {
+                            @for (h of getAvailableHours(); track h.hora) {
                               <button
                                 type="button"
                                 mat-raised-button

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -162,12 +162,14 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     private canchasService: CanchaService,
     private disponibilidadService: DisponibilidadService,
     private authService: AuthService,
+    private cdr: ChangeDetectorRef,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
     this.reservaForm = this.fb.group({
       telefono: ['', [Validators.required, Validators.pattern(/^(\+51|51)?[9][0-9]{8}$/)]],
-      recordatorioWhatsApp: [true]
+      recordatorioWhatsApp: [true],
+      duracion: [1]
     });
   }
 
@@ -280,10 +282,12 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   selectDate(fecha: DateOption) {
-    if (fecha.disponible) {
-      this.selectedDate = fecha;
-      this.selectedTime = null; // Reset selected time
+    if (!fecha.disponible) {
+      return;
     }
+
+    this.selectedDate = fecha;
+    this.selectedTime = null; // Reset selected time
 
     const body: RequestDisponibilidad = {
       idCancha: this.canchaData.idCancha!,
@@ -300,11 +304,14 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         } else {
           this.canchaData.horariosDisponibles = [];
         }
+        // Mark for check to schedule change detection in the next cycle
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error al obtener disponibilidad', err);
         //this.loadingHorarios = false;
         this.canchaData.horariosDisponibles = [];
+        this.cdr.markForCheck();
       }
     });
   }
@@ -321,7 +328,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     } else {
       this.selectedTime.push(time);
     }
-    this.reservaForm.value.duracion = this.selectedTime.length;
+    this.reservaForm.patchValue({ duracion: this.selectedTime.length });
   }
 
   getFormattedSelectedDate(): string {

@@ -1,7 +1,1 @@
-NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 14. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at
 
-ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: 'time-btn available'. Expression location: _DetalleCanchaComponent component It seems like the view has been created after its parent and its children have been dirty checked. Has it been created in a change detection hook? Find more at https://v20.angular.dev/errors/NG0100
-    at throwErrorIfNoChangesMode (debug_node.mjs:6260:11)
-    at bindingUpdated (debug_node.mjs:14030:17)
-    at Module.ɵɵproperty (debug_node.mjs:23299:9)
-    at DetalleCanchaComponent_Conditional_79_For_7_Template
