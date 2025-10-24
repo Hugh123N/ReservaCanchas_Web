@@ -373,3 +373,412 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .btn-responsive-lg {
   @apply h-14 sm:h-16 text-base sm:text-lg font-semibold;
 }
+
+/* ========== ANIMATIONS ========== */
+/* Animaciones globales reutilizables */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* Animation Classes */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+.pulse-animation {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ========== VISUAL EFFECTS ========== */
+/* Efectos visuales globales */
+
+/* Glass Morphism */
+.glass-effect {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-morphism {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Text Gradient */
+.text-gradient {
+  background: linear-gradient(135deg, rgb(147 51 234), rgb(6 182 212));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== CARD STYLES ========== */
+/* Variantes de cards con diferentes efectos hover */
+
+.card-hover-lift {
+  @apply transition-all duration-300;
+}
+
+.card-hover-lift:hover {
+  @apply transform -translate-y-2 shadow-xl;
+}
+
+.card-hover-scale {
+  @apply transition-all duration-300;
+}
+
+.card-hover-scale:hover {
+  @apply transform scale-105 shadow-xl;
+}
+
+.card-hover-glow {
+  @apply transition-all duration-300;
+}
+
+.card-hover-glow:hover {
+  @apply shadow-xl;
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
+}
+
+/* Enhanced card hover - combinación de efectos */
+.enhanced-card-hover {
+  @apply transition-all duration-300;
+}
+
+.enhanced-card-hover:hover {
+  @apply transform -translate-y-2 shadow-xl;
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
+}
+
+/* Enhanced card con scale */
+.enhanced-card {
+  @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+}
+
+.enhanced-card:hover {
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
+}
+
+/* Info Cards */
+.info-card {
+  @apply bg-white rounded-xl shadow-sm border border-neutral-100 p-6 transition-all duration-300;
+}
+
+.info-card:hover {
+  @apply shadow-md border-primary-200;
+}
+
+/* Summary Cards */
+.summary-card-base {
+  @apply bg-white rounded-xl shadow-lg border border-primary-200 p-6;
+}
+
+/* ========== HERO SECTIONS ========== */
+/* Secciones hero con gradientes */
+
+.hero-gradient-primary {
+  background: linear-gradient(135deg, rgb(147 51 234) 0%, rgb(6 182 212) 50%, rgb(249 115 22) 100%);
+  @apply relative overflow-hidden;
+}
+
+.hero-gradient-soft {
+  background: linear-gradient(135deg, rgb(243 232 255) 0%, rgb(236 254 255) 100%);
+  @apply relative;
+}
+
+.hero-overlay {
+  content: '';
+  @apply absolute inset-0 pointer-events-none;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+}
+
+.hero-container {
+  @apply relative z-10 max-w-7xl mx-auto px-4 py-16 sm:py-20;
+}
+
+/* ========== MATERIAL DESIGN GLOBAL OVERRIDES ========== */
+/* Sobrescrituras globales de Material Design */
+
+/* Form Fields */
+.mat-mdc-form-field {
+  @apply w-full;
+}
+
+.mat-mdc-form-field-outline {
+  @apply rounded-xl;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-label {
+  @apply flex items-center;
+}
+
+/* Cards */
+.mat-mdc-card {
+  @apply rounded-2xl border-0 shadow-sm;
+}
+
+.mat-mdc-card-header .mat-mdc-card-title {
+  @apply text-xl font-semibold mb-2;
+}
+
+.mat-mdc-card-header .mat-mdc-card-subtitle {
+  @apply text-neutral-600 leading-relaxed;
+}
+
+/* Buttons */
+.mat-mdc-raised-button {
+  @apply font-medium transition-all duration-300 shadow-lg;
+}
+
+.mat-mdc-raised-button:hover {
+  @apply transform -translate-y-1 shadow-xl;
+}
+
+/* Tabs */
+.mat-mdc-tab-group {
+  @apply rounded-2xl overflow-hidden;
+}
+
+.mat-mdc-tab-header {
+  @apply bg-neutral-50 border-b border-neutral-200;
+}
+
+.mat-mdc-tab-body-content {
+  @apply bg-white;
+}
+
+.mat-mdc-tab {
+  @apply font-semibold;
+}
+
+/* FAB */
+.mat-mdc-fab {
+  @apply transition-all duration-300;
+}
+
+.mat-mdc-fab:hover {
+  @apply shadow-2xl scale-110;
+}
+
+/* Chips */
+.mat-mdc-chip {
+  @apply font-medium;
+}
+
+/* ========== ADDITIONAL RESPONSIVE GRIDS ========== */
+/* Grids adicionales */
+
+.grid-responsive-4-xl {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+}
+
+.grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid-auto-fit {
+    gap: 2rem;
+  }
+}
+
+/* ========== SEARCH & FILTER COMPONENTS ========== */
+/* Componentes de búsqueda y filtros */
+
+.search-section {
+  @apply relative py-8;
+}
+
+.search-card {
+  @apply rounded-2xl shadow-xl p-6 max-w-5xl mx-auto;
+}
+
+.search-card-large {
+  @apply rounded-2xl shadow-xl p-6 max-w-6xl mx-auto;
+}
+
+.search-btn {
+  @apply transform hover:scale-105 transition-all duration-300 shadow-lg;
+}
+
+.search-field {
+  @apply w-full;
+}
+
+.filter-section {
+  @apply bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-neutral-100;
+}
+
+/* Results Header */
+.results-header {
+  @apply bg-white rounded-xl p-6 shadow-sm border border-neutral-100;
+}
+
+/* ========== FEATURE ITEMS ========== */
+/* Items de características */
+
+.feature-item {
+  @apply transition-all duration-300 cursor-default p-6 rounded-xl;
+}
+
+.feature-item:hover {
+  @apply transform -translate-y-2 shadow-lg;
+}
+
+.feature-icon-container {
+  @apply transition-all duration-300;
+}
+
+.feature-item:hover .feature-icon-container {
+  @apply transform scale-110;
+}
+
+.feature-hover {
+  @apply transition-all duration-300 cursor-default;
+}
+
+.feature-hover:hover {
+  @apply transform -translate-y-2 shadow-lg;
+}
+
+.feature-hover:hover .feature-icon-container {
+  @apply transform scale-110;
+}
+
+/* ========== STATUS & STATES ========== */
+/* Estados y status */
+
+.status-disponible {
+  @apply bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-mantenimiento {
+  @apply bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-ocupado {
+  @apply bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+/* Loading Skeleton */
+.loading-skeleton {
+  @apply bg-neutral-200 animate-pulse rounded;
+}
+
+/* Success/Error Messages */
+.success-message {
+  @apply bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl;
+}
+
+.error-message {
+  @apply bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl;
+}
+
+/* ========== SCROLLBAR UTILITIES ========== */
+/* Utilidades de scrollbar */
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(147, 51, 234, 0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply rounded bg-primary-500/30 hover:bg-primary-500/50;
+}
+
+/* ========== SECTION CONTAINERS ========== */
+/* Contenedores de secciones */
+
+.section-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* ========== ROLE CARDS ========== */
+/* Cards de roles */
+
+.role-card {
+  @apply p-6 text-center border-2 border-transparent;
+}
+
+.role-card:hover {
+  @apply border-primary-200;
+}
+
+.role-avatar {
+  @apply w-20 h-20 rounded-full flex items-center justify-center mx-auto;
+}
+
+/* ========== UTILITY CLASSES ========== */
+/* Clases de utilidad adicionales */
+
+.full-width-btn {
+  @apply w-full font-semibold py-3 px-6 text-base;
+}
+
+.cancha-item {
+  @apply transition-all duration-300;
+}
+
+.gallery-thumbnail {
+  @apply transition-all duration-300 hover:scale-110 hover:shadow-lg;
+}
