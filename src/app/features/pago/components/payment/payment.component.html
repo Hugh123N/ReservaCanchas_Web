@@ -1,35 +1,34 @@
-
-<!-- Payment Wrapper -->
-<div class="payment-wrapper">
-  <div class="payment-container">
+<!-- Payment Page -->
+<div class="page-wrapper">
+  <div class="page-container">
 
     <!-- Page Header -->
-    <div class="mb-8">
+    <div class="section-spacing">
       <div class="flex items-center gap-3 mb-4">
         <button mat-icon-button (click)="onBack()" class="text-neutral-600 hover:text-primary-600">
-          <mat-icon>arrow_back</mat-icon>
+          <mat-icon class="icon-responsive">arrow_back</mat-icon>
         </button>
         <div>
-          <h1 class="h1 text-primary">Finalizar Pago</h1>
-          <p class="text-neutral-600">Completa tu reserva de forma segura</p>
+          <h1 class="text-responsive-xl font-bold text-primary-600">Finalizar Pago</h1>
+          <p class="text-responsive-sm text-neutral-600">Completa tu reserva de forma segura</p>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
     @if (isLoading) {
-      <div class="payment-loading">
-        <mat-spinner diameter="60" color="primary"></mat-spinner>
-        <p class="payment-loading-text">Cargando información de pago...</p>
+      <div class="loading-state">
+        <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
+        <p class="loading-text">Cargando información de pago...</p>
       </div>
     }
 
     <!-- Empty State -->
     @if (!isLoading && !reservaData) {
-      <div class="payment-empty">
-        <mat-icon>receipt_long</mat-icon>
-        <h3>No hay reserva pendiente</h3>
-        <p>No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
+      <div class="empty-state">
+        <mat-icon class="empty-state-icon">receipt_long</mat-icon>
+        <h3 class="empty-state-title">No hay reserva pendiente</h3>
+        <p class="empty-state-description">No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
         <button mat-raised-button class="btn-primary" (click)="onBack()">
           Volver al Inicio
         </button>
@@ -39,51 +38,117 @@
     <!-- Main Content -->
     @if (!isLoading && reservaData) {
       <div class="payment-grid">
-        <!-- Left Column - Payment Methods & Details -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Reservation Details Card -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <div class="payment-card-title">
-                <mat-icon>event_available</mat-icon>
-                <h3>Detalles de la Reserva</h3>
-              </div>
-              <span class="payment-card-badge pending">Pendiente de Pago</span>
+
+        <!-- RESUMEN (Primera columna en desktop, arriba en mobile) -->
+        <div class="lg:order-3">
+          <div class="summary-card">
+            <div class="summary-header">
+              <mat-icon>receipt</mat-icon>
+              <h3 class="summary-title">Resumen</h3>
             </div>
-            <div class="payment-detail-card">
-              <div class="payment-detail-row">
-                <div class="payment-detail-icon">
+
+            <div class="summary-details">
+              <div class="summary-row">
+                <span class="summary-label">Precio por hora</span>
+                <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Duración</span>
+                <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Subtotal</span>
+                <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
+              </div>
+            </div>
+
+            <div class="summary-total">
+              <span class="summary-total-label">Total a Pagar</span>
+              <span class="summary-total-amount">S/ {{ reservaData.total }}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button
+                mat-raised-button
+                class="btn-confirm"
+                [disabled]="!selectedMethod || isProcessing"
+                (click)="onConfirmPayment()">
+                @if (isProcessing) {
+                  <mat-spinner diameter="20" class="loading-spinner mr-2"></mat-spinner>
+                  <span>Procesando...</span>
+                }
+                @if (!isProcessing) {
+                  <span>Confirmar Pago</span>
+                }
+              </button>
+
+              <button
+                mat-stroked-button
+                class="btn-cancel"
+                (click)="onCancel()">
+                Cancelar
+              </button>
+            </div>
+
+            <!-- Help Text -->
+            <p class="help-text">
+              ¿Necesitas ayuda?
+              <a href="/ayuda" class="help-link">Contáctanos</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL (Segunda y tercera columna en desktop) -->
+        <div class="lg:col-span-2 lg:order-1 card-spacing">
+
+          <!-- Detalles de la Reserva -->
+          <div class="details-card">
+            <div class="details-header">
+              <div class="details-title-group">
+                <mat-icon>event_available</mat-icon>
+                <h3 class="details-title">Detalles de la Reserva</h3>
+              </div>
+              <span class="badge badge-warning">Pendiente de Pago</span>
+            </div>
+
+            <div class="details-content">
+              <div class="detail-item">
+                <div class="detail-icon">
                   <mat-icon>sports_soccer</mat-icon>
                 </div>
-                <div class="payment-detail-content">
+                <div class="detail-text">
                   <h4>{{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}</h4>
                   <p>{{ reservaData.cancha?.ubicacion || 'Lima, Perú' }}</p>
                 </div>
               </div>
-              <div class="payment-detail-row">
-                <div class="payment-detail-icon">
+
+              <div class="detail-item">
+                <div class="detail-icon">
                   <mat-icon>calendar_today</mat-icon>
                 </div>
-                <div class="payment-detail-content">
+                <div class="detail-text">
                   <h4>Fecha y Hora</h4>
                   <p>{{ formatDate(reservaData.fecha) }} • {{ reservaData.selectedTime?.hora }}</p>
                 </div>
               </div>
-              <div class="payment-detail-row">
-                <div class="payment-detail-icon">
+
+              <div class="detail-item">
+                <div class="detail-icon">
                   <mat-icon>schedule</mat-icon>
                 </div>
-                <div class="payment-detail-content">
+                <div class="detail-text">
                   <h4>Duración</h4>
                   <p>{{ reservaData.duracion }} hora(s)</p>
                 </div>
               </div>
+
               @if (reservaData.telefono) {
-                <div class="payment-detail-row">
-                  <div class="payment-detail-icon">
+                <div class="detail-item">
+                  <div class="detail-icon">
                     <mat-icon>phone</mat-icon>
                   </div>
-                  <div class="payment-detail-content">
+                  <div class="detail-text">
                     <h4>Teléfono de Contacto</h4>
                     <p>{{ reservaData.telefono }}</p>
                   </div>
@@ -91,197 +156,146 @@
               }
             </div>
           </div>
-          <!-- Payment Methods Card -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <div class="payment-card-title">
-                <mat-icon>payment</mat-icon>
-                <h3>Método de Pago</h3>
-              </div>
+
+          <!-- Métodos de Pago -->
+          <div class="methods-card">
+            <div class="methods-header">
+              <mat-icon>payment</mat-icon>
+              <h3 class="methods-title">Método de Pago</h3>
             </div>
-            <div class="payment-methods">
-              <!-- Tarjeta de Crédito/Débito (Niubiz) -->
-              <div class="payment-method"
+
+            <div class="methods-list">
+              <!-- Tarjeta de Crédito/Débito -->
+              <div
+                class="method-option"
                 [class.selected]="selectedMethod === 'card'"
                 (click)="selectPaymentMethod('card')">
                 <mat-radio-button
                   [checked]="selectedMethod === 'card'"
                   color="primary"
-                  class="payment-method-radio">
+                  class="method-radio">
                 </mat-radio-button>
-                <div class="payment-method-icon bg-blue-50">
+                <div class="method-icon bg-blue-50">
                   <mat-icon class="text-blue-600">credit_card</mat-icon>
                 </div>
-                <div class="payment-method-content">
-                  <div class="payment-method-title">Tarjeta de Crédito/Débito</div>
-                  <div class="payment-method-description">Pago seguro con Niubiz</div>
+                <div class="method-info">
+                  <div class="method-name">Tarjeta de Crédito/Débito</div>
+                  <div class="method-description">Pago seguro con Niubiz</div>
                 </div>
-                <span class="payment-method-badge">Recomendado</span>
+                <span class="method-badge">Recomendado</span>
               </div>
+
               <!-- Yape -->
-              <div class="payment-method"
+              <div
+                class="method-option"
                 [class.selected]="selectedMethod === 'yape'"
                 (click)="selectPaymentMethod('yape')">
                 <mat-radio-button
                   [checked]="selectedMethod === 'yape'"
                   color="primary"
-                  class="payment-method-radio">
+                  class="method-radio">
                 </mat-radio-button>
-                <div class="payment-method-icon">
+                <div class="method-icon">
                   <img src="https://seeklogo.com/images/Y/yape-logo-11F2E8E811-seeklogo.com.png" alt="Yape">
                 </div>
-                <div class="payment-method-content">
-                  <div class="payment-method-title">Yape</div>
-                  <div class="payment-method-description">Pago instantáneo con QR</div>
+                <div class="method-info">
+                  <div class="method-name">Yape</div>
+                  <div class="method-description">Pago instantáneo con QR</div>
                 </div>
               </div>
+
               <!-- Plin -->
-              <div class="payment-method"
+              <div
+                class="method-option"
                 [class.selected]="selectedMethod === 'plin'"
                 (click)="selectPaymentMethod('plin')">
                 <mat-radio-button
                   [checked]="selectedMethod === 'plin'"
                   color="primary"
-                  class="payment-method-radio">
+                  class="method-radio">
                 </mat-radio-button>
-                <div class="payment-method-icon">
+                <div class="method-icon">
                   <img src="https://seeklogo.com/images/P/plin-logo-90845E0C23-seeklogo.com.png" alt="Plin">
                 </div>
-                <div class="payment-method-content">
-                  <div class="payment-method-title">Plin</div>
-                  <div class="payment-method-description">Pago instantáneo con QR</div>
+                <div class="method-info">
+                  <div class="method-name">Plin</div>
+                  <div class="method-description">Pago instantáneo con QR</div>
                 </div>
               </div>
-              <!-- Payment Method Details -->
-              @if (selectedMethod) {
-                <div class="mt-6">
-                  <!-- Card Payment Form (Niubiz) -->
-                  @if (selectedMethod === 'card') {
-                    <div class="payment-form">
-                      <div class="payment-confirmation">
-                        <div class="flex items-start gap-3">
-                          <mat-icon>info</mat-icon>
-                          <p class="payment-confirmation-text">
-                            Serás redirigido a la pasarela de pago segura de Niubiz para completar tu transacción.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                  <!-- Yape QR -->
-                  @if (selectedMethod === 'yape') {
-                    <div class="qr-section">
-                      <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Yape</h4>
-                      <div class="qr-code-container">
-                        <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape" class="w-48 h-48">
-                      </div>
-                      <p class="qr-instructions">
-                        1. Abre tu app Yape<br>
-                        2. Escanea este código QR<br>
-                        3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-                      </p>
-                      <div class="qr-timer">
-                        <mat-icon>timer</mat-icon>
-                        <span>Código válido por: {{ paymentTimer }}</span>
-                      </div>
-                    </div>
-                  }
-                  <!-- Plin QR -->
-                  @if (selectedMethod === 'plin') {
-                    <div class="qr-section">
-                      <h4 class="font-semibold text-neutral-800 mb-4">Escanea el código QR con Plin</h4>
-                      <div class="qr-code-container">
-                        <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin" class="w-48 h-48">
-                      </div>
-                      <p class="qr-instructions">
-                        1. Abre tu app Plin<br>
-                        2. Escanea este código QR<br>
-                        3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-                      </p>
-                      <div class="qr-timer">
-                        <mat-icon>timer</mat-icon>
-                        <span>Código válido por: {{ paymentTimer }}</span>
-                      </div>
-                    </div>
-                  }
+            </div>
+
+            <!-- Payment Method Details -->
+            @if (selectedMethod) {
+              <!-- Card Payment (Niubiz) -->
+              @if (selectedMethod === 'card') {
+                <div class="payment-info">
+                  <div class="payment-info-content">
+                    <mat-icon>info</mat-icon>
+                    <p class="payment-info-text">
+                      Serás redirigido a la pasarela de pago segura de Niubiz para completar tu transacción.
+                    </p>
+                  </div>
                 </div>
               }
-            </div>
+
+              <!-- Yape QR -->
+              @if (selectedMethod === 'yape') {
+                <div class="qr-container">
+                  <h4 class="qr-title">Escanea el código QR con Yape</h4>
+                  <div class="qr-code-wrapper">
+                    <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape">
+                  </div>
+                  <div class="qr-steps">
+                    1. Abre tu app Yape<br>
+                    2. Escanea este código QR<br>
+                    3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+                  </div>
+                  <div class="qr-timer-display">
+                    <mat-icon>timer</mat-icon>
+                    <span>Código válido por: {{ paymentTimer }}</span>
+                  </div>
+                </div>
+              }
+
+              <!-- Plin QR -->
+              @if (selectedMethod === 'plin') {
+                <div class="qr-container">
+                  <h4 class="qr-title">Escanea el código QR con Plin</h4>
+                  <div class="qr-code-wrapper">
+                    <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin">
+                  </div>
+                  <div class="qr-steps">
+                    1. Abre tu app Plin<br>
+                    2. Escanea este código QR<br>
+                    3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
+                  </div>
+                  <div class="qr-timer-display">
+                    <mat-icon>timer</mat-icon>
+                    <span>Código válido por: {{ paymentTimer }}</span>
+                  </div>
+                </div>
+              }
+            }
+
             <!-- Security Badges -->
-            <div class="security-badges">
-              <div class="security-badge">
+            <div class="security-section">
+              <div class="security-item">
                 <mat-icon>lock</mat-icon>
                 <span>Pago Seguro</span>
               </div>
-              <div class="security-badge">
+              <div class="security-item">
                 <mat-icon>verified_user</mat-icon>
                 <span>Datos Protegidos</span>
               </div>
-              <div class="security-badge">
+              <div class="security-item">
                 <mat-icon>shield</mat-icon>
                 <span>Encriptación SSL</span>
               </div>
             </div>
           </div>
-          <!-- Right Column - Summary -->
-          <div class="lg:col-span-1">
-            <div class="payment-summary">
-              <div class="payment-card">
-                <div class="payment-card-header">
-                  <div class="payment-card-title">
-                    <mat-icon>receipt</mat-icon>
-                    <h3>Resumen</h3>
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <div class="summary-row">
-                    <span class="summary-label">Precio por hora</span>
-                    <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
-                  </div>
-                  <div class="summary-row">
-                    <span class="summary-label">Duración</span>
-                    <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
-                  </div>
-                  <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
-                  </div>
-                </div>
-                <div class="summary-total">
-                  <span class="summary-total-label">Total a Pagar</span>
-                  <span class="summary-total-value">S/ {{ reservaData.total }}</span>
-                </div>
-                <!-- Action Buttons -->
-                <div class="payment-actions">
-                  <button mat-raised-button
-                    class="btn-primary payment-btn-primary"
-                    [disabled]="!selectedMethod || isProcessing"
-                    (click)="onConfirmPayment()">
-                    @if (isProcessing) {
-                      <mat-spinner diameter="20" class="mr-2"></mat-spinner>
-                    }
-                    @if (!isProcessing) {
-                      <span>Confirmar Pago</span>
-                    }
-                    @if (isProcessing) {
-                      <span>Procesando...</span>
-                    }
-                  </button>
-                  <button mat-stroked-button
-                    class="btn-outline-primary payment-btn-secondary"
-                    (click)="onCancel()">
-                    Cancelar
-                  </button>
-                </div>
-                <!-- Help Text -->
-                <p class="text-xs text-center text-neutral-500 mt-4">
-                  ¿Necesitas ayuda?
-                  <a href="/ayuda" class="text-primary-600 hover:underline">Contáctanos</a>
-                </p>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     }
   </div>
+</div>

@@ -8,7 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
+      /*colors: {
         primary: {
           50: '#E8F5E9',
           100: '#C8E6C9',
@@ -39,7 +39,7 @@ const config: Config = {
         md: "768px",
         lg: "1024px",
         xl: "1280px",
-      },
+      },*/
     },
   },
   plugins: [],

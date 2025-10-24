@@ -168,347 +168,208 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
 
-/* ===== PAYMENT MODULE - ESTILOS COMPARTIDOS ===== */
-/* Agregar este archivo al style.css global o crear payment-shared.css */
+/* ===== GLOBAL UTILITY CLASSES ===== */
+/* Clases reutilizables en todo el proyecto */
 
-/* ========== LAYOUT CONTAINERS ========== */
+/* ========== RESPONSIVE TEXT SIZES ========== */
+/* Textos que se adaptan al tamaño de pantalla */
 
-.payment-wrapper {
-  @apply min-h-screen bg-neutral-50 py-8;
+.text-responsive-xs {
+  @apply text-xs sm:text-sm;
 }
 
-.payment-container {
+.text-responsive-sm {
+  @apply text-sm sm:text-base;
+}
+
+.text-responsive-base {
+  @apply text-base sm:text-lg;
+}
+
+.text-responsive-lg {
+  @apply text-lg sm:text-xl md:text-2xl;
+}
+
+.text-responsive-xl {
+  @apply text-xl sm:text-2xl md:text-3xl;
+}
+
+.text-responsive-2xl {
+  @apply text-2xl sm:text-3xl md:text-4xl;
+}
+
+/* ========== RESPONSIVE ICON SIZES ========== */
+/* Iconos que se adaptan al tamaño de pantalla */
+
+.icon-sm {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.icon-md {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.icon-lg {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.icon-xl {
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.icon-2xl {
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+}
+
+/* Iconos responsive */
+.icon-responsive {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+@media (min-width: 640px) {
+  .icon-responsive {
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+/* ========== LAYOUT CONTAINERS ========== */
+/* Contenedores globales reutilizables */
+
+.page-wrapper {
+  @apply min-h-screen bg-neutral-50 py-4 sm:py-8;
+}
+
+.page-container {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.payment-grid {
-  @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+.content-card {
+  @apply bg-white rounded-xl sm:rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6 transition-all duration-300;
 }
 
-/* ========== CARDS ========== */
-
-.payment-card {
-  @apply bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 transition-all duration-300;
-}
-
-.payment-card:hover {
+.content-card:hover {
   @apply shadow-md;
 }
 
-.payment-card-header {
-  @apply flex items-center justify-between mb-6 pb-4 border-b border-neutral-200;
+/* ========== BADGES ========== */
+/* Insignias globales */
+
+.badge {
+  @apply px-2 sm:px-3 py-1 rounded-full text-xs font-medium;
 }
 
-.payment-card-title {
-  @apply flex items-center gap-3;
-}
-
-.payment-card-title .mat-icon {
-  @apply text-primary-500;
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-}
-
-.payment-card-title h3 {
-  @apply text-xl font-semibold text-neutral-800;
-}
-
-.payment-card-badge {
-  @apply px-3 py-1 rounded-full text-xs font-medium;
-}
-
-.payment-card-badge.pending {
-  @apply bg-yellow-100 text-yellow-700;
-}
-
-.payment-card-badge.confirmed {
+.badge-success {
   @apply bg-green-100 text-green-700;
 }
 
-/* ========== PAYMENT METHODS ========== */
-
-.payment-methods {
-  @apply space-y-3;
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-700;
 }
 
-.payment-method {
-  @apply relative flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-300;
+.badge-error {
+  @apply bg-red-100 text-red-700;
 }
 
-.payment-method:not(.selected) {
-  @apply border-neutral-200 hover:border-primary-300 hover:bg-primary-50/50;
+.badge-info {
+  @apply bg-blue-100 text-blue-700;
 }
 
-.payment-method.selected {
-  @apply border-primary-500 bg-primary-50;
+.badge-neutral {
+  @apply bg-neutral-100 text-neutral-700;
 }
 
-.payment-method-radio {
-  @apply mr-4;
+/* ========== EMPTY STATES ========== */
+/* Estados vacíos reutilizables */
+
+.empty-state {
+  @apply text-center py-12 sm:py-16;
 }
 
-.payment-method-icon {
-  @apply w-12 h-12 mr-4 rounded-lg flex items-center justify-center;
+.empty-state-icon {
+  @apply text-neutral-400 mb-4 mx-auto;
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
 }
 
-.payment-method-icon img {
-  @apply w-full h-full object-contain;
+@media (min-width: 640px) {
+  .empty-state-icon {
+    font-size: 64px !important;
+    width: 64px !important;
+    height: 64px !important;
+  }
 }
 
-.payment-method-content {
-  @apply flex-1;
+.empty-state-title {
+  @apply text-lg sm:text-xl font-semibold text-neutral-700 mb-2;
 }
 
-.payment-method-title {
-  @apply font-semibold text-neutral-800 mb-1;
+.empty-state-description {
+  @apply text-sm sm:text-base text-neutral-600 mb-6;
 }
 
-.payment-method-description {
-  @apply text-sm text-neutral-600;
+/* ========== LOADING STATES ========== */
+/* Estados de carga reutilizables */
+
+.loading-state {
+  @apply flex flex-col items-center justify-center py-8 sm:py-12;
 }
 
-.payment-method-badge {
-  @apply ml-auto px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium;
-}
-
-/* ========== SUMMARY SECTION ========== */
-
-.payment-summary {
-  @apply sticky top-8;
-}
-
-.summary-row {
-  @apply flex justify-between items-center py-3 border-b border-neutral-200;
-}
-
-.summary-row:last-child {
-  @apply border-b-0;
-}
-
-.summary-label {
-  @apply text-neutral-600;
-}
-
-.summary-value {
-  @apply font-medium text-neutral-800;
-}
-
-.summary-total {
-  @apply flex justify-between items-center pt-4 mt-4 border-t-2 border-neutral-300;
-}
-
-.summary-total-label {
-  @apply text-lg font-bold text-neutral-800;
-}
-
-.summary-total-value {
-  @apply text-3xl font-bold text-primary-600;
-}
-
-.summary-discount {
-  @apply flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl mt-4;
-}
-
-.summary-discount .mat-icon {
-  @apply text-green-600;
-}
-
-.summary-discount-text {
-  @apply text-sm text-green-700 font-medium;
-}
-
-/* ========== PAYMENT DETAILS ========== */
-
-.payment-detail-card {
-  @apply bg-neutral-50 rounded-xl p-4 mb-4;
-}
-
-.payment-detail-row {
-  @apply flex items-start gap-3 mb-3;
-}
-
-.payment-detail-row:last-child {
-  @apply mb-0;
-}
-
-.payment-detail-icon {
-  @apply flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center;
-}
-
-.payment-detail-icon .mat-icon {
-  @apply text-primary-600;
-}
-
-.payment-detail-content h4 {
-  @apply font-semibold text-neutral-800 mb-1;
-}
-
-.payment-detail-content p {
-  @apply text-sm text-neutral-600;
-}
-
-/* ========== PAYMENT FORM ========== */
-
-.payment-form {
-  @apply space-y-4 mt-6;
-}
-
-.payment-form-row {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
-}
-
-/* ========== QR CODE SECTION ========== */
-
-.qr-section {
-  @apply text-center p-6 bg-white rounded-xl border-2 border-dashed border-primary-300;
-}
-
-.qr-code-container {
-  @apply inline-block p-4 bg-white rounded-xl shadow-lg mb-4;
-}
-
-.qr-instructions {
-  @apply text-sm text-neutral-600 mb-4;
-}
-
-.qr-timer {
-  @apply flex items-center justify-center gap-2 text-accent-600 font-semibold;
-}
-
-/* ========== BANK TRANSFER ========== */
-
-.bank-info {
-  @apply space-y-4 mt-6;
-}
-
-.bank-account {
-  @apply flex items-center justify-between p-4 bg-neutral-50 rounded-xl;
-}
-
-.bank-account-label {
-  @apply text-sm text-neutral-600;
-}
-
-.bank-account-value {
-  @apply font-mono font-semibold text-neutral-800;
-}
-
-.bank-copy-btn {
-  @apply ml-4;
-}
-
-/* ========== CONFIRMATION SECTION ========== */
-
-.payment-confirmation {
-  @apply p-4 bg-blue-50 border border-blue-200 rounded-xl;
-}
-
-.payment-confirmation .mat-icon {
-  @apply text-blue-600;
-}
-
-.payment-confirmation-text {
-  @apply text-sm text-blue-700;
-}
-
-/* ========== SECURITY BADGES ========== */
-
-.security-badges {
-  @apply flex items-center justify-center gap-4 mt-6 pt-6 border-t border-neutral-200;
-}
-
-.security-badge {
-  @apply flex items-center gap-2 text-sm text-neutral-600;
-}
-
-.security-badge .mat-icon {
-  @apply text-green-600;
-}
-
-/* ========== ACTION BUTTONS ========== */
-
-.payment-actions {
-  @apply flex flex-col sm:flex-row gap-4 mt-8;
-}
-
-.payment-btn-primary {
-  @apply flex-1 h-14 text-lg font-semibold;
-}
-
-.payment-btn-secondary {
-  @apply flex-1 h-14 text-lg;
-}
-
-/* ========== LOADING STATE ========== */
-
-.payment-loading {
-  @apply flex flex-col items-center justify-center py-12;
-}
-
-.payment-loading .mat-spinner {
+.loading-spinner {
   @apply mb-4;
 }
 
-.payment-loading-text {
-  @apply text-lg text-neutral-600;
+.loading-text {
+  @apply text-sm sm:text-base lg:text-lg text-neutral-600;
 }
 
-/* ========== EMPTY STATE ========== */
+/* ========== RESPONSIVE SPACING ========== */
+/* Espaciados que se adaptan */
 
-.payment-empty {
-  @apply text-center py-16;
+.section-spacing {
+  @apply mb-6 sm:mb-8 lg:mb-12;
 }
 
-.payment-empty .mat-icon {
-  @apply text-neutral-400 mb-4;
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
+.card-spacing {
+  @apply space-y-4 sm:space-y-6;
 }
 
-.payment-empty h3 {
-  @apply text-xl font-semibold text-neutral-700 mb-2;
+/* ========== RESPONSIVE GRID ========== */
+/* Grids adaptativas globales */
+
+.grid-responsive-2 {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
 }
 
-.payment-empty p {
-  @apply text-neutral-600 mb-6;
+.grid-responsive-3 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
 }
 
-/* ========== RESPONSIVE ========== */
-
-@media (max-width: 1024px) {
-  .payment-summary {
-    @apply static;
-  }
-  
-  .payment-grid {
-    @apply grid-cols-1;
-  }
+.grid-responsive-4 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
 }
 
-@media (max-width: 640px) {
-  .payment-wrapper {
-    @apply py-4;
-  }
-  
-  .payment-card {
-    @apply p-4 rounded-xl;
-  }
-  
-  .payment-method {
-    @apply p-3;
-  }
-  
-  .payment-method-icon {
-    @apply w-10 h-10 mr-3;
-  }
-  
-  .payment-actions {
-    @apply flex-col;
-  }
-  
-  .summary-total-value {
-    @apply text-2xl;
-  }
+/* ========== BUTTONS RESPONSIVE ========== */
+/* Botones que se adaptan al tamaño */
+
+.btn-responsive {
+  @apply h-12 sm:h-14 text-sm sm:text-base;
+}
+
+.btn-responsive-lg {
+  @apply h-14 sm:h-16 text-base sm:text-lg font-semibold;
 }
