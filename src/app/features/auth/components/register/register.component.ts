@@ -21,16 +21,10 @@ import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layo
 import { UsersService } from '../../services/users.service';
 import { CreateUserModel } from '../../models/create-user.model';
 import { Features } from 'tailwindcss';
+import { OAuthProvider } from '../../types/oAuthProvider';
+import { FeatureAuth } from '../../types/featureAuth';
 
-interface OAuthProvider {
-  provider: 'google' | 'facebook';
-}
 
-interface Feature {
-  icon: string;
-  title: string;
-  description: string;
-}
 
 @Component({
   selector: 'app-register',
@@ -53,7 +47,6 @@ interface Feature {
 })
 export class RegisterComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  // Form
   registerForm!: FormGroup;
   private unsubscribe: Subject<any>;
 
@@ -103,8 +96,7 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     this.unsubscribe = new Subject<any>();
   }
 
-  // Features for side panel
-  features: Feature[] = [
+  features: FeatureAuth[] = [
     {
       icon: 'payment',
       title: 'Pago Seguro',

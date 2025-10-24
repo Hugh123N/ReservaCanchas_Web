@@ -53,8 +53,8 @@ export class UsersService extends BaseService {
     return this.getRequest<ResponseDto<AccessTokenModel>>(`/renew-session`);
   }
 
-  forgotPassword(email: string): Observable<ResponseBaseDto> {
-    return this.getRequest<ResponseBaseDto>(`/forgot-password/${email}`);
+  forgotPassword(email: string, host: string): Observable<ResponseBaseDto> {
+    return this.getRequest<ResponseBaseDto>(`/forgot-password/${email}/${host}`);
   }
 
   resetPassword(body: ResetPasswordModel): Observable<ResponseBaseDto> {

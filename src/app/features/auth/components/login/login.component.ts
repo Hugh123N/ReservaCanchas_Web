@@ -23,24 +23,15 @@ import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../services/users.service';
 import { LoginModel } from '../../models/login.model';
 import { BaseComponent } from '@base/components/base-component/base.component';
+import { UserType } from '../../types/userTypes';
+import { OAuthProvider } from '../../types/oAuthProvider';
+import { FeatureAuth } from '../../types/featureAuth';
 
 
-interface UserType {
-  value: string;
-  label: string;
-  icon: string;
-}
 
-interface OAuthProvider {
-  provider: 'google' | 'apple' | 'facebook';
-  userType?: string;
-}
 
-interface Feature {
-  icon: string;
-  title: string;
-  description: string;
-}
+
+
 
 
 @Component({
@@ -86,17 +77,7 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
   isHandset$!: Observable<boolean>;
 
   // Features for side panel
-  features: Feature[] = [
-    /*{
-      icon: 'schedule',
-      title: 'Reservas 24/7',
-      description: 'Reserva tu cancha en cualquier momento del día'
-    },
-    {
-      icon: 'verified',
-      title: 'Canchas Verificadas',
-      description: 'Todas nuestras canchas cumplen estándares de calidad'
-    },*/
+  features: FeatureAuth[] = [
     {
       icon: 'payment',
       title: 'Pago Seguro',
