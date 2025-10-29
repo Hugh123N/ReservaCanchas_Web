@@ -13,6 +13,7 @@ import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
 import { CardCanchaComponent } from 'app/features/canchas/components/card-cancha/card-cancha.component';
 import { SearchCancha } from 'app/features/canchas/core/model/searchCancha.model';
+import { SearchBarComponent, SearchBarData } from '@shared/components/search-bar/search-bar.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -30,17 +31,12 @@ import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule, DecimalPipe, CommonModule, FooterComponent, NavVarComponent,
-    CardCanchaComponent,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatFormFieldModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatSelectModule,
-    MatInputModule,
-    MatAutocompleteModule
+  imports: [
+    MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule,
+    DecimalPipe, CommonModule,
+    FooterComponent, NavVarComponent, CardCanchaComponent, SearchBarComponent,
+    MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
+    FormsModule, ReactiveFormsModule, MatInputModule, MatAutocompleteModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -221,6 +217,38 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   onAccesoOperador() {
     console.log("Acceso operador")
     // Aquí iría la navegación al panel de operador
+  }
+
+  onSearchBarSearch(searchData: SearchBarData) {
+    // Actualizar variables locales
+    this.selectedDate = searchData.fecha || null;
+    this.selectedTime = searchData.hora || '';
+    this.idTipoCancha = searchData.idTipoCancha || '';
+
+    if (searchData.ciudad && typeof searchData.ciudad === 'object') {
+      this.selectedUbigeo = searchData.ciudad;
+    } else {
+      this.selectedUbigeo = null;
+    }
+
+    // Navegar a canchas con los parámetros
+    this.router.navigate(['/cancha/canchas'], {
+      queryParams: {
+        fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
+        hora: this.selectedTime,
+        idTipoCancha: this.idTipoCancha,
+        codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
+      }
+    });
+  }
+
+  onSearchBarClear() {
+    this.selectedCity = '';
+    this.selectedDate = null;
+    this.selectedTime = '';
+    this.idTipoCancha = '';
+    this.selectedUbigeo = null;
+    this.cityControl.setValue('');
   }
 
   onBuscarCanchas() {

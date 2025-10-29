@@ -782,3 +782,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .gallery-thumbnail {
   @apply transition-all duration-300 hover:scale-110 hover:shadow-lg;
 }
+
+/* ========== PAGINATION ========== */
+/* Estilos de paginación reutilizables */
+
+.custom-paginator {
+  @apply bg-white rounded-xl shadow-sm border border-neutral-100 mt-8;
+}
+
+.custom-paginator .mat-mdc-paginator-navigation-previous,
+.custom-paginator .mat-mdc-paginator-navigation-next {
+  @apply text-primary-600 hover:bg-primary-50;
+}
+
+.custom-paginator .mat-mdc-paginator-page-size-select {
+  @apply text-primary-600;
+}
+
+.custom-paginator .mat-mdc-button-base:hover {
+  @apply bg-primary-50;
+}

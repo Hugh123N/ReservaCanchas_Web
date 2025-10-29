@@ -11,130 +11,17 @@
       <h1 class="h1 text-primary mb-4">{{ getPageTitle() }}</h1>
     </div>
 
-    <!-- Search Card -->
-    <mat-card
-      class="search-card glass-effect rounded-2xl shadow-xl p-6 max-w-6xl mx-auto"
-      >
-      <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-stretch">
-          <!-- Ciudad -->
-          <mat-form-field appearance="outline">
-            <mat-label>
-              <mat-icon class="icon-primary inline mr-1"
-                >location_city</mat-icon
-                >
-                Ciudad
-              </mat-label>
-              <input
-                matInput
-                type="text"
-                [formControl]="cityControl"
-                [matAutocomplete]="auto"
-                placeholder="Escribe tu ciudad..."
-                />
-                <mat-autocomplete
-                  #auto="matAutocomplete"
-                  [displayWith]="displayUbigeo"
-                  >
-                  @for (ubigeo of filteredUbigeos | async; track ubigeo) {
-                    <mat-option
-                      [value]="ubigeo"
-                      >
-                      <mat-icon class="mr-2 icon-primary text-sm"
-                        >location_on</mat-icon
-                        >
-                        <strong>{{ ubigeo.distrito }}</strong>
-                        @if (ubigeo.provincia && ubigeo.departamento) {
-                          <small>
-                            {{ ubigeo.departamento }}
-                          </small>
-                        }
-                      </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-
-                <!-- Deporte -->
-                <mat-form-field appearance="outline">
-                  <mat-label>
-                    <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
-                    Deporte
-                  </mat-label>
-                  <mat-select formControlName="idTipoCancha">
-                    <mat-option value="">Todos los deportes</mat-option>
-                    @for (tipo of canchaTipos; track tipo.idTipoCancha) {
-                      <mat-option [value]="tipo.idTipoCancha">
-                        {{ tipo.nombre }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-
-                <!-- Fecha -->
-                <mat-form-field appearance="outline">
-                  <mat-label>
-                    <mat-icon class="icon-primary inline mr-1">event</mat-icon>
-                    Fecha
-                  </mat-label>
-                  <input
-                    matInput
-                    [matDatepicker]="picker"
-                    [value]="fechaDate"
-                    formControlName="fecha"
-                    [min]="minDate"
-                    readonly
-                    />
-                    <mat-datepicker-toggle
-                      matIconSuffix
-                      [for]="picker"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                  </mat-form-field>
-
-                  <!-- Hora -->
-                  <mat-form-field appearance="outline">
-                    <mat-label>
-                      <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
-                      Hora
-                    </mat-label>
-                    <mat-select formControlName="hora">
-                      <mat-option value="">Cualquier hora</mat-option>
-                      <mat-option value="08:00">08:00 AM</mat-option>
-                      <mat-option value="10:00">10:00 AM</mat-option>
-                      <mat-option value="12:00">12:00 PM</mat-option>
-                      <mat-option value="14:00">02:00 PM</mat-option>
-                      <mat-option value="16:00">04:00 PM</mat-option>
-                      <mat-option value="18:00">06:00 PM</mat-option>
-                      <mat-option value="20:00">08:00 PM</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-
-                  <!-- Botones -->
-                  <div class="flex gap-2 items-center">
-                    <button
-                      mat-raised-button
-                      class="btn-primary flex-1 h-full"
-                      type="submit"
-                      [disabled]="isLoading"
-                      >
-                      <mat-icon class="mr-2">search</mat-icon>
-                      Buscar
-                    </button>
-                    <button
-                      mat-stroked-button
-                      class="btn-outline-primary h-full px-4"
-                      type="button"
-                      (click)="onClear()"
-                      [disabled]="isLoading"
-                      >
-                      <mat-icon>clear</mat-icon>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </mat-card>
-          </div>
-        </section>
+    <!-- Search Bar Component -->
+    <app-search-bar
+      [canchaTipos]="canchaTipos"
+      [ubigeos]="ubigeos"
+      [isLoading]="isLoading"
+      [maxWidth]="'large'"
+      (search)="onSearchBarSearch($event)"
+      (clear)="onSearchBarClear()"
+    ></app-search-bar>
+  </div>
+</section>
 
         <!-- Filters and Results Section -->
         <section class="results-section py-8 bg-neutral-50">

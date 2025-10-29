@@ -4,6 +4,7 @@ import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
 import { CardCanchaComponent } from 'app/features/canchas/components/card-cancha/card-cancha.component';
 import { BaseSearchComponent } from "@base/components/base-search-component/search-base.component";
+import { SearchBarComponent, SearchBarData } from '@shared/components/search-bar/search-bar.component';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -37,7 +38,7 @@ import { UbigeoService } from '../../core/services/ubigeo.service';
 
 @Component({
   selector: 'app-canchas',
-  imports: [FooterComponent, NavVarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, CommonModule],
+  imports: [FooterComponent, NavVarComponent, SearchBarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, CommonModule],
   templateUrl: './canchas.component.html',
   styleUrl: './canchas.component.css',
   providers: [CanchaService]
@@ -385,6 +386,29 @@ export class CanchasComponent extends BaseSearchComponent {
     this.onSearch(this.filter, event.pageIndex + 1);
   }
 
+  onSearchBarSearch(searchData: SearchBarData) {
+    // Actualizar el filterForm con los datos del SearchBar
+    this.cityControl.setValue(searchData.ciudad || null);
+
+    // Convertir fecha a string si existe
+    const fechaStr = searchData.fecha ? formatDateLocal(searchData.fecha) : null;
+    // Convertir idTipoCancha a number si existe
+    const idTipoCanchaNum = searchData.idTipoCancha ? parseInt(searchData.idTipoCancha) : null;
+
+    this.filterForm.patchValue({
+      idTipoCancha: idTipoCanchaNum,
+      fecha: fechaStr,
+      hora: searchData.hora || ''
+    });
+    this.onSearch();
+  }
+
+  onSearchBarClear() {
+    this.filterForm.reset();
+    this.cityControl.reset();
+    this.onSearch();
+  }
+
   onClear() {
     this.filterForm.reset();
     this.cityControl.reset();
@@ -493,4 +517,11 @@ function normalizeDateString(dateStr: string): string {
   const utcDate = new Date(dateStr);
   const localDate = new Date(utcDate.getTime() + utcDate.getTimezoneOffset() * 60000);
   return localDate.toISOString().split('T')[0]; // Retorna 'YYYY-MM-DD'
+}
+
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
