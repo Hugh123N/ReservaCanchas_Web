@@ -37,70 +37,53 @@
 
     <!-- Main Content -->
     @if (!isLoading && reservaData) {
-      <div class="payment-grid">
+      <!-- Resumen Header -->
+      <div class="content-card mb-6">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <!-- Info Principal -->
+          <div class="flex-1">
+            <h1 class="text-responsive-2xl font-bold text-neutral-800 mb-2">
+              {{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}
+            </h1>
+            <p class="text-responsive-base text-neutral-600 flex items-center gap-2 mb-4">
+              <mat-icon class="icon-sm">location_on</mat-icon>
+              {{ reservaData.cancha?.ubicacion || 'Lima, Perú' }}
+            </p>
 
-        <!-- RESUMEN (Primera columna en desktop, arriba en mobile) -->
-        <div class="lg:order-3">
-          <div class="content-card">
-            <div class="summary-header">
-              <mat-icon>receipt</mat-icon>
-              <h3 class="summary-title">Resumen</h3>
+            <!-- Detalles en línea -->
+            <div class="flex flex-wrap gap-4 text-responsive-sm">
+              <span class="flex items-center gap-2 text-neutral-700">
+                <mat-icon class="icon-sm text-primary-600">calendar_today</mat-icon>
+                {{ formatDate(reservaData.fecha) }}
+              </span>
+              <span class="flex items-center gap-2 text-neutral-700">
+                <mat-icon class="icon-sm text-primary-600">schedule</mat-icon>
+                {{ reservaData.selectedTime?.hora }}
+              </span>
+              <span class="flex items-center gap-2 text-neutral-700">
+                <mat-icon class="icon-sm text-primary-600">timer</mat-icon>
+                {{ reservaData.duracion }} hora(s)
+              </span>
+              <span class="flex items-center gap-2 text-neutral-700">
+                <mat-icon class="icon-sm text-accent-600">payments</mat-icon>
+                S/ {{ reservaData.precioHora }} / hora
+              </span>
             </div>
+          </div>
 
-            <div class="summary-details">
-              <div class="summary-row">
-                <span class="summary-label">Precio por hora</span>
-                <span class="summary-value">S/ {{ reservaData.precioHora }}</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Duración</span>
-                <span class="summary-value">{{ reservaData.duracion }} hora(s)</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Subtotal</span>
-                <span class="summary-value">S/ {{ calculateSubtotal() }}</span>
-              </div>
-            </div>
-
-            <div class="summary-total">
-              <span class="summary-total-label">Total a Pagar</span>
-              <span class="summary-total-amount">S/ {{ reservaData.total }}</span>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-              <button
-                mat-raised-button
-                class="btn-confirm"
-                [disabled]="!selectedMethod || isProcessing"
-                (click)="onConfirmPayment()">
-                @if (isProcessing) {
-                  <mat-spinner diameter="20" class="loading-spinner mr-2"></mat-spinner>
-                  <span>Procesando...</span>
-                }
-                @if (!isProcessing) {
-                  <span>Confirmar Pago</span>
-                }
-              </button>
-
-              <button
-                mat-stroked-button
-                class="btn-cancel"
-                (click)="onCancel()">
-                Cancelar
-              </button>
-            </div>
-
-            <!-- Help Text -->
-            <p class="help-text">
-              ¿Necesitas ayuda?
-              <a href="/ayuda" class="help-link">Contáctanos</a>
+          <!-- Total -->
+          <div class="bg-primary-50 rounded-xl p-4 md:p-6 text-center md:text-right min-w-[200px]">
+            <p class="text-responsive-sm text-neutral-600 mb-1">Total a Pagar</p>
+            <p class="text-responsive-2xl font-bold text-primary-600">S/ {{ reservaData.total }}</p>
+            <p class="text-responsive-sm text-neutral-500 mt-1">
+              ({{ reservaData.duracion }} x S/ {{ reservaData.precioHora }})
             </p>
           </div>
         </div>
+      </div>
 
-        <!-- CONTENIDO PRINCIPAL (Segunda y tercera columna en desktop) -->
-        <div class="lg:col-span-2 lg:order-1 card-spacing">
+      <!-- Grid de contenido -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           <!-- Métodos de Pago -->
           <div class="content-card">
@@ -239,7 +222,39 @@
             </div>
           </div>
 
-        </div>
+          <!-- Botones de Acción -->
+          <div class="content-card">
+            <div class="flex flex-col gap-4">
+              <button
+                mat-raised-button
+                class="btn-primary w-full py-3 sm:py-4 text-responsive-lg font-semibold"
+                [disabled]="!selectedMethod || isProcessing"
+                (click)="onConfirmPayment()">
+                @if (isProcessing) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                  <span>Procesando...</span>
+                }
+                @if (!isProcessing) {
+                  <mat-icon class="mr-2">check_circle</mat-icon>
+                  <span>Confirmar Pago</span>
+                }
+              </button>
+
+              <button
+                mat-stroked-button
+                class="btn-outline-primary w-full py-3"
+                (click)="onCancel()">
+                <mat-icon class="mr-2">close</mat-icon>
+                Cancelar
+              </button>
+
+              <p class="text-responsive-sm text-center text-neutral-500 mt-2">
+                ¿Necesitas ayuda?
+                <a href="/ayuda" class="text-primary-600 hover:text-primary-700 hover:underline transition-colors ml-1">Contáctanos</a>
+              </p>
+            </div>
+          </div>
+
       </div>
     }
   </div>
