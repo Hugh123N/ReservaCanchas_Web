@@ -195,127 +195,174 @@ export const routes: Routes = [
 ## 🎨 ESTILOS - Sistema de Diseño
 
 ### 🎯 Regla de Oro de Estilos
-**Solo usar estilos globales (styles.css) si se usan en 3+ lugares diferentes**
-- Estilos específicos de un componente → Van en su `.component.css`
-- Estilos que se repiten 3+ veces → Van en `styles.css` global
+**SIEMPRE verificar `styles.css` global ANTES de agregar estilos en componentes**
+- ✅ Estilos que se repiten 2+ veces → Van en `styles.css` global
+- ✅ Estilos específicos de un solo componente → Van en su `.component.css`
+- ⚠️ **IMPORTANTE**: Todos los archivos `.component.css` que usen `@apply` DEBEN incluir `@reference` al inicio
 
-### Paleta de Colores
-- **Primary**: `#9333EA` (Violeta corporativo)
-- **Secondary**: `#06B6D4` (Aqua deportivo)
-- **Accent**: `#F97316` (Naranja CTA)
-- **Neutral**: 50-900 (Grises)
+### Paleta de Colores (CSS Custom Properties)
+```css
+/* Definidos en @theme de styles.css */
+--color-primary: #9333EA;      /* Violeta corporativo */
+--color-secondary: #06B6D4;    /* Aqua deportivo */
+--color-accent: #F97316;       /* Naranja CTA */
+--color-neutral-*: ...;        /* 50-900 (Grises) */
+```
+
+### 📱 Sistema Responsive - Mobile First
+
+**Breakpoints Tailwind CSS**:
+- **sm**: 640px (móvil horizontal/tablet pequeña)
+- **md**: 768px (tablet)
+- **lg**: 1024px (desktop)
+- **xl**: 1280px (desktop grande)
+- **2xl**: 1536px (pantallas grandes)
+
+#### Clases de Texto Responsive (USAR SIEMPRE)
+```html
+<!-- ✅ CORRECTO - Usar clases responsive globales -->
+<h1 class="text-responsive-2xl font-bold">Título Hero</h1>
+<h2 class="text-responsive-xl font-bold">Título Sección</h2>
+<h3 class="text-responsive-lg font-semibold">Subtítulo</h3>
+<p class="text-responsive-base">Texto párrafo</p>
+<span class="text-responsive-sm">Texto pequeño</span>
+
+<!-- ❌ INCORRECTO - No usar clases fijas de Tailwind -->
+<h1 class="text-4xl">Título</h1>
+<h2 class="h2">Subtítulo</h2>
+```
+
+**Mapeo de clases responsive**:
+- `.text-responsive-2xl` → `text-2xl sm:text-3xl md:text-4xl lg:text-5xl`
+- `.text-responsive-xl` → `text-xl sm:text-2xl md:text-3xl`
+- `.text-responsive-lg` → `text-lg sm:text-xl md:text-2xl`
+- `.text-responsive-base` → `text-base sm:text-lg`
+- `.text-responsive-sm` → `text-sm sm:text-base`
+
+#### Iconos Responsive
+```html
+<!-- ✅ CORRECTO -->
+<mat-icon class="icon-responsive">search</mat-icon>
+<mat-icon class="icon-lg">star</mat-icon>
+<mat-icon class="icon-xl">event</mat-icon>
+
+<!-- ❌ INCORRECTO -->
+<mat-icon class="text-2xl">search</mat-icon>
+```
+
+#### Grids Responsive
+```html
+<!-- Grid adaptativo con clases globales -->
+<div class="grid-responsive-2">2 columnas responsive</div>
+<div class="grid-responsive-3">3 columnas responsive</div>
+<div class="grid-responsive-4">4 columnas responsive</div>
+```
 
 ### Clases de Botones Globales
 ```html
 <!-- Sólidos -->
-<button class="btn-primary">Principal</button>
-<button class="btn-secondary">Secundario</button>
-<button class="btn-accent">Acento</button>
+<button mat-raised-button class="btn-primary">Principal</button>
+<button mat-raised-button class="btn-secondary">Secundario</button>
+<button mat-raised-button class="btn-accent">Acento</button>
+<button mat-raised-button class="btn-white-primary">Blanco sobre fondo</button>
 
 <!-- Outline -->
-<button class="btn-outline-primary">Outline</button>
+<button mat-stroked-button class="btn-outline-primary">Outline</button>
+<button mat-stroked-button class="btn-outline-secondary">Outline Sec</button>
 
-<!-- Ghost (sin borde) -->
-<button class="btn-ghost">Ghost</button>
-
-<!-- Tamaños -->
-<button class="btn-primary btn-sm">Pequeño</button>
-<button class="btn-primary btn-lg">Grande</button>
-<button class="btn-primary btn-full">Ancho completo</button>
+<!-- Tamaños responsive -->
+<button class="btn-primary btn-responsive-sm">Pequeño</button>
+<button class="btn-primary btn-responsive-lg">Grande responsive</button>
 ```
 
 ### Cards Globales
 ```html
-<!-- Card básica -->
-<div class="card card-padding">...</div>
+<!-- Cards básicas -->
+<mat-card class="card-base">Card básica</mat-card>
+<mat-card class="card-elevated">Card con elevación</mat-card>
 
-<!-- Card con hover -->
-<div class="card-hover card-padding">...</div>
+<!-- Cards con hover effects -->
+<mat-card class="enhanced-card-hover">Card con hover</mat-card>
 
-<!-- Card interactiva (clickeable) -->
-<div class="card-interactive card-padding">...</div>
-
-<!-- Padding variants -->
-<div class="card card-padding-sm">Padding pequeño</div>
-<div class="card card-padding">Padding normal</div>
-<div class="card card-padding-lg">Padding grande</div>
+<!-- Glass effect (usado en search-bar) -->
+<mat-card class="glass-effect">Card con glassmorphism</mat-card>
 ```
 
-### Tipografía Responsiva
+### Hero Sections
 ```html
-<!-- Se ajustan automáticamente mobile/tablet/desktop -->
-<h1 class="heading-1">Título Principal</h1>
-<h2 class="heading-2">Título Secundario</h2>
-<h3 class="heading-3">Título Terciario</h3>
-<h4 class="heading-4">Encabezado</h4>
-<p class="text-body">Texto de párrafo</p>
+<!-- Hero sections predefinidos -->
+<section class="hero-section gradient-primary">
+  <div class="container mx-auto px-4">
+    <h1 class="text-responsive-2xl font-bold text-white">Título</h1>
+  </div>
+</section>
+
+<!-- Gradientes disponibles -->
+<div class="gradient-primary">Gradiente violeta</div>
+<div class="gradient-secondary">Gradiente aqua</div>
+<div class="gradient-sport">Gradiente deportivo</div>
 ```
 
-### Estados y Badges
+### Componentes de Reserva (Específicos)
 ```html
-<span class="status-disponible">Disponible</span>
-<span class="status-ocupado">Ocupado</span>
-<span class="status-mantenimiento">Mantenimiento</span>
-```
-
-### Componentes Específicos
-```html
-<!-- Date picker (usado en detalle-cancha, pago) -->
-<div class="date-card">Fecha</div>
-<div class="date-card selected">Seleccionado</div>
+<!-- Date Selection Cards -->
+<div class="date-card">Fecha normal</div>
+<div class="date-card selected">Fecha seleccionada</div>
 <div class="date-card unavailable">No disponible</div>
 
-<!-- Time selection -->
-<button class="time-btn">09:00</button>
+<!-- Time Selection Buttons -->
+<button class="time-btn available">09:00</button>
 <button class="time-btn selected">10:00</button>
+<button class="time-btn disabled">11:00</button>
+
+<!-- ⚠️ Estos componentes usan altura responsive: h-12 sm:h-14 md:h-16 -->
 ```
 
-### Layout
+### Paginación Global
 ```html
-<div class="container">Contenedor 7xl</div>
-<section class="section">Sección con padding vertical</section>
+<!-- Paginación estándar (usar en todos los listados) -->
+<mat-paginator
+  class="custom-paginator"
+  [length]="totalItems"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[10, 25, 50]">
+</mat-paginator>
 ```
 
-### Utilidades Comunes
-```html
-<div class="glass">Efecto glassmorphism</div>
-<div class="skeleton">Loading skeleton</div>
-<div class="hover-lift">Hover con elevación</div>
-<span class="text-gradient">Texto con gradiente</span>
+### Material Design Overrides Globales
+Todos los componentes de Material están customizados globalmente en `styles.css`:
+- `mat-card` → Bordes redondeados, sin borde, shadow suave
+- `mat-form-field` → Ancho completo por defecto
+- `mat-paginator` → Estilo custom con colores primarios
+- Paleta de colores configurada para usar CSS variables
 
-<!-- Responsive -->
-<div class="hide-mobile">Solo desktop</div>
-<div class="show-mobile">Solo mobile</div>
+### Animaciones Disponibles
+```html
+<!-- Fade animations -->
+<div class="animate-fade-in">Fade in</div>
+<div class="animate-fade-in-up">Fade in desde abajo</div>
+<div class="animate-fade-in-down">Fade in desde arriba</div>
+
+<!-- Con delays -->
+<div class="animate-fade-in-up delay-100">Delay 100ms</div>
+<div class="animate-fade-in-up delay-200">Delay 200ms</div>
+<div class="animate-fade-in-up delay-300">Delay 300ms</div>
+
+<!-- Hover effects -->
+<div class="hover-lift">Elevación en hover</div>
+<div class="hover-scale">Escala en hover</div>
 ```
 
-### Animaciones
+### Efectos Visuales
 ```html
-<div class="animate-fade-in-up">Fade in up</div>
-<div class="animate-fade-in-up delay-100">Con delay</div>
-```
+<!-- Glassmorphism -->
+<div class="glass-effect">Efecto vidrio</div>
 
-### 📱 Responsive - Mobile First
-**IMPORTANTE**: Todos los estilos globales son mobile-first y se adaptan automáticamente
+<!-- Gradientes de texto -->
+<h1 class="text-gradient">Texto con gradiente</h1>
 
-**Breakpoints**:
-- **Mobile**: < 768px (base, sin prefijo)
-- **Tablet**: 768px - 1023px (prefijo `md:`)
-- **Desktop**: >= 1024px (prefijo `lg:`)
-
-**En mobile**:
-- Textos más pequeños automáticamente
-- Padding reducido automáticamente
-- Botones más compactos automáticamente
-
-**NO necesitas media queries** si usas las clases globales. Ejemplos:
-```html
-<!-- ✅ BIEN - Se adapta solo -->
-<h1 class="heading-1">Título</h1>
-<div class="card-padding">Card</div>
-<button class="btn-primary">Botón</button>
-
-<!-- ❌ MAL - No uses media queries manuales -->
-<h1 class="text-5xl md:text-6xl">Título</h1>
+<!-- Skeleton loaders -->
+<div class="skeleton h-8 w-full">Loading...</div>
 ```
 
 ### ⚠️ Reglas de CSS en Componentes
@@ -325,8 +372,36 @@ export const routes: Routes = [
 2. No se va a reusar en otros componentes
 3. Tiene lógica de diseño única
 
+#### 🚨 IMPORTANTE: Uso de @reference en Component CSS
+
+**Si tu `.component.css` usa la directiva `@apply` de Tailwind, DEBES incluir `@reference` al inicio**:
+
+```css
+/* ✅ CORRECTO - Con @reference */
+@reference "../../../../styles.css";
+
+.mi-clase {
+  @apply flex items-center gap-4;
+}
+```
+
+```css
+/* ❌ INCORRECTO - Sin @reference causará error de build */
+.mi-clase {
+  @apply flex items-center gap-4;  /* ERROR: Cannot apply unknown utility class */
+}
+```
+
+**Cómo calcular la ruta relativa**:
+- Cuenta los niveles desde el archivo `.component.css` hasta llegar a `src/`
+- Ejemplo: `src/app/features/canchas/pages/detalle-cancha/detalle-cancha.component.css`
+  - detalle-cancha → pages → canchas → features → app → src = **5 niveles**
+  - Ruta: `@reference "../../../../../styles.css";`
+
 **Ejemplos de estilos que VAN en component.css**:
 ```css
+@reference "../../../../styles.css";
+
 /* Hero específico del home */
 .hero-section {
   background: linear-gradient(...);

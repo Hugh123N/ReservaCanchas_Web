@@ -55,7 +55,7 @@ type PaymentMethod = 'card' | 'yape' | 'plin';
     MatFormFieldModule,
     ReactiveFormsModule,
     MatInputModule
-],
+  ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
@@ -87,7 +87,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    private usersService: UsersService,
+    //private usersService: UsersService,
   ) {
     this.initializeCardForm();
   }

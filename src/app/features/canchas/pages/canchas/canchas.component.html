@@ -8,7 +8,7 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title -->
     <div class="text-center mb-8">
-      <h1 class="h1 text-primary mb-4">{{ getPageTitle() }}</h1>
+      <h1 class="text-responsive-2xl font-bold text-primary mb-4">{{ getPageTitle() }}</h1>
     </div>
 
     <!-- Search Bar Component -->
@@ -32,7 +32,7 @@
                 class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
                 >
                 <div class="results-info">
-                  <h2 class="h2 text-neutral-800 mb-2">
+                  <h2 class="text-responsive-xl font-semibold text-neutral-800 mb-2">
                     {{
                     isSearching
                     ? "Resultados de búsqueda"
@@ -43,7 +43,7 @@
 
                 <!-- Sort Options -->
                 <div class="sort-options flex items-center gap-3">
-                  <span class="text-sm text-neutral-600">Ordenar por:</span>
+                  <span class="text-responsive-sm text-neutral-600">Ordenar por:</span>
                   <mat-form-field appearance="outline" class="w-48">
                     <mat-select
                       (selectionChange)="onSortChange()"

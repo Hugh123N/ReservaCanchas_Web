@@ -64,7 +64,7 @@
 
 /* Time Selection - Específico de reservas */
 .time-btn {
-  @apply h-16 min-w-0;
+  @apply h-12 sm:h-14 md:h-16 min-w-0;
 }
 
 .time-btn.available {

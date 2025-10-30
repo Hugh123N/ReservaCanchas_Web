@@ -56,19 +56,19 @@
 
 /* Botones */
 .btn-primary {
-  @apply bg-primary-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-primary-600 transition;
+  @apply bg-primary-500! text-white! font-medium! px-4! py-2! rounded-lg! shadow-md! hover:bg-primary-600! transition!;
 }
 
 .btn-secondary {
-  @apply bg-secondary-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-secondary-600 transition;
+  @apply bg-secondary-500! text-white! font-medium! px-4! py-2! rounded-lg! shadow-md! hover:bg-secondary-600! transition!;
 }
 
 .btn-accent {
-  @apply bg-accent-500 text-white font-medium px-4 py-2 rounded-lg shadow-md hover:bg-accent-600 transition;
+  @apply bg-accent-500! text-white! font-medium! px-4! py-2! rounded-lg! shadow-md! hover:bg-accent-600! transition!;
 }
 
 .btn-outline-primary {
-  @apply border border-primary-500 text-primary-500 px-4 py-2 rounded-lg hover:bg-primary-50 transition;
+  @apply border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! hover:bg-primary-50! transition!;
 }
 
 /* Texto */

@@ -1,59 +1,49 @@
+@reference "../../../../../styles.css";
+
 /* ===== PAYMENT COMPONENT STYLES ===== */
-/* Estilos específicos solo para el componente de pago */
-
-/* ========== ANIMATIONS ========== */
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+/* Estilos específicos del componente de pago */
+/* IMPORTANTE: Usa clases globales de styles.css (.content-card, .page-wrapper, etc.) */
 
 /* ========== LAYOUT ========== */
 
 .payment-grid {
-  @apply grid grid-cols-1 gap-6;
-  animation: fadeIn 0.3s ease-out;
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8;
 }
 
-@media (min-width: 1024px) {
-  .payment-grid {
-    @apply grid-cols-3 gap-8;
-  }
-}
+/* ========== CARD HEADERS ========== */
 
-/* ========== SUMMARY CARD ========== */
-
-.summary-card {
-  @apply content-card;
-  animation: slideInUp 0.4s ease-out;
-}
-
-.summary-header {
+.summary-header,
+.methods-header {
   @apply flex items-center gap-3 mb-6 pb-4 border-b border-neutral-200;
 }
 
-.summary-header mat-icon {
+.summary-header mat-icon,
+.methods-header mat-icon {
   @apply text-primary-500 icon-lg;
 }
 
-.summary-title {
+.summary-title,
+.methods-title {
   @apply text-responsive-lg font-semibold text-neutral-800;
 }
+
+.details-header {
+  @apply flex items-center justify-between mb-6 pb-4 border-b border-neutral-200 flex-wrap gap-3;
+}
+
+.details-title-group {
+  @apply flex items-center gap-3;
+}
+
+.details-title-group mat-icon {
+  @apply text-primary-500 icon-responsive;
+}
+
+.details-title {
+  @apply text-responsive-lg font-semibold text-neutral-800;
+}
+
+/* ========== SUMMARY SECTION ========== */
 
 .summary-details {
   @apply space-y-3 mb-6;
@@ -85,41 +75,20 @@
 
 /* ========== RESERVATION DETAILS ========== */
 
-.details-card {
-  @apply content-card;
-  animation: slideInUp 0.5s ease-out;
-}
-
-.details-header {
-  @apply flex items-center justify-between mb-6 pb-4 border-b border-neutral-200 flex-wrap gap-3;
-}
-
-.details-title-group {
-  @apply flex items-center gap-3;
-}
-
-.details-title-group mat-icon {
-  @apply text-primary-500 icon-responsive;
-}
-
-.details-title {
-  @apply text-responsive-base font-semibold text-neutral-800;
-}
-
 .details-content {
-  @apply bg-neutral-50 rounded-xl p-4 space-y-3;
+  @apply bg-neutral-50 rounded-xl p-4 sm:p-6 space-y-4;
 }
 
 .detail-item {
-  @apply flex items-start gap-3;
+  @apply flex items-start gap-3 sm:gap-4;
 }
 
 .detail-icon {
-  @apply flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center;
+  @apply flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-lg flex items-center justify-center;
 }
 
 .detail-icon mat-icon {
-  @apply text-primary-600 icon-md;
+  @apply text-primary-600 icon-responsive;
 }
 
 .detail-text h4 {
@@ -127,50 +96,26 @@
 }
 
 .detail-text p {
-  @apply text-responsive-xs text-neutral-600;
+  @apply text-responsive-sm text-neutral-600;
 }
 
 /* ========== PAYMENT METHODS ========== */
 
-.methods-card {
-  @apply content-card;
-  animation: slideInUp 0.6s ease-out;
-}
-
-.methods-header {
-  @apply flex items-center gap-3 mb-6 pb-4 border-b border-neutral-200;
-}
-
-.methods-header mat-icon {
-  @apply text-primary-500 icon-responsive;
-}
-
-.methods-title {
-  @apply text-responsive-base font-semibold text-neutral-800;
-}
-
 .methods-list {
-  @apply space-y-3;
+  @apply space-y-3 mb-6;
 }
 
 .method-option {
-  @apply relative flex items-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all duration-300;
-}
-
-.method-option:not(.selected) {
-  @apply border-neutral-200 hover:border-primary-300 hover:bg-primary-50/50;
-}
-
-.method-option:hover:not(.selected) {
-  transform: translateX(4px);
+  @apply relative flex items-center p-4 border-2 border-neutral-200 rounded-xl cursor-pointer transition-all duration-300;
+  @apply hover:border-primary-300 hover:bg-primary-50/30 hover:transform hover:translate-x-1;
 }
 
 .method-option.selected {
-  @apply border-primary-500 bg-primary-50;
+  @apply border-primary-500 bg-primary-50 shadow-sm;
 }
 
 .method-radio {
-  @apply mr-3 sm:mr-4;
+  @apply mr-3 sm:mr-4 flex-shrink-0;
 }
 
 .method-icon {
@@ -178,7 +123,7 @@
 }
 
 .method-icon img {
-  @apply w-full h-full object-contain;
+  @apply w-full h-full object-contain p-1;
 }
 
 .method-icon mat-icon {
@@ -190,53 +135,52 @@
 }
 
 .method-name {
-  @apply text-responsive-sm font-semibold text-neutral-800 mb-1;
+  @apply text-responsive-sm font-semibold text-neutral-800 mb-0.5;
 }
 
 .method-description {
-  @apply text-responsive-xs text-neutral-600;
+  @apply text-responsive-sm text-neutral-600;
 }
 
 .method-badge {
-  @apply ml-auto px-2 sm:px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex-shrink-0;
+  @apply ml-auto px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium flex-shrink-0;
 }
 
 /* ========== QR CODE SECTION ========== */
 
 .qr-container {
-  @apply text-center p-4 sm:p-6 bg-white rounded-xl border-2 border-dashed border-primary-300 mt-6;
-  animation: slideInUp 0.3s ease-out;
+  @apply text-center p-6 bg-gradient-to-br from-white to-neutral-50 rounded-xl border-2 border-dashed border-primary-300 mt-6;
 }
 
 .qr-title {
-  @apply text-responsive-base font-semibold text-neutral-800 mb-4;
+  @apply text-responsive-lg font-semibold text-neutral-800 mb-4;
 }
 
 .qr-code-wrapper {
-  @apply inline-block p-3 sm:p-4 bg-white rounded-xl shadow-lg mb-4;
+  @apply inline-block p-4 bg-white rounded-xl shadow-lg mb-6;
 }
 
 .qr-code-wrapper img {
-  @apply w-40 h-40 sm:w-48 sm:h-48;
+  @apply w-48 h-48 sm:w-56 sm:h-56;
 }
 
 .qr-steps {
-  @apply text-responsive-xs text-neutral-600 mb-4 text-left sm:text-center;
+  @apply text-responsive-sm text-neutral-600 leading-relaxed mb-4 text-left sm:text-center;
 }
 
 .qr-timer-display {
-  @apply flex items-center justify-center gap-2 text-accent-600 font-semibold text-responsive-sm;
+  @apply flex items-center justify-center gap-2 px-4 py-2 bg-accent-50 rounded-lg;
+  @apply text-accent-600 font-semibold text-responsive-sm;
 }
 
 .qr-timer-display mat-icon {
-  @apply icon-md;
+  @apply icon-responsive;
 }
 
 /* ========== PAYMENT INFO ========== */
 
 .payment-info {
-  @apply p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl mt-6;
-  animation: slideInUp 0.3s ease-out;
+  @apply p-4 bg-blue-50 border border-blue-200 rounded-xl mt-6;
 }
 
 .payment-info-content {
@@ -244,72 +188,48 @@
 }
 
 .payment-info mat-icon {
-  @apply text-blue-600 icon-md flex-shrink-0;
+  @apply text-blue-600 icon-responsive flex-shrink-0;
 }
 
 .payment-info-text {
-  @apply text-responsive-xs text-blue-700;
+  @apply text-responsive-sm text-blue-700 leading-relaxed;
 }
 
 /* ========== SECURITY BADGES ========== */
 
 .security-section {
-  @apply flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-6 pt-6 border-t border-neutral-200;
+  @apply flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 pt-6 border-t border-neutral-200;
 }
 
 .security-item {
-  @apply flex items-center gap-2 text-responsive-xs text-neutral-600;
+  @apply flex items-center gap-2 text-responsive-sm text-neutral-600;
 }
 
 .security-item mat-icon {
-  @apply text-green-600 icon-sm sm:icon-md;
+  @apply text-green-600 icon-responsive;
 }
 
 /* ========== ACTION BUTTONS ========== */
 
 .action-buttons {
-  @apply flex flex-col gap-3 sm:gap-4 mt-6;
+  @apply flex flex-col gap-3 mt-6;
 }
 
 .btn-confirm {
-  @apply btn-primary btn-responsive-lg w-full flex items-center justify-center;
+  @apply btn-primary w-full py-3 sm:py-4 flex items-center justify-center gap-2;
+  @apply text-responsive-lg font-semibold;
 }
 
 .btn-cancel {
-  @apply btn-outline-primary btn-responsive w-full;
-}
-
-/* Spinner en botón */
-.btn-confirm .loading-spinner ::ng-deep circle {
-  stroke: white !important;
+  @apply btn-outline-primary w-full py-3;
 }
 
 /* ========== HELP TEXT ========== */
 
 .help-text {
-  @apply text-responsive-xs text-center text-neutral-500 mt-4;
+  @apply text-responsive-sm text-center text-neutral-500 mt-4;
 }
 
 .help-link {
-  @apply text-primary-600 hover:underline;
-}
-
-/* ========== RESPONSIVE ADJUSTMENTS ========== */
-
-@media (max-width: 640px) {
-  .summary-total-amount {
-    @apply text-2xl;
-  }
-
-  .method-option {
-    @apply p-3;
-  }
-
-  .method-icon {
-    @apply w-10 h-10 mr-3;
-  }
-
-  .qr-code-wrapper img {
-    @apply w-40 h-40;
-  }
+  @apply text-primary-600 hover:text-primary-700 hover:underline transition-colors;
 }
