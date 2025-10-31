@@ -10,13 +10,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../../auth/services/users.service';
-import { interval, Subject, takeUntil } from 'rxjs';
+import { interval, Subject, takeUntil, tap } from 'rxjs';
 import { MatFormField } from '@angular/material/select';
 import { MatLabel } from '@angular/material/select';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { User } from 'app/features/auth/models/user';
 
 interface ReservaData {
   canchaId: number;
@@ -27,14 +28,6 @@ interface ReservaData {
   telefono: string;
   precioHora: number;
   total: number;
-}
-
-interface UserData {
-  id: string;
-  email: string;
-  telefono: string;
-  firstName?: string;
-  lastName?: string;
 }
 
 type PaymentMethod = 'card' | 'yape' | 'plin';
@@ -59,9 +52,9 @@ type PaymentMethod = 'card' | 'yape' | 'plin';
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
-export class PaymentComponent implements OnInit, OnDestroy {
+export class PaymentComponent extends BaseComponent implements OnInit {
 
-  userData: UserData | null = null;
+  userData: User | null = null;
   reservaData: ReservaData = {
     canchaId: 0,
     fecha: '',
@@ -87,18 +80,15 @@ export class PaymentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    //private usersService: UsersService,
+    private usersService: UsersService,
+    @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
+    super('PAGOS', viewContainerRef);
     this.initializeCardForm();
   }
 
   ngOnInit(): void {
     this.loadReservationData();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
   }
 
   private loadReservationData(): void {
@@ -138,7 +128,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Obtener datos del usuario actual
     this.loadUserData();
   }
 
@@ -148,19 +137,12 @@ export class PaymentComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // AQUÍ: Obtener usuario actual
-    // this.usersService.getCurrentUser() ...
-
-    // Simulación para ejemplo
-    this.userData = {
-      id: 'user-123',
-      email: 'user@email.com',
-      telefono: '987654321',
-      firstName: 'Juan',
-      lastName: 'Pérez'
-    };
-
-    // 3. Validar y actualizar teléfono si es necesario
+    var user = this.authService.loadUserProfile();
+    if (!user) {
+      this.isLoading = false;
+      return;
+    }
+    this.userData = user;
     this.checkAndUpdatePhone();
 
     this.isLoading = false;
@@ -174,34 +156,22 @@ export class PaymentComponent implements OnInit, OnDestroy {
     const userTelefono = this.userData.telefono?.replace(/\D/g, '');
 
     if (reservaTelefono !== userTelefono) {
-      // AQUÍ: Llamar a servicio para actualizar teléfono
-      this.updateUserPhoneNumber(reservaTelefono);
+      const subscription = this.usersService
+        .updateTelefono({ idUsuario: this.userData.id, telefono: reservaTelefono })
+        .pipe(tap((response) => {
+          if (response.isValid) {
+            this.userData!.telefono = reservaTelefono;
+            console.log('Teléfono actualizado:', reservaTelefono);
+          }
+        }),
+          takeUntil(this.unsubscribe)
+        ).subscribe();
+      this.subscriptions.push(subscription);
+
+      this.userData!.telefono = reservaTelefono;
     }
   }
 
-  private updateUserPhoneNumber(newPhone: string): void {
-    // IMPLEMENTACIÓN: Descomenta cuando tengas el endpoint
-
-    /*
-    const subscription = this.usersService
-      .updateUserPhone(this.userData.id, newPhone)
-      .pipe(
-        tap((response) => {
-          if (response.isValid) {
-            this.userData!.telefono = newPhone;
-            console.log('Teléfono actualizado:', newPhone);
-          }
-        }),
-        takeUntil(this.unsubscribe)
-      )
-      .subscribe();
-    this.subscriptions.push(subscription);
-    */
-
-    // Simulación
-    console.log('Actualizando teléfono:', newPhone);
-    this.userData!.telefono = newPhone;
-  }
 
   private findLatestReservation(): number | null {
     const keys = Object.keys(localStorage);

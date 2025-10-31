@@ -16,6 +16,7 @@ import { ApplicationUserModel } from '../models/application-user.model';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { QueryResultsModel } from '@base/models/query/query-results.model';
+import { UpdateTelefonoUser } from '../models/updateTelefonoUser.model';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,10 @@ export class UsersService extends BaseService {
 
   resetPassword(body: ResetPasswordModel): Observable<ResponseBaseDto> {
     return this.postRequest<ResetPasswordModel, ResponseBaseDto>(`/reset-password`, body);
+  }
+
+  updateTelefono(body: UpdateTelefonoUser): Observable<ResponseBaseDto> {
+    return this.putRequest<UpdateTelefonoUser, ResponseBaseDto>(`/telefono`, body);
   }
 
   logout(): Observable<ResponseBaseDto> {

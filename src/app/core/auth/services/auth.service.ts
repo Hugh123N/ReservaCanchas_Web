@@ -28,7 +28,7 @@ export class AuthService {
       user.email = claims.Email == 'no_information' ? '' : claims.Email;
       user.username = claims.UserName;
       user.fullname = claims.DisplayName;
-      user.telefono = claims.PhoneNumber == 'no_information' ? '' : claims.PhoneNumber;
+      user.telefono = claims.Telefono == 'no_information' ? '' : claims.Telefono;
 
       this.user$.next(user);
 

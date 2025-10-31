@@ -1,5 +1,5 @@
 export class User {
-    id: number = 0;
+    id: string = '';
     username: string = '';
     password: string = '';
     email: string = '';
@@ -14,7 +14,7 @@ export class User {
     phone: string = '';
 
     clear(): void {
-        this.id = 0;
+        this.id = '';
         this.username = '';
         this.password = '';
         this.email = '';

@@ -74,7 +74,7 @@
 }
 
 .qr-title {
-  @apply text-responsive-lg font-semibold text-neutral-800 mb-4;
+  @apply text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-4;
 }
 
 .qr-code-wrapper {
@@ -86,16 +86,16 @@
 }
 
 .qr-steps {
-  @apply text-responsive-sm text-neutral-600 leading-relaxed mb-4 text-left sm:text-center;
+  @apply text-sm sm:text-base text-neutral-600 leading-relaxed mb-4 text-left sm:text-center;
 }
 
 .qr-timer-display {
   @apply flex items-center justify-center gap-2 px-4 py-2 bg-accent-50 rounded-lg;
-  @apply text-accent-600 font-semibold text-responsive-sm;
+  @apply text-accent-600 font-semibold text-sm sm:text-base;
 }
 
 .qr-timer-display mat-icon {
-  @apply icon-responsive;
+  font-size: 1.25rem;
 }
 
 /* ========== PAYMENT INFO ========== */
@@ -109,11 +109,12 @@
 }
 
 .payment-info mat-icon {
-  @apply text-blue-600 icon-responsive flex-shrink-0;
+  @apply text-blue-600 flex-shrink-0;
+  font-size: 1.25rem;
 }
 
 .payment-info-text {
-  @apply text-responsive-sm text-blue-700 leading-relaxed;
+  @apply text-sm sm:text-base text-blue-700 leading-relaxed;
 }
 
 /* ========== SECURITY BADGES ========== */
@@ -123,10 +124,11 @@
 }
 
 .security-item {
-  @apply flex items-center gap-2 text-responsive-sm text-neutral-600;
+  @apply flex items-center gap-2 text-sm sm:text-base text-neutral-600;
 }
 
 .security-item mat-icon {
-  @apply text-green-600 icon-responsive;
+  @apply text-green-600;
+  font-size: 1.25rem;
 }
 
