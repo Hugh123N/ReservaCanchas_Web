@@ -169,38 +169,130 @@
               <!-- Yape QR -->
               @if (selectedMethod === 'yape') {
                 <div class="qr-container">
-                  <h4 class="qr-title">Escanea el código QR con Yape</h4>
-                  <div class="qr-code-wrapper">
-                    <img src="https://via.placeholder.com/200x200?text=QR+YAPE" alt="QR Yape">
-                  </div>
-                  <div class="qr-steps">
-                    1. Abre tu app Yape<br>
-                    2. Escanea este código QR<br>
-                    3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-                  </div>
-                  <div class="qr-timer-display">
-                    <mat-icon>timer</mat-icon>
-                    <span>Código válido por: {{ paymentTimer }}</span>
-                  </div>
+                  @if (!qrCodeImage) {
+                    <div class="text-center py-4">
+                      <p class="text-neutral-600 mb-4">Haz clic en "Generar QR" para crear tu código de pago</p>
+                    </div>
+                  }
+                  @if (qrCodeImage) {
+                    <h4 class="qr-title">Escanea el código QR con Yape</h4>
+                    <div class="qr-code-wrapper">
+                      <img [src]="qrCodeImage" alt="QR Yape">
+                    </div>
+                    <div class="qr-steps">
+                      1. Abre tu app Yape<br>
+                      2. Escanea este código QR<br>
+                      3. Confirma el pago de <strong>S/ {{ reservaConPagoDto?.montoFormateado || reservaData.total }}</strong><br>
+                      4. Ingresa el código de operación abajo
+                    </div>
+                    <div class="qr-timer-display">
+                      <mat-icon>timer</mat-icon>
+                      <span>Código válido por: {{ paymentTimer }}</span>
+                    </div>
+
+                    <!-- Input de código de operación -->
+                    @if (showOperationCodeInput || reservaConPagoDto) {
+                      <form [formGroup]="operationCodeForm" class="mt-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                          <mat-label>Código de Operación Yape</mat-label>
+                          <input matInput
+                                 formControlName="codigoOperacion"
+                                 placeholder="Ej: ABC12345"
+                                 maxlength="10"
+                                 [style.text-transform]="'uppercase'">
+                          <mat-icon matPrefix>qr_code_scanner</mat-icon>
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('required')) {
+                            <mat-error>El código es requerido</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('minlength')) {
+                            <mat-error>Mínimo 6 caracteres</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('maxlength')) {
+                            <mat-error>Máximo 10 caracteres</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('pattern')) {
+                            <mat-error>Solo letras y números</mat-error>
+                          }
+                        </mat-form-field>
+                        <button
+                          mat-raised-button
+                          class="btn-primary w-full mt-2"
+                          [disabled]="!operationCodeForm.valid || isProcessing"
+                          (click)="onConfirmOperationCode()">
+                          @if (isProcessing) {
+                            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                          }
+                          <mat-icon class="mr-2">verified</mat-icon>
+                          Confirmar Pago
+                        </button>
+                      </form>
+                    }
+                  }
                 </div>
               }
 
               <!-- Plin QR -->
               @if (selectedMethod === 'plin') {
                 <div class="qr-container">
-                  <h4 class="qr-title">Escanea el código QR con Plin</h4>
-                  <div class="qr-code-wrapper">
-                    <img src="https://via.placeholder.com/200x200?text=QR+PLIN" alt="QR Plin">
-                  </div>
-                  <div class="qr-steps">
-                    1. Abre tu app Plin<br>
-                    2. Escanea este código QR<br>
-                    3. Confirma el pago de <strong>S/ {{ reservaData.total }}</strong>
-                  </div>
-                  <div class="qr-timer-display">
-                    <mat-icon>timer</mat-icon>
-                    <span>Código válido por: {{ paymentTimer }}</span>
-                  </div>
+                  @if (!qrCodeImage) {
+                    <div class="text-center py-4">
+                      <p class="text-neutral-600 mb-4">Haz clic en "Generar QR" para crear tu código de pago</p>
+                    </div>
+                  }
+                  @if (qrCodeImage) {
+                    <h4 class="qr-title">Escanea el código QR con Plin</h4>
+                    <div class="qr-code-wrapper">
+                      <img [src]="qrCodeImage" alt="QR Plin">
+                    </div>
+                    <div class="qr-steps">
+                      1. Abre tu app Plin<br>
+                      2. Escanea este código QR<br>
+                      3. Confirma el pago de <strong>S/ {{ reservaConPagoDto?.montoFormateado || reservaData.total }}</strong><br>
+                      4. Ingresa el código de operación abajo
+                    </div>
+                    <div class="qr-timer-display">
+                      <mat-icon>timer</mat-icon>
+                      <span>Código válido por: {{ paymentTimer }}</span>
+                    </div>
+
+                    <!-- Input de código de operación -->
+                    @if (showOperationCodeInput || reservaConPagoDto) {
+                      <form [formGroup]="operationCodeForm" class="mt-4">
+                        <mat-form-field class="w-full" appearance="outline">
+                          <mat-label>Código de Operación Plin</mat-label>
+                          <input matInput
+                                 formControlName="codigoOperacion"
+                                 placeholder="Ej: XYZ789"
+                                 maxlength="10"
+                                 [style.text-transform]="'uppercase'">
+                          <mat-icon matPrefix>qr_code_scanner</mat-icon>
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('required')) {
+                            <mat-error>El código es requerido</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('minlength')) {
+                            <mat-error>Mínimo 6 caracteres</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('maxlength')) {
+                            <mat-error>Máximo 10 caracteres</mat-error>
+                          }
+                          @if (operationCodeForm.get('codigoOperacion')?.hasError('pattern')) {
+                            <mat-error>Solo letras y números</mat-error>
+                          }
+                        </mat-form-field>
+                        <button
+                          mat-raised-button
+                          class="btn-primary w-full mt-2"
+                          [disabled]="!operationCodeForm.valid || isProcessing"
+                          (click)="onConfirmOperationCode()">
+                          @if (isProcessing) {
+                            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                          }
+                          <mat-icon class="mr-2">verified</mat-icon>
+                          Confirmar Pago
+                        </button>
+                      </form>
+                    }
+                  }
                 </div>
               }
             }
@@ -225,20 +317,39 @@
           <!-- Botones de Acción -->
           <div class="content-card">
             <div class="flex flex-col gap-4">
-              <button
-                mat-raised-button
-                class="btn-primary w-full py-3 sm:py-4 text-responsive-lg font-semibold"
-                [disabled]="!selectedMethod || isProcessing"
-                (click)="onConfirmPayment()">
-                @if (isProcessing) {
-                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
-                  <span>Procesando...</span>
-                }
-                @if (!isProcessing) {
-                  <mat-icon class="mr-2">check_circle</mat-icon>
-                  <span>Confirmar Pago</span>
-                }
-              </button>
+              @if ((selectedMethod === 'yape' || selectedMethod === 'plin') && !reservaConPagoDto) {
+                <button
+                  mat-raised-button
+                  class="btn-primary w-full py-3 sm:py-4 text-responsive-lg font-semibold"
+                  [disabled]="!selectedMethod || isProcessing"
+                  (click)="onConfirmPayment()">
+                  @if (isProcessing) {
+                    <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                    <span>Generando QR...</span>
+                  }
+                  @if (!isProcessing) {
+                    <mat-icon class="mr-2">qr_code_2</mat-icon>
+                    <span>Generar QR de Pago</span>
+                  }
+                </button>
+              }
+
+              @if (selectedMethod === 'card') {
+                <button
+                  mat-raised-button
+                  class="btn-primary w-full py-3 sm:py-4 text-responsive-lg font-semibold"
+                  [disabled]="!selectedMethod || isProcessing || !cardForm.valid"
+                  (click)="onConfirmPayment()">
+                  @if (isProcessing) {
+                    <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                    <span>Procesando...</span>
+                  }
+                  @if (!isProcessing) {
+                    <mat-icon class="mr-2">check_circle</mat-icon>
+                    <span>Pagar con Tarjeta</span>
+                  }
+                </button>
+              }
 
               <button
                 mat-stroked-button
