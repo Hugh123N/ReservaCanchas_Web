@@ -1,0 +1,6 @@
+@reference "../../../../../styles.css";
+
+/* Estilos mínimos - la mayoría están en styles.css */
+mat-form-field {
+  @apply w-full;
+}

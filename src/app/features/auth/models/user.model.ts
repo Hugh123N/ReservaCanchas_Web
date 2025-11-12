@@ -4,6 +4,6 @@ export class UserModel {
     firstName: string = '';
     lastName: string = '';
     phoneNumber: string = '';
-    avatar: string = '';
+    imagen?: string = '';
     roleIds: string[] = [];
 }

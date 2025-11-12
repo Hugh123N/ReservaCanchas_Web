@@ -68,7 +68,7 @@ export class AuthService {
 
   public logOut(): Observable<ResponseBaseDto> {
     return this.usersService.logout().pipe(
-      map((result: ResponseBaseDto) => {
+      map((result) => {
         if (result.isValid) {
           this.cleanAndRedirect();
         }
@@ -98,10 +98,10 @@ export class AuthService {
   }
 
   public cleanAndRedirect() {
-    localStorage.removeItem('menuConfigV1');
+    //localStorage.removeItem('menuConfigV1');
     localStorage.removeItem(this.access_token_key);
     sessionStorage.clear();
-    this.router.navigate(['user/login']);
+    this.router.navigate(['auth/login']);
   }
 
   public getUserClaim(claimName: string): any {

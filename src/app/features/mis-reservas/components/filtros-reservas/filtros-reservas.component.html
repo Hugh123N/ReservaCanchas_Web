@@ -1,0 +1,89 @@
+<mat-card class="card-base p-4">
+  <form [formGroup]="filtrosForm" (ngSubmit)="onAplicarFiltros()">
+    <div class="flex items-center gap-3 mb-2">
+      <mat-icon class="text-primary-600">filter_alt</mat-icon>
+      <h4 class="text-responsive-lg font-bold text-neutral-800">Filtrar Reservas</h4>
+    </div>
+
+    <!-- Grid de Filtros -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-2">
+
+      <!-- Estado de Reserva -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Estado de Reserva</mat-label>
+        <mat-select formControlName="codigoEstado">
+          <mat-option [value]="null">Todos</mat-option>
+          @for (estado of estadosReserva; track estado.value) {
+            <mat-option [value]="estado.value">{{ estado.label }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>event_available</mat-icon>
+      </mat-form-field>
+
+      <!-- Estado de Pago -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Estado de Pago</mat-label>
+        <mat-select formControlName="estadoPago">
+          <mat-option [value]="null">Todos</mat-option>
+          @for (estado of estadosPago; track estado.value) {
+            <mat-option [value]="estado.value">{{ estado.label }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>payments</mat-icon>
+      </mat-form-field>
+
+      <!-- Código de Reserva -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Código de Reserva</mat-label>
+        <input matInput formControlName="codigoReserva" placeholder="Ej: RES-2025-0001">
+        <mat-icon matPrefix>confirmation_number</mat-icon>
+      </mat-form-field>
+
+      <!-- Nombre de Cancha -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nombre de Cancha</mat-label>
+        <input matInput formControlName="nombreCancha" placeholder="Buscar por cancha">
+        <mat-icon matPrefix>sports_soccer</mat-icon>
+      </mat-form-field>
+
+      <!-- Fecha Desde -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Fecha Desde</mat-label>
+        <input matInput [matDatepicker]="pickerDesde" formControlName="fechaDesde" placeholder="DD/MM/AAAA">
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDesde></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Fecha Hasta -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Fecha Hasta</mat-label>
+        <input matInput [matDatepicker]="pickerHasta" formControlName="fechaHasta" placeholder="DD/MM/AAAA">
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+        <mat-datepicker #pickerHasta></mat-datepicker>
+      </mat-form-field>
+
+    </div>
+
+    <!-- Botones -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-end">
+      <button
+        type="button"
+        mat-stroked-button
+        class="btn-outline-primary"
+        (click)="onLimpiar()"
+        [disabled]="!hasFiltrosActivos()">
+        <mat-icon class="mr-2">filter_list_off</mat-icon>
+        Limpiar
+      </button>
+      <button
+        type="submit"
+        mat-raised-button
+        class="btn-primary">
+        <mat-icon class="mr-2">search</mat-icon>
+        Aplicar Filtros
+      </button>
+    </div>
+  </form>
+</mat-card>

@@ -67,7 +67,7 @@ export class UsersService extends BaseService {
   }
 
   logout(): Observable<ResponseBaseDto> {
-    let response = new ResponseBaseDto();
+    const response = new ResponseBaseDto();
     response.isValid = true;
     return of(response);
   }

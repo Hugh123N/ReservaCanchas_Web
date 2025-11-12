@@ -1,43 +1,85 @@
 <mat-toolbar class="header-toolbar !bg-white-600 text-white">
-  <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
+  <div
+    class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4"
+  >
     <!-- Logo (izquierda) -->
-    <div class="flex items-center gap-2">
+    <a
+      [routerLink]="['/']"
+      class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition"
+    >
       <mat-icon class="logo-icon !text-primary-600">sports_soccer</mat-icon>
       <span class="logo-text title-main">CanchaReservas</span>
-    </div>
+    </a>
 
     <!-- Acciones (derecha) -->
     <div class="flex items-center gap-4">
-      <!-- Desktop (>=640px) -->
+      <!-- Desktop (>=640px) - Usuario NO autenticado -->
+      @if (!isAuthenticated) {
       <div class="hidden sm:flex items-center gap-4">
         <button
           mat-button
           class="btn-clean-primary hover:"
           (click)="onIniciarSesion()"
         >
-          <mat-icon >login</mat-icon>
+          <mat-icon>login</mat-icon>
           Iniciar Sesión
         </button>
 
-        <button class="!bg-primary-500 !text-white hover:!bg-primary-600 transition " mat-button (click)="onRegistrarse()">
+        <button
+          class="!bg-primary-500 !text-white hover:!bg-primary-600 transition"
+          mat-button
+          (click)="onRegistrarse()"
+        >
           Registrarse
         </button>
       </div>
+      }
 
-      <!-- Mobile (<640px) -->
+      <!-- Desktop (>=640px) - Usuario autenticado -->
+      @if (isAuthenticated) {
+      <div class="hidden sm:flex items-center gap-4">
+        <button mat-button class="btn-clean-primary" (click)="onMisReservas()">
+          <mat-icon>event_available</mat-icon>
+          Mis Reservas
+        </button>
+
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="userMenu"
+          class="!text-primary-600"
+        >
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      </div>
+      }
+
+      <!-- Mobile (<640px) - NO autenticado -->
+      @if (!isAuthenticated) {
       <button
         mat-icon-button
-        class="sm:!hidden hover:!text-secondary-200"
-        [matMenuTriggerFor]="mobileMenu"
+        class="sm:!hidden !text-primary-600 hover:!text-primary-700"
+        [matMenuTriggerFor]="mobileMenuGuest"
       >
         <mat-icon>menu</mat-icon>
       </button>
+      }
+      <!-- Mobile (<640px) - Autenticado -->
+      @if (isAuthenticated) {
+      <button
+        mat-icon-button
+        class="sm:!hidden !text-primary-600 hover:!text-primary-700"
+        [matMenuTriggerFor]="mobileMenuAuth"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      }
     </div>
   </div>
 </mat-toolbar>
 
-<!-- Mobile Menu -->
-<mat-menu #mobileMenu="matMenu">
+<!-- Mobile Menu - NO autenticado -->
+<!-- Mobile Menu - NO autenticado (Guest) -->
+<mat-menu #mobileMenuGuest="matMenu">
   <button mat-menu-item (click)="onIniciarSesion()">
     <mat-icon>login</mat-icon>
     <span>Iniciar Sesión</span>
@@ -45,5 +87,46 @@
   <button mat-menu-item (click)="onRegistrarse()">
     <mat-icon>person_add</mat-icon>
     <span>Registrarse</span>
+  </button>
+</mat-menu>
+
+<!-- Mobile Menu - Autenticado (Authenticated) -->
+  <mat-menu #mobileMenuAuth="matMenu">
+    <div class="px-4 py-2 border-b">
+      <p class="font-semibold text-neutral-800">{{ currentUser?.username || 'Usuario' }}</p>
+    </div>
+    <button mat-menu-item (click)="onPerfil()">
+      <mat-icon>person</mat-icon>
+      <span>Mi Perfil</span>
+    </button>
+    <button mat-menu-item (click)="onMisReservas()">
+      <mat-icon>event_available</mat-icon>
+      <span>Mis Reservas</span>
+    </button>
+    <button mat-menu-item (click)="onCerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar Sesión</span>
+    </button>
+  </mat-menu>
+
+<!-- User Menu - Desktop -->
+<mat-menu #userMenu="matMenu">
+  <div class="px-4 py-2 border-b">
+    <p class="font-semibold text-neutral-800">
+      {{ currentUser?.username || "Usuario" }}
+    </p>
+    <p class="text-xs text-neutral-500">{{ currentUser?.email }}</p>
+  </div>
+  <button mat-menu-item (click)="onPerfil()">
+    <mat-icon>person</mat-icon>
+    <span>Mi Perfil</span>
+  </button>
+  <button mat-menu-item (click)="onMisReservas()">
+    <mat-icon>event_available</mat-icon>
+    <span>Mis Reservas</span>
+  </button>
+  <button mat-menu-item (click)="onCerrarSesion()">
+    <mat-icon>logout</mat-icon>
+    <span>Cerrar Sesión</span>
   </button>
 </mat-menu>

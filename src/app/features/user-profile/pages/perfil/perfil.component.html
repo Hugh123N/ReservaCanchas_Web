@@ -1,0 +1,194 @@
+<!-- Perfil de Usuario Page -->
+<div class="page-wrapper">
+  <div class="page-container">
+
+    <!-- Page Header -->
+    <div class="section-spacing">
+      <div class="flex items-center gap-3 mb-6">
+        <button
+          mat-icon-button
+          (click)="onBack()"
+          class="text-neutral-600">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="flex-1">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 class="text-responsive-2xl font-bold text-primary-600">Mi Perfil</h1>
+              <p class="text-responsive-base text-neutral-600">Información personal y configuración de cuenta</p>
+            </div>
+            <button
+              mat-raised-button
+              class="btn-primary"
+              routerLink="/perfil/editar">
+              <mat-icon class="mr-2">edit</mat-icon>
+              Editar Perfil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="loading-state">
+        <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
+        <p class="loading-text">Cargando perfil...</p>
+      </div>
+    }
+
+    <!-- Profile Content -->
+    @if (!isLoading && usuario) {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Card Izquierda: Avatar y Nombre -->
+        <div class="lg:col-span-1">
+          <mat-card class="card-base text-center p-6">
+            <!-- Avatar -->
+            <div class="flex justify-center mb-4">
+              <div class="relative">
+                <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-primary-200 shadow-lg">
+                  @if (hasCustomAvatar()) {
+                    <img
+                      [src]="getAvatarUrl()"
+                      [alt]="getFullName()"
+                      class="w-full h-full object-cover"
+                      (error)="usuario!.imagen = ''"
+                    />
+                  } @else {
+                    <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                      <mat-icon class="!text-6xl sm:!text-7xl text-white">account_circle</mat-icon>
+                    </div>
+                  }
+                </div>
+                <!-- Badge de estado activo -->
+                <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+              </div>
+            </div>
+
+            <!-- Nombre y Username -->
+            <h2 class="text-responsive-xl font-bold text-neutral-800 mb-1">
+              {{ getFullName() }}
+            </h2>
+            <p class="text-sm text-neutral-500 mb-4">
+              &#64;{{ usuario.userName }}
+            </p>
+
+            <mat-divider class="my-4!"></mat-divider>
+
+            <!-- Estado de cuenta -->
+            <div class="flex items-center justify-center gap-2 text-sm">
+              @if (usuario.activo) {
+                <div class="flex items-center gap-1 text-green-600">
+                  <mat-icon class="icon-sm">check_circle</mat-icon>
+                  <span class="font-semibold">Cuenta Activa</span>
+                </div>
+              } @else {
+                <div class="flex items-center gap-1 text-neutral-500">
+                  <mat-icon class="icon-sm">cancel</mat-icon>
+                  <span class="font-semibold">Cuenta Inactiva</span>
+                </div>
+              }
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Card Derecha: Información Detallada -->
+        <div class="lg:col-span-2">
+          <mat-card class="card-base p-6">
+            <h3 class="text-responsive-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
+              <mat-icon class="text-primary-600">person</mat-icon>
+              Información Personal
+            </h3>
+
+            <!-- Grid de información -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+              <!-- Nombre -->
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-primary-100 rounded-lg">
+                  <mat-icon class="text-primary-600">badge</mat-icon>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-neutral-500 mb-1">Nombre</p>
+                  <p class="font-semibold text-neutral-800">{{ usuario.firstName }}</p>
+                </div>
+              </div>
+
+              <!-- Apellido -->
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-primary-100 rounded-lg">
+                  <mat-icon class="text-primary-600">badge</mat-icon>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-neutral-500 mb-1">Apellido</p>
+                  <p class="font-semibold text-neutral-800">{{ usuario.lastName }}</p>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-accent-100 rounded-lg">
+                  <mat-icon class="text-accent-600">email</mat-icon>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-neutral-500 mb-1">Correo Electrónico</p>
+                  <p class="font-semibold text-neutral-800 break-all">{{ usuario.email }}</p>
+                </div>
+              </div>
+
+              <!-- Teléfono -->
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-secondary-100 rounded-lg">
+                  <mat-icon class="text-secondary-600">phone</mat-icon>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-neutral-500 mb-1">Teléfono</p>
+                  <p class="font-semibold text-neutral-800">
+                    {{ usuario.phoneNumber || 'No registrado' }}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button
+                mat-stroked-button
+                class="btn-outline-primary flex-1"
+                routerLink="/perfil/editar">
+                <mat-icon class="mr-2">edit</mat-icon>
+                Actualizar Información
+              </button>
+              <button
+                mat-stroked-button
+                class="btn-outline-secondary flex-1!"
+                routerLink="/mis-reservas">
+                <mat-icon class="mr-2">event_available</mat-icon>
+                Ver Mis Reservas
+              </button>
+            </div>
+          </mat-card>
+        </div>
+
+      </div>
+    }
+
+    <!-- Empty State (si no se cargó el usuario) -->
+    @if (!isLoading && !usuario) {
+      <div class="empty-state">
+        <mat-icon class="empty-state-icon">person_off</mat-icon>
+        <h3 class="empty-state-title">No se pudo cargar el perfil</h3>
+        <p class="empty-state-description">
+          Ocurrió un error al cargar tu información de perfil. Por favor, intenta nuevamente.
+        </p>
+        <button mat-raised-button class="btn-primary" (click)="loadUserProfile()">
+          <mat-icon class="mr-2">refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    }
+
+  </div>
+</div>

@@ -14,6 +14,7 @@ import { SelectComboReserva } from '../model/selectComboReserva.model';
 import { SelectReserva } from '../model/selectReserva.model';
 import { SelectReservaFilter } from '../model/selectReservaFilter.model';
 import { ReservaConPagoDto } from '../model/reservaConPago.model';
+import { ReservaClienteDto } from '../model/reservaCliente.model';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { QueryResultsModel } from '@base/models/query/query-results.model';
@@ -57,5 +58,16 @@ export class ReservaService extends BaseService {
 
   select(body: QueryParamsModel): Observable<ResponseDto<QueryResultsModel<SelectReserva>>> {
     return this.postRequest<QueryParamsModel, ResponseDto<QueryResultsModel<SelectReserva>>>(`/select`, body);
+  }
+
+  /**
+   * Buscar las reservas del cliente con filtros y paginación
+   * Endpoint: POST /api/Reserva/mis-reservas/{idUsuario}
+   */
+  searchMisReservas(idUsuario: string, searchParams: QueryParamsModel): Observable<ResponseDto<QueryResultsModel<ReservaClienteDto>>> {
+    return this.postRequest<QueryParamsModel, ResponseDto<QueryResultsModel<ReservaClienteDto>>>(
+      `/mis-reservas/${idUsuario}`,
+      searchParams
+    );
   }
 }

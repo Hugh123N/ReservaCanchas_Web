@@ -1,28 +1,20 @@
-
-import { ChangeDetectorRef, Component, Inject, Input, OnInit, Output, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { MatRadioModule } from '@angular/material/radio';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../../auth/services/users.service';
-import { interval, Subject, takeUntil, tap } from 'rxjs';
-import { MatFormField } from '@angular/material/select';
-import { MatLabel } from '@angular/material/select';
-
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { Subject, takeUntil, tap } from 'rxjs';
 import { User } from 'app/features/auth/models/user';
 import { ReservaService } from 'app/features/reserva/core/services/reserva.service';
-import { PagoService } from '../../core/services/pago.service';
 import { CreateReserva } from 'app/features/reserva/core/model/createReserva.model';
 import { ReservaConPagoDto } from 'app/features/reserva/core/model/reservaConPago.model';
-import { ConfirmarPago } from '../../core/model/confirmarPago.model';
+import Swal from 'sweetalert2';
 
 interface ReservaData {
   canchaId: number;
@@ -35,24 +27,16 @@ interface ReservaData {
   total: number;
 }
 
-type PaymentMethod = 'card' | 'yape' | 'plin';
-
-
-
 @Component({
   selector: 'app-payment',
+  standalone: true,
   imports: [
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatRadioModule,
     MatProgressSpinnerModule,
-    MatDividerModule,
-    MatFormField,
-    MatLabel,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatInputModule
+    MatDividerModule
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
@@ -71,33 +55,21 @@ export class PaymentComponent extends BaseComponent implements OnInit {
   };
 
   // States
-  selectedMethod: PaymentMethod | null = null;
   isLoading: boolean = false;
   isProcessing: boolean = false;
-  paymentTimer: string = '15:00';
-  cardForm!: FormGroup;
-  operationCodeForm!: FormGroup;
-
-  // Pago data
-  reservaConPagoDto: ReservaConPagoDto | null = null;
-  qrCodeImage: string | null = null;
-  showOperationCodeInput: boolean = false;
 
   private unsubscribe = new Subject<void>();
 
-  constructor(private fb: FormBuilder,
+  constructor(
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private usersService: UsersService,
     private reservaService: ReservaService,
-    private pagoService: PagoService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('PAGOS', viewContainerRef);
-    this.initializeCardForm();
-    this.initializeOperationCodeForm();
   }
 
   ngOnInit(): void {
@@ -171,12 +143,13 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     if (reservaTelefono !== userTelefono) {
       const subscription = this.usersService
         .updateTelefono({ idUsuario: this.userData.id, telefono: reservaTelefono })
-        .pipe(tap((response) => {
-          if (response.isValid) {
-            this.userData!.telefono = reservaTelefono;
-            console.log('Teléfono actualizado:', reservaTelefono);
-          }
-        }),
+        .pipe(
+          tap((response) => {
+            if (response.isValid) {
+              this.userData!.telefono = reservaTelefono;
+              console.log('Teléfono actualizado:', reservaTelefono);
+            }
+          }),
           takeUntil(this.unsubscribe)
         ).subscribe();
       this.subscriptions.push(subscription);
@@ -184,7 +157,6 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       this.userData!.telefono = reservaTelefono;
     }
   }
-
 
   private findLatestReservation(): number | null {
     const keys = Object.keys(localStorage);
@@ -197,138 +169,25 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     return parseInt(lastKey.replace('reserva_draft_', ''));
   }
 
-
-
-
-  private initializeCardForm(): void {
-    this.cardForm = this.fb.group({
-      cardNumber: ['', [Validators.required, Validators.minLength(16)]],
-      cardHolder: ['', [Validators.required, Validators.minLength(3)]],
-      cardExpiry: ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}$/)]],
-      cardCvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]]
-    });
-  }
-
-  private initializeOperationCodeForm(): void {
-    this.operationCodeForm = this.fb.group({
-      codigoOperacion: ['', [
-        Validators.required,
-        Validators.minLength(6),
-        Validators.maxLength(10),
-        Validators.pattern(/^[A-Za-z0-9]+$/)
-      ]]
-    });
-  }
-
   /**
-   * Select payment method
+   * Crear pre-reserva con pago en EFECTIVO
+   * Este es el único método de pago aceptado para clientes
    */
-  selectPaymentMethod(method: PaymentMethod): void {
-    this.selectedMethod = method;
-    this.showOperationCodeInput = false;
-    this.operationCodeForm.reset();
-    this.reservaConPagoDto = null;
-    this.qrCodeImage = null;
-
-    if (method === 'card') {
-      this.cardForm.reset();
-    }
-  }
-
-  /**
-   * Start countdown timer for QR
-   */
-  private startTimer(fechaExpiracion: string): void {
-    const timerSubscription = interval(1000)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        const now = new Date().getTime();
-        const expiry = new Date(fechaExpiracion).getTime();
-        const remaining = Math.floor((expiry - now) / 1000);
-
-        if (remaining <= 0) {
-          this.paymentTimer = '00:00';
-          this.onPaymentExpired();
-        } else {
-          const mins = Math.floor(remaining / 60);
-          const secs = remaining % 60;
-          this.paymentTimer = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-      });
-
-    this.subscriptions.push(timerSubscription);
-  }
-
-  /**
-   * Stop timer
-   */
-  private stopTimer(): void {
-    this.unsubscribe.next();
-    this.paymentTimer = '15:00';
-  }
-
-  /**
-   * Handle payment expiration
-   */
-  private onPaymentExpired(): void {
-    this.stopTimer();
-    this.openSweetAlert('El tiempo de pago ha expirado', 'Por favor, vuelve a intentar crear la reserva.', 'error');
-    this.selectedMethod = null;
-    this.reservaConPagoDto = null;
-    this.qrCodeImage = null;
-  }
-
-  /**
-   * Iniciar proceso de pago - Crear reserva
-   */
-  async onConfirmPayment(): Promise<void> {
-    if (!this.selectedMethod || !this.reservaData || !this.userData) {
-      return;
-    }
-
-    // Si ya existe una reserva creada y es método QR, mostrar input de código
-    if (this.reservaConPagoDto && (this.selectedMethod === 'yape' || this.selectedMethod === 'plin')) {
-      this.showOperationCodeInput = true;
+  onConfirmPreReserva(): void {
+    if (!this.reservaData || !this.userData) {
+      this.openWarningAlert('No se encontraron datos de la reserva o del usuario');
       return;
     }
 
     this.isProcessing = true;
 
-    try {
-      // Procesar según método de pago
-      switch (this.selectedMethod) {
-        case 'card':
-          await this.processCardPayment();
-          break;
-        case 'yape':
-        case 'plin':
-          await this.createReservaWithQR();
-          break;
-      }
-    } catch (error: any) {
-      console.error('Error:', error);
-      this.openSweetAlert('Error al procesar el pago', error?.message || 'Ocurrió un error inesperado', 'error');
-      this.isProcessing = false;
-    }
-  }
-
-  /**
-   * Crear reserva con método de pago Yape/Plin
-   */
-  private async createReservaWithQR(): Promise<void> {
-    if (!this.reservaData || !this.userData || !this.selectedMethod) {
-      return;
-    }
-
-    const codigoMetodoPago = this.selectedMethod === 'yape' ? '04' : '05';
-
+    // Construir detalles de la reserva con los horarios seleccionados
     const detalles = this.reservaData.selectedTime.map((t: any) => {
       const [hours, minutes] = t.hora.split(':').map(Number);
 
       const horaInicio = t.hora;
       const horaFinDate = new Date();
       horaFinDate.setHours(hours + 1, minutes, 0);
-
       const horaFin = horaFinDate.toTimeString().slice(0, 5); // HH:mm
 
       return {
@@ -336,14 +195,16 @@ export class PaymentComponent extends BaseComponent implements OnInit {
         horaFin
       };
     });
-    //debugger;
+
+    // DTO para crear pre-reserva con EFECTIVO
     const createReservaDto: CreateReserva = {
       idUsuario: this.userData.id,
       idCancha: this.reservaData.canchaId,
       fecha: this.reservaData.fecha,
       monto: this.reservaData.total,
-      idEstadoReserva: 1, // PENDIENTE
-      codigoMetodoPago: codigoMetodoPago,
+      idEstadoReserva: 1, 
+      codigoMetodoPago: '02', // ✅ SOLO EFECTIVO
+      // NO enviamos montoAdelanto (lo registra el operador al confirmar)
       detalles
     };
 
@@ -351,31 +212,17 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       .pipe(
         tap((response) => {
           if (response.isValid && response.data) {
-            this.reservaConPagoDto = response.data;
-
-            // Configurar QR Code
-            if (this.reservaConPagoDto?.qrCodeBase64) {
-              this.qrCodeImage = `data:image/png;base64,${this.reservaConPagoDto.qrCodeBase64}`;
-            }
-
-            // Iniciar temporizador
-            if (this.reservaConPagoDto?.fechaExpiracion) {
-              this.startTimer(this.reservaConPagoDto.fechaExpiracion);
-            }
-
-            this.openSuccessAlert(response || 'Reserva creada. Escanea el código QR para pagar');
-            this.showOperationCodeInput = false;
             this.isProcessing = false;
-            this.cdr.markForCheck();
+            this.showPreReservaSuccessModal(response.data);
           } else {
-            this.openErrorAlert(response || 'Error al crear la reserva');
+            this.openErrorAlert(response || 'Error al crear la pre-reserva');
             this.isProcessing = false;
           }
         }),
         takeUntil(this.unsubscribe)
       ).subscribe({
         error: (error) => {
-          this.openErrorAlert(error || 'Error al crear la reserva. Ocurrió un error inesperado');
+          this.openErrorAlert(error || 'Error al crear la pre-reserva. Ocurrió un error inesperado');
           this.isProcessing = false;
         }
       });
@@ -384,93 +231,141 @@ export class PaymentComponent extends BaseComponent implements OnInit {
   }
 
   /**
-   * Confirmar pago con código de operación
+   * Modal de éxito con toda la información de la pre-reserva
    */
-  onConfirmOperationCode(): void {
-    if (!this.operationCodeForm.valid || !this.reservaConPagoDto) {
-      this.openWarningAlert('Por favor ingresa un código de operación válido (6-10 caracteres alfanuméricos)');
-      return;
-    }
+  private showPreReservaSuccessModal(data: ReservaConPagoDto): void {
+    // Formatear fecha de expiración
+    const fechaExpiracion = data.fechaExpiracionPreReserva
+      ? this.formatDateTime(data.fechaExpiracionPreReserva)
+      : 'No especificada';
 
-    this.isProcessing = true;
+    // Calcular horas restantes
+    const horasRestantes = data.duracionPreReservaHoras || 24;
 
-    const confirmarPagoDto: ConfirmarPago = {
-      idPago: this.reservaConPagoDto.pago.idPago,
-      codigoOperacion: this.operationCodeForm.value.codigoOperacion.toUpperCase()
-    };
+    // Formatear horarios
+    const horarios = this.reservaData.selectedTime
+      .map((t: any) => t.hora)
+      .join(', ');
 
-    const subscription = this.pagoService.confirmarPago(confirmarPagoDto)
-      .pipe(
-        tap((response) => {
-          if (response.isValid && response.data) {
-            this.stopTimer();
-            this.openSuccessAlert(`Tu reserva ha sido confirmada exitosamente. Código: ${response.data.codigoOperacion}`);
+    Swal.fire({
+      icon: 'success',
+      title: '¡Pre-Reserva Creada Exitosamente!',
+      html: `
+        <div style="text-align: left; padding: 1rem;">
+          <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #0ea5e9;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #0369a1; font-size: 1.1rem;">
+              📋 Código de Reserva
+            </h4>
+            <p style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #0c4a6e;">
+              ${data.codigoReserva || 'N/A'}
+            </p>
+          </div>
 
-            // Navegar a confirmación
-            setTimeout(() => {
-              this.navigateToConfirmation(response.data!.codigoOperacion || 'CONFIRMED');
-            }, 2000);
-          } else {
-            this.openErrorAlert(response || 'Error al confirmar el pago');
-            this.isProcessing = false;
-          }
-        }),
-        takeUntil(this.unsubscribe)
-      ).subscribe({
-        error: (error) => {
-          this.openErrorAlert(error || 'Error al confirmar el pago. Verifica el código de operación e intenta nuevamente');
-          this.isProcessing = false;
-        }
-      });
+          <div style="margin-bottom: 1rem;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #334155;">📅 Detalles de tu Reserva</h4>
+            <p style="margin: 0.25rem 0;"><strong>Cancha:</strong> ${this.reservaData.cancha?.nombre || 'N/A'}</p>
+            <p style="margin: 0.25rem 0;"><strong>Fecha:</strong> ${this.formatDate(this.reservaData.fecha)}</p>
+            <p style="margin: 0.25rem 0;"><strong>Horarios:</strong> ${horarios}</p>
+            <p style="margin: 0.25rem 0;"><strong>Monto Total:</strong> S/ ${data.montoFormateado || this.reservaData.total.toFixed(2)}</p>
+            <p style="margin: 0.25rem 0;"><strong>Estado:</strong> <span style="color: #f59e0b; font-weight: bold;">PENDIENTE</span></p>
+          </div>
 
-    this.subscriptions.push(subscription);
-  }
+          <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">⏰ IMPORTANTE</h4>
+            <p style="margin: 0.25rem 0;">Tu pre-reserva expirará el:</p>
+            <p style="margin: 0.25rem 0; font-weight: bold; font-size: 1.1rem; color: #78350f;">
+              ${fechaExpiracion}
+            </p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #92400e;">
+              ⏳ Tienes <strong>${horasRestantes} horas</strong> para que el operador confirme tu reserva
+            </p>
+          </div>
 
-  /**
-   * Calcular hora fin
-   */
-  private calculateEndTime(): string {
-    if (!this.reservaData.selectedTime?.hora) {
-      return '';
-    }
+          <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">📞 Próximos Pasos</h4>
+            <p style="margin: 0.25rem 0;">El operador de la cancha se contactará contigo al:</p>
+            <p style="margin: 0.25rem 0; font-size: 1.2rem; font-weight: bold; color: #047857;">
+              📱 ${this.reservaData.telefono || this.userData?.telefono || 'N/A'}
+            </p>
+            <p style="margin: 0.5rem 0 0 0;">Para coordinar el <strong>pago en EFECTIVO</strong></p>
+            ${data.telefonoCancha ? `
+              <p style="margin: 0.5rem 0 0 0; padding-top: 0.5rem; border-top: 1px solid #d1fae5;">
+                También puedes contactar a la cancha al: <strong>${data.telefonoCancha}</strong>
+              </p>
+            ` : ''}
+          </div>
 
-    const [hours, minutes] = this.reservaData.selectedTime.hora.split(':');
-    const startHour = parseInt(hours);
-    const endHour = startHour + this.reservaData.duracion;
+          <div style="background: #eff6ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <p style="margin: 0; color: #1e40af; font-size: 0.95rem;">
+              ✅ <strong>Una vez confirmada</strong>, recibirás un recordatorio por email y WhatsApp
+              <strong>1 hora antes</strong> de tu reserva.
+            </p>
+          </div>
+        </div>
+      `,
+      width: '650px',
+      confirmButtonText: '📋 Ver Mis Reservas',
+      confirmButtonColor: '#10b981',
+      showCancelButton: true,
+      cancelButtonText: '🏠 Ir al Inicio',
+      cancelButtonColor: '#6b7280',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      customClass: {
+        popup: 'pre-reserva-modal',
+        confirmButton: 'btn-primary-large',
+        title: 'swal-title-custom'
+      }
+    }).then((result) => {
+      // Limpiar localStorage
+      if (this.reservaData?.canchaId) {
+        localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
+      }
 
-    return `${endHour.toString().padStart(2, '0')}:${minutes}:00`;
-  }
-
-  private async processCardPayment(): Promise<void> {
-    console.log('Procesando pago con tarjeta...');
-    this.openWarningAlert('El pago con tarjeta aún no está disponible. Por favor usa Yape o Plin.');
-    this.isProcessing = false;
-  }
-
-  private navigateToConfirmation(transactionId: string, status: 'confirmed' | 'pending' = 'confirmed'): void {
-    if (this.reservaData?.canchaId) {
-      localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
-    }
-
-    this.router.navigate(['/reserva-confirmada'], {
-      state: {
-        transactionId,
-        status,
-        reservaData: this.reservaData,
-        paymentMethod: this.selectedMethod
+      // Redirigir según botón presionado
+      if (result.isConfirmed) {
+        // Ver Mis Reservas
+        this.router.navigate(['/mis-reservas']);
+      } else {
+        // Ir al Inicio
+        this.router.navigate(['/']);
       }
     });
   }
 
+  /**
+   * Cancelar y volver
+   */
   onCancel(): void {
-    if (confirm('¿Estás seguro de cancelar esta reserva?')) {
-      if (this.reservaData?.canchaId) {
-        localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Se perderán los datos de la reserva',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, volver'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (this.reservaData?.canchaId) {
+          localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
+        }
+        this.router.navigate(['/']);
       }
-      this.router.navigate(['/']);
-    }
+    });
   }
 
+  /**
+   * Volver atrás
+   */
+  onBack(): void {
+    this.router.navigate(['/']);
+  }
+
+  /**
+   * Formatear fecha
+   */
   formatDate(dateString: string): string {
     if (!dateString) return '-';
     const date = new Date(dateString);
@@ -483,32 +378,34 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     return date.toLocaleDateString('es-PE', options);
   }
 
+  /**
+   * Formatear fecha y hora completa
+   */
+  formatDateTime(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return date.toLocaleDateString('es-PE', options);
+  }
+
+  /**
+   * Calcular subtotal
+   */
   calculateSubtotal(): number {
     if (!this.reservaData) return 0;
     return this.reservaData.precioHora * this.reservaData.duracion;
-  }
-  onBack(): void {
-    this.router.navigate(['/']);
   }
 
   override ngOnDestroy(): void {
     this.unsubscribe.next();
     this.unsubscribe.complete();
-    super.ngOnDestroy(); 
-  }
-
-  getButtonText(): string {
-    if (!this.selectedMethod) return 'Selecciona un método de pago';
-    if (this.isProcessing) return 'Procesando...';
-
-    if ((this.selectedMethod === 'yape' || this.selectedMethod === 'plin') && !this.reservaConPagoDto) {
-      return 'Generar QR de Pago';
-    }
-
-    if (this.reservaConPagoDto && this.showOperationCodeInput) {
-      return 'Confirmar Código de Operación';
-    }
-
-    return 'Confirmar Pago';
+    super.ngOnDestroy();
   }
 }

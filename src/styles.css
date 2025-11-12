@@ -71,6 +71,16 @@
   @apply border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! hover:bg-primary-50! transition!;
 }
 
+.btn-outline-primary {
+  @apply border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! hover:bg-primary-50! transition!;
+}
+
+.btn-outline-secondary {
+  @apply border! border-secondary-500! text-secondary-500! px-4! py-2! rounded-lg! hover:bg-secondary-50! transition!;
+}
+.btn-outline-accent {
+  @apply border! border-accent-500! text-accent-500! px-4! py-2! rounded-lg! hover:bg-accent-50! transition!;
+}
 /* Texto */
 .text-primary {
   @apply text-primary-500;
@@ -109,28 +119,28 @@
 
 /* Blanco -> Primary */
 .btn-white-primary {
-  @apply bg-white border !border-primary-500 !text-primary-500 
-         font-medium px-4 py-2 rounded-lg shadow-sm 
-         hover:!bg-primary-500 hover:!text-white transition;
+  @apply !bg-white !border !border-primary-500 !text-primary-500 
+         !font-medium !px-4 !py-2 !rounded-lg !shadow-sm 
+         hover:!bg-primary-500 hover:!text-white !transition;
 }
 
 /* Blanco -> Secondary */
 .btn-white-secondary {
-  @apply bg-white border border-secondary-500 text-secondary-500 
-         font-medium px-4 py-2 rounded-lg shadow-sm 
-         hover:bg-secondary-500 hover:text-white transition;
+  @apply !bg-white !border !border-secondary-500 !text-secondary-500 
+         !font-medium !px-4 !py-2 !rounded-lg !shadow-sm 
+         hover:!bg-secondary-500 hover:!text-white !transition;
 }
 
 /* Blanco -> Accent */
 .btn-white-accent {
-  @apply bg-white border border-accent-500 text-accent-500 
-         font-medium px-4 py-2 rounded-lg shadow-sm 
-         hover:bg-accent-500 hover:text-white transition;
+  @apply bg-white! border !border-accent-500 !text-accent-500 
+         font-medium! px-4! py-2! rounded-lg! shadow-sm! 
+         hover:!bg-accent-500 hover:!text-white transition;
 }
 
 
 .btn-clean-primary {
-  @apply bg-white text-black font-medium px-4 py-2 rounded-md transition hover:!bg-primary-500 hover:!text-white;
+  @apply bg-white! text-black! font-medium! px-4! py-2! rounded-md! transition! hover:!bg-primary-500 hover:!text-white;
 }
 
 
@@ -158,14 +168,6 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-
-
-
-
-
-
-
 
 
 /* ===== GLOBAL UTILITY CLASSES ===== */

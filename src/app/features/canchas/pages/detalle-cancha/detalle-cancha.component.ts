@@ -34,7 +34,6 @@ interface DateOption {
   numero: string;
   mes: string;
   fecha: string;
-  disponible: boolean;
 }
 
 interface TimeOption {
@@ -215,8 +214,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         dia: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : dayNames[date.getDay()],
         numero: date.getDate().toString().padStart(2, '0'),
         mes: monthNames[date.getMonth()],
-        fecha: date.toISOString().split('T')[0],
-        disponible: Math.random() > 0.2 // 80% probability of being available
+        fecha: formatDateLocal(date),
       });
     }
   }
@@ -266,7 +264,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
 
   getDateCardClass(fecha: DateOption): string {
     let classes = 'date-card';
-    if (!fecha.disponible) classes += ' unavailable';
     if (this.selectedDate?.fecha === fecha.fecha) classes += ' selected';
     return classes;
   }
@@ -282,10 +279,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   selectDate(fecha: DateOption) {
-    if (!fecha.disponible) {
-      return;
-    }
-
     this.selectedDate = fecha;
     this.selectedTime = null; // Reset selected time
 
@@ -417,4 +410,12 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     // In a real app, this would call a service to update favorites
     console.log('Favorite toggled:', this.isFavorite);
   }
+  
+}
+
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

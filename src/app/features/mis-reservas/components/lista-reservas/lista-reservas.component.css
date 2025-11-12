@@ -1,0 +1,39 @@
+@reference "../../../../../styles.css";
+
+/* Estados de reserva */
+.estado-pendiente {
+  @apply bg-amber-100 text-amber-800;
+}
+
+.estado-confirmado {
+  @apply bg-green-100 text-green-800;
+}
+
+.estado-cancelado {
+  @apply bg-red-100 text-red-800;
+}
+
+.estado-expirado {
+  @apply bg-neutral-200 text-neutral-600;
+}
+
+/* Card hover effect personalizado */
+mat-card {
+  @apply transition-all duration-300;
+  position: relative;
+  overflow: visible;
+}
+
+mat-card:hover {
+  @apply shadow-lg;
+  transform: translateY(-2px);
+}
+
+/* Paginador personalizado */
+::ng-deep .mat-mdc-paginator {
+  @apply bg-transparent;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  @apply justify-center;
+}

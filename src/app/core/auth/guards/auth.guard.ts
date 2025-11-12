@@ -11,7 +11,9 @@ import { PermissionService } from '@base/permissions/services/permission.service
 import { environment } from '@environments/environment';
 import { PermissionModel } from '@base/permissions/models/permission.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
