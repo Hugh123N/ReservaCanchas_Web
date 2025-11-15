@@ -13,7 +13,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-//import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,16 +22,18 @@ import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../services/users.service';
 import { LoginModel } from '../../models/login.model';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { UserType } from '../../types/userTypes';
-import { OAuthProvider } from '../../types/oAuthProvider';
-import { FeatureAuth } from '../../types/featureAuth';
-import { OAuthService } from '../../services/oauth.service';
+import { OAuthHandlerService } from '../../services/oauth-handler.service';
+import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
+import { AuthSocialButtonsComponent } from '../../components/auth-social-buttons/auth-social-buttons.component';
+import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
+import { AUTH_FEATURES_LOGIN_REGISTER } from '../../constants/auth-features.constants';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
@@ -43,7 +44,11 @@ import { OAuthService } from '../../services/oauth.service';
     MatCheckboxModule,
     MatProgressSpinnerModule,
     LayoutModule,
-    MatChipsModule],
+    MatChipsModule,
+    AuthVisualPanelComponent,
+    AuthSocialButtonsComponent,
+    AuthMessageComponent
+  ],
   templateUrl: './login.component.html'
 })
 export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
@@ -58,18 +63,8 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
 
   isHandset$!: Observable<boolean>;
 
-  features: FeatureAuth[] = [
-    {
-      icon: 'payment',
-      title: 'Pago Seguro',
-      description: 'Múltiples métodos de pago seguros y confiables'
-    },
-    {
-      icon: 'support_agent',
-      title: 'Soporte 24/7',
-      description: 'Nuestro equipo está disponible para ayudarte'
-    }
-  ];
+  // Use constant from shared file instead of duplicating
+  readonly features = AUTH_FEATURES_LOGIN_REGISTER;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -79,7 +74,7 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     private authService: AuthService,
     private usersService: UsersService,
-    private oauthService: OAuthService,
+    private oauthHandler: OAuthHandlerService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super("USERS", viewContainerRef);
@@ -168,95 +163,40 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
     this.clearMessages();
     this.isLoading = true;
 
-    const subscription = this.oauthService
-      .loginWithGoogle()
-      .subscribe({
-        next: (idToken: string) => {
-          // Token de Google recibido, enviarlo al backend
-          this.usersService
-            .loginWithOAuth('Google', idToken)
-            .pipe(
-              tap((response) => {
-                if (response && response.isValid) {
-                  this.authService.logIn(response.data.accessToken);
-                  this.successMessage = '¡Login exitoso con Google!';
-
-                  setTimeout(() => {
-                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirect_after_login');
-                      this.router.navigateByUrl(redirectUrl);
-                    } else {
-                      this.router.navigate(['/']);
-                    }
-                  }, 1000);
-                } else {
-                  this.errorMessage = response?.Messages?.join(', ') || 'Error al autenticar con Google';
-                }
-              }),
-              takeUntil(this.unsubscribe),
-              finalize(() => {
-                this.isLoading = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe();
-        },
-        error: (error) => {
-          this.errorMessage = 'Error al iniciar sesión con Google. Por favor intenta nuevamente.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }
-      });
-
-    this.subscriptions.push(subscription);
+    this.oauthHandler.handleGoogleAuth(
+      (message) => {
+        this.successMessage = message;
+        this.cdr.markForCheck();
+      },
+      (message) => {
+        this.errorMessage = message;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
   }
+
   onFacebookLogin(): void {
     this.clearMessages();
     this.isLoading = true;
 
-    const subscription = this.oauthService
-      .loginWithFacebook()
-      .subscribe({
-        next: (accessToken: string) => {
-          // Access token de Facebook recibido, enviarlo al backend
-          this.usersService
-            .loginWithOAuth('Facebook', accessToken)
-            .pipe(
-              tap((response) => {
-                if (response && response.isValid) {
-                  this.authService.logIn(response.data.accessToken);
-                  this.successMessage = '¡Login exitoso con Facebook!';
-
-                  setTimeout(() => {
-                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirect_after_login');
-                      this.router.navigateByUrl(redirectUrl);
-                    } else {
-                      this.router.navigate(['/']);
-                    }
-                  }, 1000);
-                } else {
-                  this.errorMessage = response?.Messages?.join(', ') || 'Error al autenticar con Facebook';
-                }
-              }),
-              takeUntil(this.unsubscribe),
-              finalize(() => {
-                this.isLoading = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe();
-        },
-        error: (error) => {
-          this.errorMessage = 'Error al iniciar sesión con Facebook. Por favor intenta nuevamente.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }
-      });
-
-    this.subscriptions.push(subscription);
+    this.oauthHandler.handleFacebookAuth(
+      (message) => {
+        this.successMessage = message;
+        this.cdr.markForCheck();
+      },
+      (message) => {
+        this.errorMessage = message;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
   }
 
   onForgotPassword(): void {

@@ -4,7 +4,7 @@ import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layo
 import { Observable, Subject } from 'rxjs';
 import { finalize, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 // Material Modules
 import { MatButtonModule } from '@angular/material/button';
@@ -15,15 +15,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-// Services & Models
+// Services
 import { UsersService } from '../../services/users.service';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { ResetPasswordModel } from '../../models/reset-password.model';
-import { passwordMatchValidator } from '@shared/validators/password-match-validator';
-import { FeatureAuth } from '../../types/featureAuth';
+import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
+import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
+import { AUTH_FEATURES_FORGOT_PASSWORD } from '../../constants/auth-features.constants';
 
 @Component({
-  selector: 'app-reset-password',
+  selector: 'app-forgot-password',
   standalone: true,
   imports: [
     CommonModule,
@@ -35,52 +35,44 @@ import { FeatureAuth } from '../../types/featureAuth';
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    LayoutModule
+    LayoutModule,
+    AuthVisualPanelComponent,
+    AuthMessageComponent
   ],
-  templateUrl: './reset-password.component.html'
+  templateUrl: './forgot-password.component.html'
 })
-export class ResetPasswordComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ForgotPasswordComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  resetPasswordForm!: FormGroup;
+  // Form
+  forgotPasswordForm!: FormGroup;
   private unsubscribe: Subject<any>;
 
+  // States
   isLoading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
-  passwordReset: boolean = false;
-  showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
-
-  // Query params
-  email: string = '';
-  code: string = '';
+  emailSent: boolean = false;
 
   // Responsive
   isHandset$!: Observable<boolean>;
 
-  features: FeatureAuth[] = [
-    {
-      icon: 'verified_user',
-      title: 'Proceso Verificado',
-      description: 'Tu identidad ha sido confirmada mediante el código de seguridad'
-    },
-    {
-      icon: 'lock_clock',
-      title: 'Acceso Inmediato',
-      description: 'Una vez cambiada tu contraseña, podrás iniciar sesión de inmediato'
-    }
-  ];
+  // Use constant from shared file instead of duplicating
+  readonly features = AUTH_FEATURES_FORGOT_PASSWORD;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private breakpointObserver: BreakpointObserver,
     private usersService: UsersService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('USERS', viewContainerRef);
+
+    // Initialize form
+    this.forgotPasswordForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
 
     // Initialize responsive observer
     this.isHandset$ = this.breakpointObserver
@@ -94,21 +86,7 @@ export class ResetPasswordComponent extends BaseComponent implements OnInit, OnD
   }
 
   ngOnInit(): void {
-    // Get query parameters
-    this.route.queryParams.subscribe(params => {
-      this.email = params['email'] || '';
-      this.code = params['code'] || '';
-
-      if (!this.email || !this.code) {
-        this.errorMessage = 'El enlace de recuperación no es válido o ha expirado.';
-      }
-    });
-
-    // Initialize form
-    this.resetPasswordForm = this.formBuilder.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, passwordMatchValidator()]]
-    });
+    // Component initialization
   }
 
   override ngOnDestroy(): void {
@@ -117,41 +95,29 @@ export class ResetPasswordComponent extends BaseComponent implements OnInit, OnD
   }
 
   onSubmit(): void {
-    const controls = this.resetPasswordForm.controls;
+    const controls = this.forgotPasswordForm.controls;
 
-    if (this.resetPasswordForm.invalid) {
+    if (this.forgotPasswordForm.invalid) {
       Object.keys(controls).forEach((controlName) =>
         controls[controlName].markAsTouched()
       );
       return;
     }
 
-    if (!this.email || !this.code) {
-      this.errorMessage = 'El enlace de recuperación no es válido.';
-      return;
-    }
-
     this.clearMessages();
     this.isLoading = true;
 
-    const model = new ResetPasswordModel();
-    model.email = this.email;
-    model.code = parseInt(this.code);
-    model.password = this.resetPasswordForm.value.password;
-    model.confirmPassword = this.resetPasswordForm.value.confirmPassword;
+    const email = this.forgotPasswordForm.value.email;
+    const host = window.location.hostname; // URL del frontend para el enlace de reset
 
     const subscription = this.usersService
-      .resetPassword(model)
+      .forgotPassword(email, host)
       .pipe(
         tap((response) => {
           if (response.isValid) {
-            this.passwordReset = true;
-            this.successMessage = '¡Contraseña cambiada exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.';
-            this.resetPasswordForm.reset();
-            // Redirect to login after 3 seconds
-            setTimeout(() => {
-              this.router.navigate(['/auth/login']);
-            }, 3000);
+            this.emailSent = true;
+            this.successMessage = 'Se ha enviado un enlace de recuperación a tu correo electrónico. Por favor, revisa tu bandeja de entrada.';
+            this.forgotPasswordForm.reset();
           } else {
             this.openErrorAlert(response);
           }
@@ -165,7 +131,7 @@ export class ResetPasswordComponent extends BaseComponent implements OnInit, OnD
       .subscribe({
         error: (err) => {
           console.error(err);
-          this.errorMessage = 'Error al restablecer la contraseña. Por favor, solicita un nuevo enlace de recuperación.';
+          this.errorMessage = 'Error al enviar el correo de recuperación. Por favor, intenta nuevamente.';
         }
       });
 
@@ -180,17 +146,8 @@ export class ResetPasswordComponent extends BaseComponent implements OnInit, OnD
     this.router.navigate(['/']);
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
   private clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
   }
-
 }

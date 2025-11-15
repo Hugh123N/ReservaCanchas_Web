@@ -1,39 +1,9 @@
-<!-- Login Wrapper -->
+<!-- Register Wrapper -->
 <div class="auth-wrapper">
   <!-- Left Panel - Visual (Desktop/Tablet) -->
   @if (!(isHandset$ | async)) {
   <div class="auth-visual-panel">
-    <!-- Background Image Overlay -->
-    <div class="auth-visual-overlay"></div>
-    <!-- Content -->
-    <div class="auth-visual-content">
-      <!-- Logo -->
-      <div class="auth-visual-logo">
-        <div class="auth-logo-large">
-          <mat-icon>sports_soccer</mat-icon>
-        </div>
-        <h1 class="auth-visual-title">CanchaReservas</h1>
-      </div>
-      <p class="auth-visual-description">
-        La plataforma más completa para encontrar y reservar canchas de fútbol,
-        tenis, básquetbol, pádel y más.
-        <strong>Miles de canchas disponibles</strong> en toda la ciudad.
-      </p>
-      <!-- Features List -->
-      <div class="auth-visual-features">
-        @for (feature of features; track feature) {
-        <div class="auth-feature-item">
-          <div class="auth-feature-icon">
-            <mat-icon>{{ feature.icon }}</mat-icon>
-          </div>
-          <div class="auth-feature-text">
-            <h4>{{ feature.title }}</h4>
-            <p>{{ feature.description }}</p>
-          </div>
-        </div>
-        }
-      </div>
-    </div>
+    <app-auth-visual-panel [features]="features"> </app-auth-visual-panel>
   </div>
   }
 
@@ -68,33 +38,13 @@
         </div>
 
         <!-- Social Login Buttons -->
-        <div class="auth-social-section">
-          <button
-            mat-stroked-button
-            class="auth-social-btn google"
-            type="button"
-            (click)="onGoogleRegister()"
-            [disabled]="isLoading"
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-              class="auth-social-icon mr-2"
-            />
-            <span>Continuar con Google</span>
-          </button>
-
-          <button
-            mat-stroked-button
-            class="auth-social-btn facebook"
-            type="button"
-            (click)="onFacebookRegister()"
-            [disabled]="isLoading"
-          >
-            <mat-icon class="auth-social-icon">facebook</mat-icon>
-            <span>Continuar con Facebook</span>
-          </button>
-        </div>
+        <app-auth-social-buttons
+          [isLoading]="isLoading"
+          [mode]="'register'"
+          (googleClick)="onGoogleRegister()"
+          (facebookClick)="onFacebookRegister()"
+        >
+        </app-auth-social-buttons>
 
         <!-- Divider -->
         <div class="auth-divider">
@@ -242,20 +192,12 @@
           </button>
 
           <!-- Error Message -->
-          @if (errorMessage) {
-          <div class="error-message">
-            <mat-icon class="mr-2">error_outline</mat-icon>
-            <span>{{ errorMessage }}</span>
-          </div>
-          }
+          <app-auth-message [type]="'error'" [message]="errorMessage">
+          </app-auth-message>
 
           <!-- Success Message -->
-          @if (successMessage) {
-          <div class="success-message">
-            <mat-icon class="mr-2">check_circle</mat-icon>
-            <span>{{ successMessage }}</span>
-          </div>
-          }
+          <app-auth-message [type]="'success'" [message]="successMessage">
+          </app-auth-message>
         </form>
 
         <!-- Login Link -->

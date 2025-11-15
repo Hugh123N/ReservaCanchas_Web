@@ -3,7 +3,6 @@ import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule, AbstractC
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
@@ -11,7 +10,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -20,18 +18,19 @@ import { finalize, map, Observable, shareReplay, Subject, takeUntil, tap } from 
 import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
 import { UsersService } from '../../services/users.service';
 import { CreateUserModel } from '../../models/create-user.model';
-import { Features } from 'tailwindcss';
-import { OAuthProvider } from '../../types/oAuthProvider';
-import { FeatureAuth } from '../../types/featureAuth';
-import { OAuthService } from '../../services/oauth.service';
-import { AuthService } from '@core/auth/services/auth.service';
+import { OAuthHandlerService } from '../../services/oauth-handler.service';
+import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
+import { AuthSocialButtonsComponent } from '../../components/auth-social-buttons/auth-social-buttons.component';
+import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
+import { AUTH_FEATURES_LOGIN_REGISTER } from '../../constants/auth-features.constants';
 
 
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
@@ -42,7 +41,10 @@ import { AuthService } from '@core/auth/services/auth.service';
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatChipsModule,
-    LayoutModule
+    LayoutModule,
+    AuthVisualPanelComponent,
+    AuthSocialButtonsComponent,
+    AuthMessageComponent
   ],
   templateUrl: './register.component.html'
 })
@@ -67,8 +69,7 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     private cdr: ChangeDetectorRef,
     private breakpointObserver: BreakpointObserver,
     private usersService: UsersService,
-    private oauthService: OAuthService,
-    private authService: AuthService,
+    private oauthHandler: OAuthHandlerService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super("USERS", viewContainerRef);
@@ -99,21 +100,9 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     this.unsubscribe = new Subject<any>();
   }
 
-  features: FeatureAuth[] = [
-    {
-      icon: 'payment',
-      title: 'Pago Seguro',
-      description: 'Múltiples métodos de pago seguros y confiables'
-    },
-    {
-      icon: 'support_agent',
-      title: 'Soporte 24/7',
-      description: 'Nuestro equipo está disponible para ayudarte'
-    }
-  ];
+  readonly features = AUTH_FEATURES_LOGIN_REGISTER;
 
   ngOnInit(): void {
-    // Initialize component
   }
 
   override ngOnDestroy(): void {
@@ -194,96 +183,40 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     this.clearMessages();
     this.isLoading = true;
 
-    const subscription = this.oauthService
-      .loginWithGoogle()
-      .subscribe({
-        next: (idToken: string) => {
-          // Token de Google recibido, enviarlo al backend (el backend crea o busca el usuario)
-          this.usersService
-            .loginWithOAuth('Google', idToken)
-            .pipe(
-              tap((response) => {
-                if (response && response.isValid) {
-                  this.authService.logIn(response.data.accessToken);
-                  this.successMessage = '¡Registro exitoso con Google! Redirigiendo...';
-
-                  setTimeout(() => {
-                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirect_after_login');
-                      this.router.navigateByUrl(redirectUrl);
-                    } else {
-                      this.router.navigate(['/']);
-                    }
-                  }, 1000);
-                } else {
-                  this.errorMessage = response?.Messages?.join(', ') || 'Error al registrarse con Google';
-                }
-              }),
-              takeUntil(this.unsubscribe),
-              finalize(() => {
-                this.isLoading = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe();
-        },
-        error: (error) => {
-          this.errorMessage = 'Error al registrarse con Google. Por favor intenta nuevamente.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }
-      });
-
-    this.subscriptions.push(subscription);
+    this.oauthHandler.handleGoogleAuth(
+      (message) => {
+        this.successMessage = message;
+        this.cdr.markForCheck();
+      },
+      (message) => {
+        this.errorMessage = message;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
   }
 
   onFacebookRegister(): void {
     this.clearMessages();
     this.isLoading = true;
 
-    const subscription = this.oauthService
-      .loginWithFacebook()
-      .subscribe({
-        next: (accessToken: string) => {
-          // Access token de Facebook recibido, enviarlo al backend (el backend crea o busca el usuario)
-          this.usersService
-            .loginWithOAuth('Facebook', accessToken)
-            .pipe(
-              tap((response) => {
-                if (response && response.isValid) {
-                  this.authService.logIn(response.data.accessToken);
-                  this.successMessage = '¡Registro exitoso con Facebook! Redirigiendo...';
-
-                  setTimeout(() => {
-                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirect_after_login');
-                      this.router.navigateByUrl(redirectUrl);
-                    } else {
-                      this.router.navigate(['/']);
-                    }
-                  }, 1000);
-                } else {
-                  this.errorMessage = response?.Messages?.join(', ') || 'Error al registrarse con Facebook';
-                }
-              }),
-              takeUntil(this.unsubscribe),
-              finalize(() => {
-                this.isLoading = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe();
-        },
-        error: (error) => {
-          this.errorMessage = 'Error al registrarse con Facebook. Por favor intenta nuevamente.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }
-      });
-
-    this.subscriptions.push(subscription);
+    this.oauthHandler.handleFacebookAuth(
+      (message) => {
+        this.successMessage = message;
+        this.cdr.markForCheck();
+      },
+      (message) => {
+        this.errorMessage = message;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
   }
 
   onLogin(): void {

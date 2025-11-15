@@ -4,7 +4,7 @@ import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layo
 import { Observable, Subject } from 'rxjs';
 import { finalize, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 // Material Modules
 import { MatButtonModule } from '@angular/material/button';
@@ -15,14 +15,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-// Services
+// Services & Models
 import { UsersService } from '../../services/users.service';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { environment } from '@environments/environment';
-import { FeatureAuth } from '../../types/featureAuth';
+import { ResetPasswordModel } from '../../models/reset-password.model';
+import { passwordMatchValidator } from '@shared/validators/password-match-validator';
+import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
+import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
+import { AUTH_FEATURES_RESET_PASSWORD } from '../../constants/auth-features.constants';
 
 @Component({
-  selector: 'app-forgot-password',
+  selector: 'app-reset-password',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,52 +37,44 @@ import { FeatureAuth } from '../../types/featureAuth';
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    LayoutModule
+    LayoutModule,
+    AuthVisualPanelComponent,
+    AuthMessageComponent
   ],
-  templateUrl: './forgot-password.component.html'
+  templateUrl: './reset-password.component.html'
 })
-export class ForgotPasswordComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ResetPasswordComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  // Form
-  forgotPasswordForm!: FormGroup;
+  resetPasswordForm!: FormGroup;
   private unsubscribe: Subject<any>;
 
-  // States
   isLoading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
-  emailSent: boolean = false;
+  passwordReset: boolean = false;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+
+  // Query params
+  email: string = '';
+  code: string = '';
 
   // Responsive
   isHandset$!: Observable<boolean>;
 
-  features: FeatureAuth[] = [
-    {
-      icon: 'lock_reset',
-      title: 'Recuperación Rápida',
-      description: 'Recibe un enlace en tu correo para restablecer tu contraseña de forma segura'
-    },
-    {
-      icon: 'schedule',
-      title: 'Enlace Temporal',
-      description: 'El enlace de recuperación expira en 24 horas por tu seguridad'
-    }
-  ];
+  // Use constant from shared file instead of duplicating
+  readonly features = AUTH_FEATURES_RESET_PASSWORD;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private breakpointObserver: BreakpointObserver,
     private usersService: UsersService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('USERS', viewContainerRef);
-
-    // Initialize form
-    this.forgotPasswordForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
 
     // Initialize responsive observer
     this.isHandset$ = this.breakpointObserver
@@ -93,7 +88,21 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
   }
 
   ngOnInit(): void {
-    // Component initialization
+    // Get query parameters
+    this.route.queryParams.subscribe(params => {
+      this.email = params['email'] || '';
+      this.code = params['token'] || '';
+
+      if (!this.email || !this.code) {
+        this.errorMessage = 'El enlace de recuperación no es válido o ha expirado.';
+      }
+    });
+
+    // Initialize form
+    this.resetPasswordForm = this.formBuilder.group({
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, passwordMatchValidator()]]
+    });
   }
 
   override ngOnDestroy(): void {
@@ -102,29 +111,41 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
   }
 
   onSubmit(): void {
-    const controls = this.forgotPasswordForm.controls;
+    const controls = this.resetPasswordForm.controls;
 
-    if (this.forgotPasswordForm.invalid) {
+    if (this.resetPasswordForm.invalid) {
       Object.keys(controls).forEach((controlName) =>
         controls[controlName].markAsTouched()
       );
       return;
     }
 
+    if (!this.email || !this.code) {
+      this.errorMessage = 'El enlace de recuperación no es válido.';
+      return;
+    }
+
     this.clearMessages();
     this.isLoading = true;
 
-    const email = this.forgotPasswordForm.value.email;
-    const host = window.location.hostname; // URL del frontend para el enlace de reset
+    const model = new ResetPasswordModel();
+    model.email = this.email;
+    model.code = parseInt(this.code);
+    model.password = this.resetPasswordForm.value.password;
+    model.confirmPassword = this.resetPasswordForm.value.confirmPassword;
 
     const subscription = this.usersService
-      .forgotPassword(email, host)
+      .resetPassword(model)
       .pipe(
         tap((response) => {
           if (response.isValid) {
-            this.emailSent = true;
-            this.successMessage = 'Se ha enviado un enlace de recuperación a tu correo electrónico. Por favor, revisa tu bandeja de entrada.';
-            this.forgotPasswordForm.reset();
+            this.passwordReset = true;
+            this.successMessage = '¡Contraseña cambiada exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.';
+            this.resetPasswordForm.reset();
+            // Redirect to login after 3 seconds
+            setTimeout(() => {
+              this.router.navigate(['/auth/login']);
+            }, 3000);
           } else {
             this.openErrorAlert(response);
           }
@@ -138,7 +159,7 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
       .subscribe({
         error: (err) => {
           console.error(err);
-          this.errorMessage = 'Error al enviar el correo de recuperación. Por favor, intenta nuevamente.';
+          this.errorMessage = 'Error al restablecer la contraseña. Por favor, solicita un nuevo enlace de recuperación.';
         }
       });
 
@@ -153,8 +174,17 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
     this.router.navigate(['/']);
   }
 
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   private clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
   }
+
 }

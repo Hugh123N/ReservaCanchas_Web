@@ -1,0 +1,32 @@
+<!-- Background Image Overlay -->
+<div class="auth-visual-overlay"></div>
+<!-- Content -->
+<div class="auth-visual-content">
+  <!-- Logo -->
+  <div class="auth-visual-logo">
+    <div class="auth-logo-large">
+      <mat-icon>sports_soccer</mat-icon>
+    </div>
+    <h1 class="auth-visual-title">{{ title }}</h1>
+  </div>
+
+  <p class="auth-visual-description">
+    {{ subtitle }}
+    <strong>Miles de canchas disponibles</strong> en toda la ciudad.
+  </p>
+
+  <!-- Features List -->
+  <div class="auth-visual-features">
+    @for (feature of features; track feature) {
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <mat-icon>{{ feature.icon }}</mat-icon>
+        </div>
+        <div class="auth-feature-text">
+          <h4>{{ feature.title }}</h4>
+          <p>{{ feature.description }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
