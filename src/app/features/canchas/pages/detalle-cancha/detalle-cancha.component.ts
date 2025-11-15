@@ -28,6 +28,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 import { DisponibilidadService } from '../../core/services/disponibilidad.service';
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
 import { AuthService } from '@core/auth/services/auth.service';
+import { generateFutureDates, getNombreDia, getNombreMes, formatParaInput } from '@shared/utils/date.utils';
 import { DateOption } from '../../core/types/date-option';
 import { TimeOption } from '../../core/types/time-option.interface';
 import { ServiceItem } from '../../core/types/service-item.interface';
@@ -131,24 +132,24 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   generateAvailableDates() {
-    const today = new Date();
+    const dates = generateFutureDates(7);
     this.fechasDisponibles = [];
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+    dates.forEach((date, i) => {
+      const nombreDia = getNombreDia(date);
+      const nombreMes = getNombreMes(date);
 
-      const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-      const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-        'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      // Abreviar nombres (primeras 3 letras)
+      const diaAbreviado = nombreDia.substring(0, 3);
+      const mesAbreviado = nombreMes.substring(0, 3);
 
       this.fechasDisponibles.push({
-        dia: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : dayNames[date.getDay()],
+        dia: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : diaAbreviado.charAt(0).toUpperCase() + diaAbreviado.slice(1),
         numero: date.getDate().toString().padStart(2, '0'),
-        mes: monthNames[date.getMonth()],
+        mes: mesAbreviado.charAt(0).toUpperCase() + mesAbreviado.slice(1),
         fecha: formatDateLocal(date),
       });
-    }
+    });
   }
 
   getAvailableHours(): TimeOption[] {

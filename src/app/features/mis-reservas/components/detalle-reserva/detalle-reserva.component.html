@@ -51,7 +51,7 @@
         </div>
         <div class="flex-1">
           <p class="text-xs text-neutral-500">Fecha de Creación</p>
-          <p class="font-semibold text-neutral-800">{{ formatFechaHora(reserva.fechaCreacion) }}</p>
+          <p class="font-semibold text-neutral-800">{{ formatFechaHoraCompleta(reserva.fechaCreacion) }}</p>
         </div>
       </div>
     </div>
@@ -141,7 +141,7 @@
             }
           </p>
           <p class="text-sm text-amber-700">
-            Expira el: <strong>{{ formatFechaHora(reserva.fechaExpiracionPreReserva) }}</strong>
+            Expira el: <strong>{{ formatFechaHoraCompleta(reserva.fechaExpiracionPreReserva) }}</strong>
           </p>
           @if (isProximaExpirar()) {
             <p class="text-sm text-amber-700 mt-1">

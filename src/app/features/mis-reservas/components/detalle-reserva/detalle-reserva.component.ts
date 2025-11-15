@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { ReservaClienteDto } from 'app/features/reserva/core/model/reservaCliente.model';
+import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
+import { formatFechaLocal, formatFechaHora, calcularHorasRestantes } from '@shared/utils/date.utils';
 
 @Component({
   selector: 'app-detalle-reserva',
@@ -40,10 +42,10 @@ export class DetalleReservaComponent {
    */
   getEstadoClass(codigoEstado: string): string {
     const estadoMap: Record<string, string> = {
-      '01': 'estado-pendiente',
-      '02': 'estado-confirmado',
-      '03': 'estado-cancelado',
-      '04': 'estado-expirado'
+      [EstadoReservaCodigo.PENDIENTE]: 'estado-pendiente',
+      [EstadoReservaCodigo.CONFIRMADO]: 'estado-confirmado',
+      [EstadoReservaCodigo.CANCELADO]: 'estado-cancelado',
+      [EstadoReservaCodigo.EXPIRADO]: 'estado-expirado'
     };
     return estadoMap[codigoEstado] || '';
   }
@@ -53,10 +55,10 @@ export class DetalleReservaComponent {
    */
   getEstadoIcon(codigoEstado: string): string {
     const iconMap: Record<string, string> = {
-      '01': 'schedule',
-      '02': 'check_circle',
-      '03': 'cancel',
-      '04': 'event_busy'
+      [EstadoReservaCodigo.PENDIENTE]: 'schedule',
+      [EstadoReservaCodigo.CONFIRMADO]: 'check_circle',
+      [EstadoReservaCodigo.CANCELADO]: 'cancel',
+      [EstadoReservaCodigo.EXPIRADO]: 'event_busy'
     };
     return iconMap[codigoEstado] || 'help';
   }
@@ -65,32 +67,19 @@ export class DetalleReservaComponent {
    * Formatear fecha
    */
   formatFecha(fecha: string): string {
-    if (!fecha) return '-';
-    const date = new Date(fecha);
-    const options: Intl.DateTimeFormatOptions = {
+    return formatFechaLocal(fecha, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    };
-    return date.toLocaleDateString('es-PE', options);
+    });
   }
 
   /**
    * Formatear fecha y hora
    */
-  formatFechaHora(fecha: string): string {
-    if (!fecha) return '-';
-    const date = new Date(fecha);
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return date.toLocaleDateString('es-PE', options);
+  formatFechaHoraCompleta(fecha: string): string {
+    return formatFechaHora(fecha);
   }
 
   /**
@@ -99,9 +88,7 @@ export class DetalleReservaComponent {
   isProximaExpirar(): boolean {
     if (!this.reserva.fechaExpiracionPreReserva || !this.reserva.estaPendiente) return false;
 
-    const now = new Date().getTime();
-    const expiracion = new Date(this.reserva.fechaExpiracionPreReserva).getTime();
-    const horasRestantes = (expiracion - now) / (1000 * 60 * 60);
+    const horasRestantes = calcularHorasRestantes(this.reserva.fechaExpiracionPreReserva);
 
     return horasRestantes > 0 && horasRestantes <= 6;
   }
@@ -112,10 +99,6 @@ export class DetalleReservaComponent {
   getHorasRestantes(): number {
     if (!this.reserva.fechaExpiracionPreReserva) return 0;
 
-    const now = new Date().getTime();
-    const expiracion = new Date(this.reserva.fechaExpiracionPreReserva).getTime();
-    const horasRestantes = Math.max(0, (expiracion - now) / (1000 * 60 * 60));
-
-    return Math.floor(horasRestantes);
+    return Math.floor(calcularHorasRestantes(this.reserva.fechaExpiracionPreReserva));
   }
 }

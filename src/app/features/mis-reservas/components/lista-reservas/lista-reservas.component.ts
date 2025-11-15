@@ -17,6 +17,8 @@ import { FiltrosReservasComponent } from '../filtros-reservas/filtros-reservas.c
 import { DetalleReservaComponent } from '../detalle-reserva/detalle-reserva.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
+import { formatFechaLocal, calcularHorasRestantes } from '@shared/utils/date.utils';
+import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
 
 @Component({
   selector: 'app-lista-reservas',
@@ -171,10 +173,10 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
    */
   getEstadoClass(codigoEstado: string): string {
     const estadoMap: Record<string, string> = {
-      '01': 'estado-pendiente',    // Amarillo
-      '02': 'estado-confirmado',   // Verde
-      '03': 'estado-cancelado',    // Rojo
-      '04': 'estado-expirado'      // Gris
+      [EstadoReservaCodigo.PENDIENTE]: 'estado-pendiente',    // Amarillo
+      [EstadoReservaCodigo.CONFIRMADO]: 'estado-confirmado',   // Verde
+      [EstadoReservaCodigo.CANCELADO]: 'estado-cancelado',    // Rojo
+      [EstadoReservaCodigo.EXPIRADO]: 'estado-expirado'      // Gris
     };
     return estadoMap[codigoEstado] || '';
   }
@@ -184,10 +186,10 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
    */
   getEstadoIcon(codigoEstado: string): string {
     const iconMap: Record<string, string> = {
-      '01': 'schedule',           // Pendiente
-      '02': 'check_circle',       // Confirmado
-      '03': 'cancel',             // Cancelado
-      '04': 'event_busy'          // Expirado
+      [EstadoReservaCodigo.PENDIENTE]: 'schedule',           // Pendiente
+      [EstadoReservaCodigo.CONFIRMADO]: 'check_circle',       // Confirmado
+      [EstadoReservaCodigo.CANCELADO]: 'cancel',             // Cancelado
+      [EstadoReservaCodigo.EXPIRADO]: 'event_busy'          // Expirado
     };
     return iconMap[codigoEstado] || 'help';
   }
@@ -196,15 +198,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
    * Formatear fecha
    */
   formatFecha(fecha: string): string {
-    if (!fecha) return '-';
-    const date = new Date(fecha);
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    };
-    return date.toLocaleDateString('es-PE', options);
+    return formatFechaLocal(fecha);
   }
 
   /**
@@ -228,9 +222,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
   isProximaExpirar(reserva: ReservaClienteDto): boolean {
     if (!reserva.fechaExpiracionPreReserva || !reserva.estaPendiente) return false;
 
-    const now = new Date().getTime();
-    const expiracion = new Date(reserva.fechaExpiracionPreReserva).getTime();
-    const horasRestantes = (expiracion - now) / (1000 * 60 * 60);
+    const horasRestantes = calcularHorasRestantes(reserva.fechaExpiracionPreReserva);
 
     return horasRestantes > 0 && horasRestantes <= 6;
   }
@@ -241,11 +233,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
   getHorasRestantes(reserva: ReservaClienteDto): number {
     if (!reserva.fechaExpiracionPreReserva) return 0;
 
-    const now = new Date().getTime();
-    const expiracion = new Date(reserva.fechaExpiracionPreReserva).getTime();
-    const horasRestantes = Math.max(0, (expiracion - now) / (1000 * 60 * 60));
-
-    return Math.floor(horasRestantes);
+    return Math.floor(calcularHorasRestantes(reserva.fechaExpiracionPreReserva));
   }
 
   override ngOnDestroy(): void {

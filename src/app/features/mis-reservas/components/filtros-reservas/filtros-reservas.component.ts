@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SearchReservaClienteFilterDto } from 'app/features/reserva/core/model/reservaCliente.model';
+import { EstadoReservaCodigo, EstadoReservaNombre } from '@shared/enums/estado-reserva.enum';
+import { EstadoPago } from '@shared/enums/estado-pago.enum';
 
 @Component({
   selector: 'app-filtros-reservas',
@@ -38,16 +40,16 @@ export class FiltrosReservasComponent implements OnInit {
   filtrosForm!: FormGroup;
 
   estadosReserva = [
-    { value: '01', label: 'Pendiente' },
-    { value: '02', label: 'Confirmado' },
-    { value: '03', label: 'Cancelado' },
-    { value: '04', label: 'Expirado' }
+    { value: EstadoReservaCodigo.PENDIENTE, label: EstadoReservaNombre.PENDIENTE },
+    { value: EstadoReservaCodigo.CONFIRMADO, label: EstadoReservaNombre.CONFIRMADO },
+    { value: EstadoReservaCodigo.CANCELADO, label: EstadoReservaNombre.CANCELADO },
+    { value: EstadoReservaCodigo.EXPIRADO, label: EstadoReservaNombre.EXPIRADO }
   ];
 
   estadosPago = [
-    { value: 'Pendiente', label: 'Pendiente' },
-    { value: 'Parcial', label: 'Parcial' },
-    { value: 'Pagado', label: 'Pagado' }
+    { value: EstadoPago.PENDIENTE, label: EstadoPago.PENDIENTE },
+    { value: EstadoPago.PARCIAL, label: EstadoPago.PARCIAL },
+    { value: EstadoPago.PAGADO, label: EstadoPago.PAGADO }
   ];
 
   constructor(private fb: FormBuilder) {}
