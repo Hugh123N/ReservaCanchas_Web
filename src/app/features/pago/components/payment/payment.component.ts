@@ -14,18 +14,8 @@ import { User } from 'app/features/auth/models/user';
 import { ReservaService } from 'app/features/reserva/core/services/reserva.service';
 import { CreateReserva } from 'app/features/reserva/core/model/createReserva.model';
 import { ReservaConPagoDto } from 'app/features/reserva/core/model/reservaConPago.model';
+import { ReservaData } from '../../core/types/reserva-data.interface';
 import Swal from 'sweetalert2';
-
-interface ReservaData {
-  canchaId: number;
-  cancha?: any;
-  fecha: string;
-  selectedTime: any;
-  duracion: number;
-  telefono: string;
-  precioHora: number;
-  total: number;
-}
 
 @Component({
   selector: 'app-payment',
@@ -203,7 +193,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       fecha: this.reservaData.fecha,
       monto: this.reservaData.total,
       idEstadoReserva: 1, 
-      codigoMetodoPago: '02', // ✅ SOLO EFECTIVO
+      codigoMetodoPago: '02', //SOLO EFECTIVO
       // NO enviamos montoAdelanto (lo registra el operador al confirmar)
       detalles
     };

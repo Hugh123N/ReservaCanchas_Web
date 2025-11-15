@@ -29,16 +29,8 @@ import { DisponibilidadService } from '../../core/services/disponibilidad.servic
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
 import { AuthService } from '@core/auth/services/auth.service';
 import { DateOption } from '../../core/types/date-option';
-
-interface TimeOption {
-  hora: string;
-}
-
-interface ServiceItem {
-  name: string;
-  icon: string;
-  iconClass: string;
-}
+import { TimeOption } from '../../core/types/time-option.interface';
+import { ServiceItem } from '../../core/types/service-item.interface';
 
 @Component({
   selector: 'app-detalle-cancha',
