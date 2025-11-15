@@ -71,13 +71,10 @@
   @apply border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! hover:bg-primary-50! transition!;
 }
 
-.btn-outline-primary {
-  @apply border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! hover:bg-primary-50! transition!;
-}
-
 .btn-outline-secondary {
   @apply border! border-secondary-500! text-secondary-500! px-4! py-2! rounded-lg! hover:bg-secondary-50! transition!;
 }
+
 .btn-outline-accent {
   @apply border! border-accent-500! text-accent-500! px-4! py-2! rounded-lg! hover:bg-accent-50! transition!;
 }
@@ -523,7 +520,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .hero-gradient-soft {
   background: linear-gradient(135deg, rgb(243 232 255) 0%, rgb(236 254 255) 100%);
-  @apply relative;
+  @apply relative overflow-hidden;
 }
 
 .hero-overlay {
@@ -809,4 +806,65 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 /* Spinner blanco dentro de botón */
 .spinner-white ::ng-deep circle {
   stroke: white !important;
+}
+
+/* ========== RESERVATION STATES ========== */
+/* Estados de Reservas - Consolidados desde componentes */
+
+.estado-pendiente {
+  @apply bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.estado-confirmado {
+  @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.estado-cancelado {
+  @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.estado-expirado {
+  @apply bg-neutral-200 text-neutral-600 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+/* ========== ERROR PAGES ========== */
+/* Clases base para páginas de error (404, 401, 500) */
+
+.error-page-container {
+  @apply min-h-screen flex items-center justify-center p-5;
+}
+
+.error-page-card {
+  @apply bg-white rounded-2xl shadow-2xl p-8 sm:p-10 md:p-12 text-center max-w-2xl w-full;
+}
+
+.error-page-icon {
+  @apply mb-6;
+  font-size: 60px !important;
+  width: 60px !important;
+  height: 60px !important;
+}
+
+@media (min-width: 640px) {
+  .error-page-icon {
+    font-size: 80px !important;
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
+.error-page-code {
+  @apply text-4xl sm:text-5xl md:text-6xl font-bold mb-4;
+}
+
+.error-page-title {
+  @apply text-xl sm:text-2xl md:text-3xl font-semibold text-neutral-800 mb-3;
+}
+
+.error-page-description {
+  @apply text-sm sm:text-base md:text-lg text-neutral-600 mb-8 leading-relaxed;
+}
+
+.error-page-actions {
+  @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
 }

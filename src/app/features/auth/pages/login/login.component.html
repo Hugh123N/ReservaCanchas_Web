@@ -2,7 +2,7 @@
   <!-- Left Panel - Visual (Desktop/Tablet) -->
   @if (!(isHandset$ | async)) {
     <div class="auth-visual-panel">
-      <app-auth-visual-panel ngskiphydration="true"
+      <app-auth-visual-panel
         [features]="features">
       </app-auth-visual-panel>
     </div>

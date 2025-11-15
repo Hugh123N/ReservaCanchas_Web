@@ -3,14 +3,9 @@
 /* ===== DETALLE CANCHA COMPONENT SPECIFIC STYLES ===== */
 /* Solo estilos específicos del detalle de cancha */
 
-/* Hero Section específico */
-.cancha-hero {
-  background: linear-gradient(135deg, rgb(243 232 255) 0%, rgb(236 254 255) 100%);
-}
-
 /* Info Card específica */
 .cancha-info-card {
-  @apply transition-all duration-300 hover:shadow-xl border-2 border-transparent;
+  @apply border-2 border-transparent;
 }
 
 .cancha-info-card:hover {

@@ -1,22 +1,5 @@
 @reference "../../../../../styles.css";
 
-/* Estados de reserva */
-.estado-pendiente {
-  @apply bg-amber-100 text-amber-800;
-}
-
-.estado-confirmado {
-  @apply bg-green-100 text-green-800;
-}
-
-.estado-cancelado {
-  @apply bg-red-100 text-red-800;
-}
-
-.estado-expirado {
-  @apply bg-neutral-200 text-neutral-600;
-}
-
 /* Card hover effect personalizado */
 mat-card {
   @apply transition-all duration-300;
