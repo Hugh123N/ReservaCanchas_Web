@@ -26,12 +26,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 import { UserType } from '../../types/userTypes';
 import { OAuthProvider } from '../../types/oAuthProvider';
 import { FeatureAuth } from '../../types/featureAuth';
-
-
-
-
-
-
+import { OAuthService } from '../../services/oauth.service';
 
 
 @Component({
@@ -54,29 +49,16 @@ import { FeatureAuth } from '../../types/featureAuth';
 })
 export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
 
-  // Form
   loginForm!: FormGroup;
   private unsubscribe: Subject<any>;
 
-  // States
   isLoading: boolean = false;
   hidePassword: boolean = true;
   errorMessage: string = '';
   successMessage: string = '';
-  showUserTypeSelection: boolean = false; // Cambiar a true si necesitas selector de tipo
 
-  // User Type
-  selectedUserType: string = 'cliente';
-  userTypes: UserType[] = [
-    { value: 'cliente', label: 'Cliente', icon: 'person' },
-    { value: 'proveedor', label: 'Proveedor', icon: 'business' },
-    { value: 'operador', label: 'Operador', icon: 'admin_panel_settings' }
-  ];
-
-  // Responsive
   isHandset$!: Observable<boolean>;
 
-  // Features for side panel
   features: FeatureAuth[] = [
     {
       icon: 'payment',
@@ -98,11 +80,10 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     private authService: AuthService,
     private usersService: UsersService,
+    private oauthService: OAuthService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
-    // private oauthService: OAuthService
   ) {
     super("USERS", viewContainerRef);
-    // Initialize form
     this.loginForm = this.formBuilder.group({
       applicationCode: ['Cliente', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -151,7 +132,6 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
       userName: this.loginForm.value.email,
       password: this.loginForm.value.password,
       rememberMe: this.loginForm.value.rememberMe,
-      //userType: this.selectedUserType
     };
 
     const subscription = this.usersService
@@ -185,103 +165,99 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-
-  private redirectAfterLogin(userType: string): void {
-    switch (userType) {
-      case 'proveedor':
-        this.router.navigate(['/proveedor/dashboard']);
-        break;
-      case 'operador':
-        this.router.navigate(['/operador/dashboard']);
-        break;
-      case 'cliente':
-      default:
-        this.router.navigate(['/']);
-        break;
-    }
-  }
-
-  // ===== OAUTH METHODS =====
   onGoogleLogin(): void {
     this.clearMessages();
     this.isLoading = true;
 
-    const oauthData: OAuthProvider = {
-      provider: 'google',
-      userType: this.selectedUserType
-    };
+    const subscription = this.oauthService
+      .loginWithGoogle()
+      .subscribe({
+        next: (idToken: string) => {
+          // Token de Google recibido, enviarlo al backend
+          this.usersService
+            .loginWithOAuth('Google', idToken)
+            .pipe(
+              tap((response) => {
+                if (response && response.isValid) {
+                  this.authService.logIn(response.data.accessToken);
+                  this.successMessage = '¡Login exitoso con Google!';
 
-    // Implementación real con tu servicio OAuth
-    this.performOAuthLogin(oauthData);
-
-    /* Implementación real:
-    this.oauthService.loginWithGoogle(oauthData).subscribe({
-      next: (response) => {
-        if (response.isValid) {
-          this.handleLoginSuccess(response.data);
-        } else {
-          this.handleLoginError(response.message);
+                  setTimeout(() => {
+                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                    if (redirectUrl) {
+                      sessionStorage.removeItem('redirect_after_login');
+                      this.router.navigateByUrl(redirectUrl);
+                    } else {
+                      this.router.navigate(['/']);
+                    }
+                  }, 1000);
+                } else {
+                  this.errorMessage = response?.Messages?.join(', ') || 'Error al autenticar con Google';
+                }
+              }),
+              takeUntil(this.unsubscribe),
+              finalize(() => {
+                this.isLoading = false;
+                this.cdr.markForCheck();
+              })
+            )
+            .subscribe();
+        },
+        error: (error) => {
+          this.errorMessage = 'Error al iniciar sesión con Google. Por favor intenta nuevamente.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
         }
-      },
-      error: (error) => {
-        this.handleLoginError('Error al iniciar sesión con Google');
-      }
-    });
-    */
+      });
+
+    this.subscriptions.push(subscription);
   }
   onFacebookLogin(): void {
     this.clearMessages();
     this.isLoading = true;
 
-    const oauthData: OAuthProvider = {
-      provider: 'facebook',
-      userType: this.selectedUserType
-    };
+    const subscription = this.oauthService
+      .loginWithFacebook()
+      .subscribe({
+        next: (accessToken: string) => {
+          // Access token de Facebook recibido, enviarlo al backend
+          this.usersService
+            .loginWithOAuth('Facebook', accessToken)
+            .pipe(
+              tap((response) => {
+                if (response && response.isValid) {
+                  this.authService.logIn(response.data.accessToken);
+                  this.successMessage = '¡Login exitoso con Facebook!';
 
-    this.performOAuthLogin(oauthData);
-
-    /* Implementación real:
-    this.oauthService.loginWithFacebook(oauthData).subscribe({
-      next: (response) => {
-        if (response.isValid) {
-          this.handleLoginSuccess(response.data);
-        } else {
-          this.handleLoginError(response.message);
+                  setTimeout(() => {
+                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                    if (redirectUrl) {
+                      sessionStorage.removeItem('redirect_after_login');
+                      this.router.navigateByUrl(redirectUrl);
+                    } else {
+                      this.router.navigate(['/']);
+                    }
+                  }, 1000);
+                } else {
+                  this.errorMessage = response?.Messages?.join(', ') || 'Error al autenticar con Facebook';
+                }
+              }),
+              takeUntil(this.unsubscribe),
+              finalize(() => {
+                this.isLoading = false;
+                this.cdr.markForCheck();
+              })
+            )
+            .subscribe();
+        },
+        error: (error) => {
+          this.errorMessage = 'Error al iniciar sesión con Facebook. Por favor intenta nuevamente.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
         }
-      },
-      error: (error) => {
-        this.handleLoginError('Error al iniciar sesión con Facebook');
-      }
-    });
-    */
-  }
+      });
 
-  /**
-   * Simulated OAuth login (replace with real service)
-   */
-  private performOAuthLogin(oauthData: OAuthProvider): void {
-    console.log('OAuth login:', oauthData);
-
-    // Simulación - Reemplazar con llamada real
-    setTimeout(() => {
-      this.isLoading = false;
-      this.errorMessage = `Login con ${oauthData.provider} en desarrollo. Por favor usa email/contraseña.`;
-
-      setTimeout(() => {
-        this.clearMessages();
-      }, 3000);
-    }, 1000);
-  }
-
-
-  /**
-   * Change user type
-   */
-  onUserTypeChange(userType: string): void {
-    this.selectedUserType = userType;
-    this.clearMessages();
+    this.subscriptions.push(subscription);
   }
 
   onForgotPassword(): void {
@@ -289,9 +265,7 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   onRegister(): void {
-    this.router.navigate(['/auth/register'], {
-      queryParams: { userType: this.selectedUserType }
-    });
+    this.router.navigate(['/auth/register']);
   }
 
   close(): void {

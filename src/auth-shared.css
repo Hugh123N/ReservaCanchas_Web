@@ -23,39 +23,6 @@
 
 /* ========== VISUAL CONTENT ========== */
 
-/* Floating Icons Container */
-.auth-floating-icons {
-  @apply absolute inset-0 pointer-events-none overflow-hidden;
-}
-
-.auth-floating-icon {
-  @apply absolute rounded-3xl p-6 backdrop-blur-sm;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: authFloatIcon 20s ease-in-out infinite;
-}
-
-.auth-floating-icon .mat-icon {
-  @apply text-white/80;
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-}
-
-/* Floating icon positions */
-.auth-floating-icon-1 { top: 10%; left: 10%; animation-delay: 0s; }
-.auth-floating-icon-2 { top: 20%; right: 15%; animation-delay: 3s; }
-.auth-floating-icon-3 { bottom: 30%; left: 15%; animation-delay: 6s; }
-.auth-floating-icon-4 { bottom: 15%; right: 20%; animation-delay: 9s; }
-.auth-floating-icon-5 { top: 60%; left: 50%; animation-delay: 12s; }
-
-@keyframes authFloatIcon {
-  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
-  25% { transform: translateY(-30px) rotate(5deg); opacity: 0.8; }
-  50% { transform: translateY(-15px) rotate(-5deg); opacity: 1; }
-  75% { transform: translateY(-25px) rotate(3deg); opacity: 0.7; }
-}
-
 /* Visual Content */
 .auth-visual-content {
   @apply relative z-10 max-w-2xl text-white;

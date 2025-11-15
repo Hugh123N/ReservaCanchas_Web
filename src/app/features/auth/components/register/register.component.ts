@@ -23,6 +23,8 @@ import { CreateUserModel } from '../../models/create-user.model';
 import { Features } from 'tailwindcss';
 import { OAuthProvider } from '../../types/oAuthProvider';
 import { FeatureAuth } from '../../types/featureAuth';
+import { OAuthService } from '../../services/oauth.service';
+import { AuthService } from '@core/auth/services/auth.service';
 
 
 
@@ -66,6 +68,8 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     private cdr: ChangeDetectorRef,
     private breakpointObserver: BreakpointObserver,
     private usersService: UsersService,
+    private oauthService: OAuthService,
+    private authService: AuthService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super("USERS", viewContainerRef);
@@ -191,34 +195,96 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     this.clearMessages();
     this.isLoading = true;
 
-    const oauthData: OAuthProvider = {
-      provider: 'google'
-    };
+    const subscription = this.oauthService
+      .loginWithGoogle()
+      .subscribe({
+        next: (idToken: string) => {
+          // Token de Google recibido, enviarlo al backend (el backend crea o busca el usuario)
+          this.usersService
+            .loginWithOAuth('Google', idToken)
+            .pipe(
+              tap((response) => {
+                if (response && response.isValid) {
+                  this.authService.logIn(response.data.accessToken);
+                  this.successMessage = '¡Registro exitoso con Google! Redirigiendo...';
 
-    this.performOAuthRegister(oauthData);
+                  setTimeout(() => {
+                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                    if (redirectUrl) {
+                      sessionStorage.removeItem('redirect_after_login');
+                      this.router.navigateByUrl(redirectUrl);
+                    } else {
+                      this.router.navigate(['/']);
+                    }
+                  }, 1000);
+                } else {
+                  this.errorMessage = response?.Messages?.join(', ') || 'Error al registrarse con Google';
+                }
+              }),
+              takeUntil(this.unsubscribe),
+              finalize(() => {
+                this.isLoading = false;
+                this.cdr.markForCheck();
+              })
+            )
+            .subscribe();
+        },
+        error: (error) => {
+          this.errorMessage = 'Error al registrarse con Google. Por favor intenta nuevamente.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+
+    this.subscriptions.push(subscription);
   }
+
   onFacebookRegister(): void {
     this.clearMessages();
     this.isLoading = true;
 
-    const oauthData: OAuthProvider = {
-      provider: 'facebook'
-    };
+    const subscription = this.oauthService
+      .loginWithFacebook()
+      .subscribe({
+        next: (accessToken: string) => {
+          // Access token de Facebook recibido, enviarlo al backend (el backend crea o busca el usuario)
+          this.usersService
+            .loginWithOAuth('Facebook', accessToken)
+            .pipe(
+              tap((response) => {
+                if (response && response.isValid) {
+                  this.authService.logIn(response.data.accessToken);
+                  this.successMessage = '¡Registro exitoso con Facebook! Redirigiendo...';
 
-    this.performOAuthRegister(oauthData);
-  }
-  private performOAuthRegister(oauthData: OAuthProvider): void {
-    console.log('OAuth register:', oauthData);
+                  setTimeout(() => {
+                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                    if (redirectUrl) {
+                      sessionStorage.removeItem('redirect_after_login');
+                      this.router.navigateByUrl(redirectUrl);
+                    } else {
+                      this.router.navigate(['/']);
+                    }
+                  }, 1000);
+                } else {
+                  this.errorMessage = response?.Messages?.join(', ') || 'Error al registrarse con Facebook';
+                }
+              }),
+              takeUntil(this.unsubscribe),
+              finalize(() => {
+                this.isLoading = false;
+                this.cdr.markForCheck();
+              })
+            )
+            .subscribe();
+        },
+        error: (error) => {
+          this.errorMessage = 'Error al registrarse con Facebook. Por favor intenta nuevamente.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
 
-    // Simulación - Reemplazar con llamada real
-    setTimeout(() => {
-      this.isLoading = false;
-      this.errorMessage = `Registro con ${oauthData.provider} en desarrollo. Por favor usa el formulario.`;
-
-      setTimeout(() => {
-        this.clearMessages();
-      }, 3000);
-    }, 1000);
+    this.subscriptions.push(subscription);
   }
 
   onLogin(): void {

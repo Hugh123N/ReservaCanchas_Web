@@ -201,12 +201,8 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   }
 
   override ngOnDestroy() {
+    super.ngOnDestroy();
     this.cityControlSub?.unsubscribe();
-  }
-
-  onReservarCancha(cancha: SearchCancha) {
-    console.log("Reservar cancha:", cancha.nombre)
-    // Aquí iría la lógica para reservar
   }
 
   onRegistrarCancha() {
@@ -231,7 +227,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       this.selectedUbigeo = null;
     }
 
-    // Navegar a canchas con los parámetros
     this.router.navigate(['/cancha/canchas'], {
       queryParams: {
         fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,

@@ -28,13 +28,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 import { DisponibilidadService } from '../../core/services/disponibilidad.service';
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
 import { AuthService } from '@core/auth/services/auth.service';
-
-interface DateOption {
-  dia: string;
-  numero: string;
-  mes: string;
-  fecha: string;
-}
+import { DateOption } from '../../core/types/date-option';
 
 interface TimeOption {
   hora: string;
@@ -82,61 +76,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   isFavorite: boolean = false;
 
   // Data
-  canchaData: GetCancha = {
-    idCancha: 1,
-    nombre: "DeporPlaza Matamula",
-    idTipoCancha: 2,
-    descripcion: "Moderna cancha de fútbol con césped sintético de última generación, iluminación LED profesional y todas las comodidades para una experiencia deportiva excepcional.",
-    ubicacion: "Jr Belisario Flores #900",
-    direccion: "Jr Belisario Flores #900, Lince, Lima",
-    latitud: -12.0854,
-    longitud: -77.0428,
-    precioHora: 50,
-    idProveedor: "prov-001",
-    codigoUbigeo: "150117",
-    idEstadoCancha: 1,
-    calificacionPromedio: 4.5,
-    tipoCancha: {
-      nombre: "Fútbol 11",
-      idTipoCancha: 2
-    },
-    imagenesCancha: [
-      {
-        idCancha: 1,
-        urlImagen: "https://img.freepik.com/fotos-premium/cancha-futbol-atardecer-fondo_670382-6866.jpg?w=1060",
-        esPrincipal: true,
-        idImagenCancha: 1,
-        activo: true
-      },
-      {
-        idCancha: 1,
-        urlImagen: "https://picsum.photos/seed/cancha1/800/600",
-        esPrincipal: false,
-        idImagenCancha: 2,
-        activo: true
-      },
-      {
-        idCancha: 1,
-        urlImagen: "https://picsum.photos/seed/cancha2/800/600",
-        esPrincipal: false,
-        idImagenCancha: 3,
-        activo: true
-      }
-    ],
-    estadoCancha: {
-      codigo: "01",
-      nombre: "Disponible",
-      idEstadoCancha: 1,
-    },
-    faboritos: [],
-    ubigeo: {
-      codigoUbigeo: "150117",
-      departamento: "LIMA",
-      provincia: "LIMA",
-      distrito: "LINCE"
-    },
-    horariosDisponibles: ["08:00", "09:00", "10:00", "14:00", "15:00", "16:00", "18:00", "19:00", "20:00", "21:00"]
-  };
+  canchaData: GetCancha;
 
   // Available dates (next 7 days)
   fechasDisponibles: DateOption[] = [];
@@ -165,9 +105,9 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
+    this.canchaData = {} as GetCancha;
     this.reservaForm = this.fb.group({
       telefono: ['', [Validators.required, Validators.pattern(/^(\+51|51)?[9][0-9]{8}$/)]],
-      recordatorioWhatsApp: [true],
       duracion: [1]
     });
   }

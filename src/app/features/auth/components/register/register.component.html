@@ -2,57 +2,39 @@
 <div class="auth-wrapper">
   <!-- Left Panel - Visual (Desktop/Tablet) -->
   @if (!(isHandset$ | async)) {
-    <div class="auth-visual-panel">
-      <!-- Background Image Overlay -->
-      <div class="auth-visual-overlay"></div>
-      <!-- Floating Icons -->
-      <div class="auth-floating-icons">
-        <div class="auth-floating-icon auth-floating-icon-1">
+  <div class="auth-visual-panel">
+    <!-- Background Image Overlay -->
+    <div class="auth-visual-overlay"></div>
+    <!-- Content -->
+    <div class="auth-visual-content">
+      <!-- Logo -->
+      <div class="auth-visual-logo">
+        <div class="auth-logo-large">
           <mat-icon>sports_soccer</mat-icon>
         </div>
-        <div class="auth-floating-icon auth-floating-icon-2">
-          <mat-icon>sports_tennis</mat-icon>
-        </div>
-        <div class="auth-floating-icon auth-floating-icon-3">
-          <mat-icon>sports_basketball</mat-icon>
-        </div>
-        <div class="auth-floating-icon auth-floating-icon-4">
-          <mat-icon>sports_volleyball</mat-icon>
-        </div>
-        <div class="auth-floating-icon auth-floating-icon-5">
-          <mat-icon>sports</mat-icon>
-        </div>
+        <h1 class="auth-visual-title">CanchaReservas</h1>
       </div>
-      <!-- Content -->
-      <div class="auth-visual-content">
-        <!-- Logo -->
-        <div class="auth-visual-logo">
-          <div class="auth-logo-large">
-            <mat-icon>sports_soccer</mat-icon>
+      <p class="auth-visual-description">
+        La plataforma más completa para encontrar y reservar canchas de fútbol,
+        tenis, básquetbol, pádel y más.
+        <strong>Miles de canchas disponibles</strong> en toda la ciudad.
+      </p>
+      <!-- Features List -->
+      <div class="auth-visual-features">
+        @for (feature of features; track feature) {
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <mat-icon>{{ feature.icon }}</mat-icon>
           </div>
-          <h1 class="auth-visual-title">CanchaReservas</h1>
+          <div class="auth-feature-text">
+            <h4>{{ feature.title }}</h4>
+            <p>{{ feature.description }}</p>
+          </div>
         </div>
-        <p class="auth-visual-description">
-          La plataforma más completa para encontrar y reservar canchas de fútbol,
-          tenis, básquetbol, pádel y más.
-          <strong>Miles de canchas disponibles</strong> en toda la ciudad.
-        </p>
-        <!-- Features List -->
-        <div class="auth-visual-features">
-          @for (feature of features; track feature) {
-            <div class="auth-feature-item">
-              <div class="auth-feature-icon">
-                <mat-icon>{{ feature.icon }}</mat-icon>
-              </div>
-              <div class="auth-feature-text">
-                <h4>{{ feature.title }}</h4>
-                <p>{{ feature.description }}</p>
-              </div>
-            </div>
-          }
-        </div>
+        }
       </div>
     </div>
+  </div>
   }
 
   <!-- Right Panel - Login Form -->
@@ -60,25 +42,21 @@
     <div class="auth-scroll-container">
       <!-- Close Button (Mobile) -->
       @if (isHandset$ | async) {
-        <button
-          mat-icon-button
-          class="auth-close-btn"
-          (click)="close()"
-          >
-          <mat-icon>close</mat-icon>
-        </button>
+      <button mat-icon-button class="auth-close-btn" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
       }
 
       <!-- Login Card -->
       <div class="auth-form-card">
         <!-- Logo Mobile -->
         @if (isHandset$ | async) {
-          <div class="auth-logo-mobile">
-            <div class="logo-icon">
-              <mat-icon>sports_soccer</mat-icon>
-            </div>
-            <h1 class="title-main">CanchaReservas</h1>
+        <div class="auth-logo-mobile">
+          <div class="logo-icon">
+            <mat-icon>sports_soccer</mat-icon>
           </div>
+          <h1 class="title-main">CanchaReservas</h1>
+        </div>
         }
 
         <!-- Header -->
@@ -97,246 +75,214 @@
             type="button"
             (click)="onGoogleRegister()"
             [disabled]="isLoading"
-            >
+          >
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
               alt="Google"
-              class="auth-social-icon"
-              />
-              <span>Continuar con Google</span>
-            </button>
+              class="auth-social-icon mr-2"
+            />
+            <span>Continuar con Google</span>
+          </button>
 
+          <button
+            mat-stroked-button
+            class="auth-social-btn facebook"
+            type="button"
+            (click)="onFacebookRegister()"
+            [disabled]="isLoading"
+          >
+            <mat-icon class="auth-social-icon">facebook</mat-icon>
+            <span>Continuar con Facebook</span>
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+          <mat-divider></mat-divider>
+          <span class="auth-divider-text">o continúa con email</span>
+          <mat-divider></mat-divider>
+        </div>
+
+        <!-- Register Form -->
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+          class="login-form"
+        >
+          <!-- First Name Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nombre</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="firstName"
+              placeholder="Tu nombre"
+              autocomplete="given-name"
+            />
+            <mat-icon matPrefix class="icon-primary">person</mat-icon>
+            @if (registerForm.get('firstName')?.hasError('required')) {
+            <mat-error> El nombre es requerido </mat-error>
+            } @if (registerForm.get('firstName')?.hasError('minlength')) {
+            <mat-error> Mínimo 2 caracteres </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Last Name Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Apellido</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="lastName"
+              placeholder="Tu apellido"
+              autocomplete="family-name"
+            />
+            <mat-icon matPrefix class="icon-primary">person_outline</mat-icon>
+            @if (registerForm.get('lastName')?.hasError('required')) {
+            <mat-error> El apellido es requerido </mat-error>
+            } @if (registerForm.get('lastName')?.hasError('minlength')) {
+            <mat-error> Mínimo 2 caracteres </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Correo electrónico</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="tu@email.com"
+              autocomplete="email"
+            />
+            <mat-icon matPrefix class="icon-primary">email</mat-icon>
+            @if (registerForm.get('email')?.hasError('required')) {
+            <mat-error> El email es requerido </mat-error>
+            } @if (registerForm.get('email')?.hasError('email')) {
+            <mat-error> Ingresa un email válido </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Contraseña</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+            />
+            <mat-icon matPrefix class="icon-primary">lock</mat-icon>
             <button
-              mat-stroked-button
-              class="auth-social-btn facebook"
+              mat-icon-button
+              matSuffix
               type="button"
-              (click)="onFacebookRegister()"
-              [disabled]="isLoading"
-              >
-              <mat-icon class="auth-social-icon">facebook</mat-icon>
-              <span>Continuar con Facebook</span>
-            </button>
-          </div>
-
-          <!-- Divider -->
-          <div class="auth-divider">
-            <mat-divider></mat-divider>
-            <span class="auth-divider-text">o continúa con email</span>
-            <mat-divider></mat-divider>
-          </div>
-
-          <!-- Register Form -->
-          <form
-            [formGroup]="registerForm"
-            (ngSubmit)="onSubmit()"
-            class="login-form"
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Mostrar contraseña'"
             >
-            <!-- First Name Field -->
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Nombre</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="firstName"
-                placeholder="Tu nombre"
-                autocomplete="given-name"
-                />
-                <mat-icon matPrefix class="icon-primary">person</mat-icon>
-                @if (registerForm.get('firstName')?.hasError('required')) {
-                  <mat-error
-                    >
-                    El nombre es requerido
-                  </mat-error>
-                }
-                @if (registerForm.get('firstName')?.hasError('minlength')) {
-                  <mat-error
-                    >
-                    Mínimo 2 caracteres
-                  </mat-error>
-                }
-              </mat-form-field>
+              <mat-icon class="icon-secondary">{{
+                hidePassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (registerForm.get('password')?.hasError('required')) {
+            <mat-error> La contraseña es requerida </mat-error>
+            } @if (registerForm.get('password')?.hasError('minlength')) {
+            <mat-error> Mínimo 6 caracteres </mat-error>
+            } @if (registerForm.get('password')?.hasError('pattern')) {
+            <mat-error> Debe contener letras y números </mat-error>
+            }
+          </mat-form-field>
 
-              <!-- Last Name Field -->
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Apellido</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="lastName"
-                  placeholder="Tu apellido"
-                  autocomplete="family-name"
-                  />
-                  <mat-icon matPrefix class="icon-primary">person_outline</mat-icon>
-                  @if (registerForm.get('lastName')?.hasError('required')) {
-                    <mat-error
-                      >
-                      El apellido es requerido
-                    </mat-error>
-                  }
-                  @if (registerForm.get('lastName')?.hasError('minlength')) {
-                    <mat-error
-                      >
-                      Mínimo 2 caracteres
-                    </mat-error>
-                  }
-                </mat-form-field>
+          <!-- Confirm Password Field -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Confirmar Contraseña</mat-label>
+            <input
+              matInput
+              [type]="hideConfirmPassword ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+            />
+            <mat-icon matPrefix class="icon-primary">lock_outline</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hideConfirmPassword = !hideConfirmPassword"
+              [attr.aria-label]="'Mostrar contraseña'"
+            >
+              <mat-icon class="icon-secondary">{{
+                hideConfirmPassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (registerForm.get('confirmPassword')?.hasError('required')) {
+            <mat-error> Confirma tu contraseña </mat-error>
+            } @if ( registerForm.hasError('passwordMismatch') &&
+            registerForm.get('confirmPassword')?.touched ) {
+            <mat-error> Las contraseñas no coinciden </mat-error>
+            }
+          </mat-form-field>
 
-                <!-- Email Field -->
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Correo electrónico</mat-label>
-                  <input
-                    matInput
-                    type="email"
-                    formControlName="email"
-                    placeholder="tu@email.com"
-                    autocomplete="email"
-                    />
-                    <mat-icon matPrefix class="icon-primary">email</mat-icon>
-                    @if (registerForm.get('email')?.hasError('required')) {
-                      <mat-error>
-                        El email es requerido
-                      </mat-error>
-                    }
-                    @if (registerForm.get('email')?.hasError('email')) {
-                      <mat-error>
-                        Ingresa un email válido
-                      </mat-error>
-                    }
-                  </mat-form-field>
+          <!-- Submit Button -->
+          <button
+            mat-raised-button
+            type="submit"
+            class="btn-primary submit-btn w-full"
+            [disabled]="registerForm.invalid || isLoading"
+          >
+            @if (isLoading) {
+            <mat-spinner diameter="20" class="spinner-white mr-2">
+            </mat-spinner>
+            } @if (!isLoading) {
+            <span>Crear Cuenta</span>
+            } @if (isLoading) {
+            <span>Creando cuenta...</span>
+            }
+          </button>
 
-                  <!-- Password Field -->
-                  <mat-form-field appearance="outline" class="w-full">
-                    <mat-label>Contraseña</mat-label>
-                    <input
-                      matInput
-                      [type]="hidePassword ? 'password' : 'text'"
-                      formControlName="password"
-                      placeholder="Mínimo 6 caracteres"
-                      autocomplete="new-password"
-                      />
-                      <mat-icon matPrefix class="icon-primary">lock</mat-icon>
-                      <button
-                        mat-icon-button
-                        matSuffix
-                        type="button"
-                        (click)="hidePassword = !hidePassword"
-                        [attr.aria-label]="'Mostrar contraseña'"
-                        >
-                        <mat-icon class="icon-secondary">{{
-                          hidePassword ? "visibility_off" : "visibility"
-                        }}</mat-icon>
-                      </button>
-                      @if (registerForm.get('password')?.hasError('required')) {
-                        <mat-error
-                          >
-                          La contraseña es requerida
-                        </mat-error>
-                      }
-                      @if (registerForm.get('password')?.hasError('minlength')) {
-                        <mat-error
-                          >
-                          Mínimo 6 caracteres
-                        </mat-error>
-                      }
-                      @if (registerForm.get('password')?.hasError('pattern')) {
-                        <mat-error
-                          >
-                          Debe contener letras y números
-                        </mat-error>
-                      }
-                    </mat-form-field>
+          <!-- Error Message -->
+          @if (errorMessage) {
+          <div class="error-message">
+            <mat-icon class="mr-2">error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+          }
 
-                    <!-- Confirm Password Field -->
-                    <mat-form-field appearance="outline" class="w-full">
-                      <mat-label>Confirmar Contraseña</mat-label>
-                      <input
-                        matInput
-                        [type]="hideConfirmPassword ? 'password' : 'text'"
-                        formControlName="confirmPassword"
-                        placeholder="Repite tu contraseña"
-                        autocomplete="new-password"
-                        />
-                        <mat-icon matPrefix class="icon-primary">lock_outline</mat-icon>
-                        <button
-                          mat-icon-button
-                          matSuffix
-                          type="button"
-                          (click)="hideConfirmPassword = !hideConfirmPassword"
-                          [attr.aria-label]="'Mostrar contraseña'"
-                          >
-                          <mat-icon class="icon-secondary">{{
-                            hideConfirmPassword ? "visibility_off" : "visibility"
-                          }}</mat-icon>
-                        </button>
-                        @if (registerForm.get('confirmPassword')?.hasError('required')) {
-                          <mat-error
-                            >
-                            Confirma tu contraseña
-                          </mat-error>
-                        }
-                        @if (
-                          registerForm.hasError('passwordMismatch') &&
-                          registerForm.get('confirmPassword')?.touched
-                          ) {
-                          <mat-error
-                            >
-                            Las contraseñas no coinciden
-                          </mat-error>
-                        }
-                      </mat-form-field>
+          <!-- Success Message -->
+          @if (successMessage) {
+          <div class="success-message">
+            <mat-icon class="mr-2">check_circle</mat-icon>
+            <span>{{ successMessage }}</span>
+          </div>
+          }
+        </form>
 
-                      <!-- Submit Button -->
-                      <button
-                        mat-raised-button
-                        type="submit"
-                        class="btn-primary submit-btn w-full"
-                        [disabled]="registerForm.invalid || isLoading"
-                        >
-                        @if (isLoading) {
-                          <mat-spinner
-                            diameter="20"
-                            class="spinner-white mr-2"
-                            >
-                          </mat-spinner>
-                        }
-                        @if (!isLoading) {
-                          <span>Crear Cuenta</span>
-                        }
-                        @if (isLoading) {
-                          <span>Creando cuenta...</span>
-                        }
-                      </button>
-
-                      <!-- Error Message -->
-                      @if (errorMessage) {
-                        <div class="error-message">
-                          <mat-icon class="mr-2">error_outline</mat-icon>
-                          <span>{{ errorMessage }}</span>
-                        </div>
-                      }
-
-                      <!-- Success Message -->
-                      @if (successMessage) {
-                        <div class="success-message">
-                          <mat-icon class="mr-2">check_circle</mat-icon>
-                          <span>{{ successMessage }}</span>
-                        </div>
-                      }
-                    </form>
-
-                    <!-- Login Link -->
-                    <div class="login-section">
-                      <span class="text-neutral-600">¿Ya tienes cuenta?</span>
-                      <button
-                        mat-button
-                        class="login-link"
-                        type="button"
-                        (click)="onLogin()"
-                        >
-                        Inicia sesión aquí
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <!-- Login Link -->
+        <div class="login-section">
+          <span class="text-neutral-600">¿Ya tienes cuenta?</span>
+          <button
+            mat-button
+            class="login-link"
+            type="button"
+            (click)="onLogin()"
+          >
+            Inicia sesión aquí
+          </button>
+        </div>
+        <!-- Back to Home Link (Desktop Only) -->
+        @if (!(isHandset$ | async)) {
+        <div class="text-center mt-4 pt-4 border-t border-neutral-200">
+          <button
+            (click)="close()"
+            class="text-xs text-neutral-500 hover:text-primary-600 transition-colors inline-flex items-center gap-1 border-0 p-0 bg-transparent cursor-pointer"
+          >
+            <mat-icon class="text-base">arrow_back</mat-icon>
+            Volver al inicio
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

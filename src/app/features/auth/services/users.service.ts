@@ -50,6 +50,17 @@ export class UsersService extends BaseService {
     return this.postRequest<LoginModel, ResponseDto<LoginResultModel>>(`/login`, loginDto);
   }
 
+  loginWithOAuth(provider: 'Google' | 'Facebook', idToken: string): Observable<ResponseDto<LoginResultModel>> {
+    const body = {
+      applicationCode: 'Cliente',
+      email: null,
+      password: null,
+      idToken: idToken,
+      typeValidation: provider
+    };
+    return this.postRequest<any, ResponseDto<LoginResultModel>>(`/client/loginAndCreate`, body);
+  }
+
   renewSession(): Observable<ResponseDto<AccessTokenModel>> {
     return this.getRequest<ResponseDto<AccessTokenModel>>(`/renew-session`);
   }
