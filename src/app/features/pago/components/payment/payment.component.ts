@@ -351,7 +351,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
         if (this.reservaData?.canchaId) {
           localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
         }
-        this.router.navigate(['/']);
+        this.router.navigate(['/cancha/', this.reservaData.canchaId]);
       }
     });
   }
@@ -360,7 +360,9 @@ export class PaymentComponent extends BaseComponent implements OnInit {
    * Volver atrás
    */
   onBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/cancha/', this.reservaData.canchaId], {
+      queryParams: { reserva: 'true' }
+    });
   }
 
   /**

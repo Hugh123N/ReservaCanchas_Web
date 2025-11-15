@@ -44,9 +44,9 @@
 
           <!-- Información de la Cancha -->
           <mat-card class="card-base">
-            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 p-2">
               <div class="flex-1">
-                <h2 class="text-responsive-xl font-bold text-neutral-800 mb-2">
+                <h2 class="text-responsive-xl font-bold text-neutral-800 mb-0">
                   {{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}
                 </h2>
                 <p class="text-responsive-base text-neutral-600 flex items-center gap-2 mb-4">
@@ -107,9 +107,7 @@
           </mat-card>
 
           <!-- Información Importante -->
-          <mat-card class="card-base bg-amber-50 border-l-4 border-amber-500">
-            <div class="flex gap-3">
-              <mat-icon class="text-amber-600">info</mat-icon>
+          <mat-card class="card-base bg-yellow-100! border-l-4 border-amber-500 p-2">
               <div class="flex-1">
                 <h3 class="font-bold text-neutral-800 mb-2">⚠️ Información Importante</h3>
                 <ul class="space-y-2 text-sm text-neutral-700">
@@ -131,42 +129,6 @@
                   </li>
                 </ul>
               </div>
-            </div>
-          </mat-card>
-
-          <!-- Método de Pago -->
-          <mat-card class="card-base">
-            <div class="flex items-center gap-3 mb-4">
-              <mat-icon class="text-primary-600">payments</mat-icon>
-              <h3 class="text-responsive-lg font-bold text-neutral-800">Método de Pago</h3>
-            </div>
-
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-              <mat-icon class="text-green-600 text-3xl">payments</mat-icon>
-              <div class="flex-1">
-                <p class="font-bold text-green-800">Pago en Efectivo</p>
-                <p class="text-sm text-green-700">Coordinarás directamente con el operador de la cancha</p>
-              </div>
-              <mat-icon class="text-green-600">check_circle</mat-icon>
-            </div>
-
-            <mat-divider class="my-4"></mat-divider>
-
-            <!-- Badges de Seguridad -->
-            <div class="flex flex-wrap gap-4 justify-center">
-              <div class="flex items-center gap-2 text-sm text-neutral-600">
-                <mat-icon class="icon-sm text-primary-600">lock</mat-icon>
-                <span>Proceso Seguro</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-600">
-                <mat-icon class="icon-sm text-primary-600">verified_user</mat-icon>
-                <span>Datos Protegidos</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm text-neutral-600">
-                <mat-icon class="icon-sm text-primary-600">shield</mat-icon>
-                <span>Sin Cargos Ocultos</span>
-              </div>
-            </div>
           </mat-card>
         </div>
 
@@ -175,9 +137,9 @@
           <div class="sticky top-4 space-y-4">
 
             <!-- Card de Total -->
-            <mat-card class="card-base bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200">
+            <mat-card class="card-base bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200! p-2">
               <div class="text-center">
-                <p class="text-sm text-neutral-600 mb-2">Monto Total</p>
+                <p class="text-sm text-neutral-600 mb-1">Monto Total</p>
                 <p class="text-4xl font-bold text-primary-600 mb-2">
                   S/ {{ reservaData.total }}
                 </p>
@@ -185,7 +147,7 @@
                   {{ reservaData.duracion }} hora(s) × S/ {{ reservaData.precioHora }}
                 </p>
 
-                <mat-divider class="my-4"></mat-divider>
+                <mat-divider class="my-4 p-2"></mat-divider>
 
                 <!-- Desglose -->
                 <div class="space-y-2 text-sm">

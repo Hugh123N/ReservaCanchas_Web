@@ -804,3 +804,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .custom-paginator .mat-mdc-button-base:hover {
   @apply bg-primary-50;
 }
+
+
+/* Spinner blanco dentro de botón */
+.spinner-white ::ng-deep circle {
+  stroke: white !important;
+}

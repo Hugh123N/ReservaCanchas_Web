@@ -44,8 +44,7 @@ import { AuthService } from '@core/auth/services/auth.service';
     MatChipsModule,
     LayoutModule
   ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  templateUrl: './register.component.html'
 })
 export class RegisterComponent extends BaseComponent implements OnInit, OnDestroy {
 

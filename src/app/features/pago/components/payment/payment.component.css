@@ -1,9 +1,5 @@
 @reference "../../../../../styles.css";
 
-/* ===== PAYMENT COMPONENT STYLES ===== */
-/* Estilos específicos del componente de pago */
-/* IMPORTANTE: Usa clases globales de styles.css (.content-card, .page-wrapper, etc.) */
-
 /* ========== CARD HEADERS ========== */
 
 .methods-header {
@@ -131,4 +127,5 @@
   @apply text-green-600;
   font-size: 1.25rem;
 }
+
 

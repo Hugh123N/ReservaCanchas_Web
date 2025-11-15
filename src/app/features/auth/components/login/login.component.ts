@@ -44,8 +44,7 @@ import { OAuthService } from '../../services/oauth.service';
     MatProgressSpinnerModule,
     LayoutModule,
     MatChipsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  templateUrl: './login.component.html'
 })
 export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
 

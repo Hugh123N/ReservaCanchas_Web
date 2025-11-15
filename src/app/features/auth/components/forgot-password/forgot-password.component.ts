@@ -36,8 +36,7 @@ import { FeatureAuth } from '../../types/featureAuth';
     MatProgressSpinnerModule,
     LayoutModule
   ],
-  templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+  templateUrl: './forgot-password.component.html'
 })
 export class ForgotPasswordComponent extends BaseComponent implements OnInit, OnDestroy {
 
