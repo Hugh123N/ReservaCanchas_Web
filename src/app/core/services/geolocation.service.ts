@@ -146,7 +146,7 @@ export class GeolocationService {
    * @param desdeLng Longitud de referencia
    * @returns Array ordenado con propiedad de distancia agregada
    */
-  ordenarPorDistancia<T extends { coordenadas: { lat: number; lng: number } }>(
+  ordenarPorDistancia<T extends { lat: number; lng: number }>(
     ubicaciones: T[],
     desdeLat: number,
     desdeLng: number
@@ -157,8 +157,8 @@ export class GeolocationService {
         distancia: this.calcularDistancia(
           desdeLat,
           desdeLng,
-          ubicacion.coordenadas.lat,
-          ubicacion.coordenadas.lng
+          ubicacion.lat,
+          ubicacion.lng
         )
       }))
       .sort((a, b) => a.distancia - b.distancia);
@@ -172,7 +172,7 @@ export class GeolocationService {
    * @param radioKm Radio en kilómetros
    * @returns Array filtrado de ubicaciones
    */
-  filtrarPorRadio<T extends { coordenadas: { lat: number; lng: number } }>(
+  filtrarPorRadio<T extends { lat: number; lng: number }>(
     ubicaciones: T[],
     centroLat: number,
     centroLng: number,
@@ -182,8 +182,8 @@ export class GeolocationService {
       const distancia = this.calcularDistancia(
         centroLat,
         centroLng,
-        ubicacion.coordenadas.lat,
-        ubicacion.coordenadas.lng
+        ubicacion.lat,
+        ubicacion.lng
       );
       return distancia <= radioKm;
     });

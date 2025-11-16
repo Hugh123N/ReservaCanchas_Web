@@ -1,3 +1,5 @@
+@reference "../../../../../styles.css";
+
 /* Map Page Container */
 .map-page-container {
   position: fixed;

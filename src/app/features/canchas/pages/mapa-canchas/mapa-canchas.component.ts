@@ -61,7 +61,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       direccion: 'Av. La Universidad 1234',
       distrito: 'La Molina',
       provincia: 'Lima',
-      coordenadas: { lat: -12.0794, lng: -76.9437 },
+      lat: -12.0794, lng: -76.9437,
       precioDesde: 50,
       deportes: ['Fútbol', 'Vóley'],
       imagenUrl: 'assets/images/default-field.png',
@@ -74,10 +74,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       direccion: 'Av. Aviación 2567',
       distrito: 'San Borja',
       provincia: 'Lima',
-      coordenadas: { lat: -12.0887, lng: -77.0025 },
+      lat: -12.0887, lng: -77.0025,
       precioDesde: 60,
       deportes: ['Fútbol', 'Básquet', 'Tenis'],
-      imagenUrl: 'assets/images/default-field.png',
+      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
       calificacion: 4.8,
       totalResenas: 256
     },
@@ -87,10 +87,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       direccion: 'Calle Las Begonias 789',
       distrito: 'Santiago de Surco',
       provincia: 'Lima',
-      coordenadas: { lat: -12.1391, lng: -76.9979 },
+      lat: -12.1391, lng: -76.9979,
       precioDesde: 45,
       deportes: ['Fútbol', 'Vóley', 'Básquet'],
-      imagenUrl: 'assets/images/default-field.png',
+      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
       calificacion: 4.3,
       totalResenas: 89
     },
@@ -100,10 +100,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       direccion: 'Av. Larco 1500',
       distrito: 'Miraflores',
       provincia: 'Lima',
-      coordenadas: { lat: -12.1212, lng: -77.0295 },
+      lat: -12.1212, lng: -77.0295,
       precioDesde: 80,
       deportes: ['Fútbol', 'Tenis', 'Pádel'],
-      imagenUrl: 'assets/images/default-field.png',
+      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
       calificacion: 4.9,
       totalResenas: 412
     },
@@ -113,10 +113,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       direccion: 'Av. Javier Prado 890',
       distrito: 'San Isidro',
       provincia: 'Lima',
-      coordenadas: { lat: -12.0981, lng: -77.0324 },
+      lat: -12.0981, lng: -77.0324,
       precioDesde: 55,
       deportes: ['Fútbol', 'Básquet'],
-      imagenUrl: 'assets/images/default-field.png',
+      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
       calificacion: 4.6,
       totalResenas: 167
     }
@@ -286,7 +286,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
    * Maneja el click en una tarjeta
    */
   alClickTarjeta(cancha: UbicacionCancha): void {
-    this.mapboxService.volarA(cancha.coordenadas.lat, cancha.coordenadas.lng, 15);
+    this.mapboxService.volarA(cancha.lat, cancha.lng, 15);
     this.canchaResaltadaId.set(cancha.id);
   }
 
@@ -351,8 +351,8 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.geolocationService.calcularDistancia(
       this.ubicacionUsuario.lat,
       this.ubicacionUsuario.lng,
-      cancha.coordenadas.lat,
-      cancha.coordenadas.lng
+      cancha.lat,
+      cancha.lng
     );
   }
 }

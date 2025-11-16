@@ -30,6 +30,6 @@ export const environment = {
 	email: 'user@email.com',
 	password: 'password$',
 	mapbox: {
-		accessToken: 'pk.eyJ1IjoiaHVnbzA5bnAiLCJhIjoiY21pMThzNTV2MTgxMzJucTBrZmE0ZndkZiJ9.kgmswkk3XqpmrfFxyvsaRA' // Register at https://www.mapbox.com/ to get your token
+		accessToken: 'pk.eyJ1IjoiaHVnbzA5bnAiLCJhIjoiY21pMXdhMzhpMWVkcTJqb3FkanhkN3BqMyJ9.jU-LYk6hLrkk-iB01eUBFg' // Register at https://www.mapbox.com/ to get your token
 	}
 };

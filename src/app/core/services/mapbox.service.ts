@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as mapboxgl from 'mapbox-gl';
+//import * as mapboxgl from 'mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
 import { UbicacionCancha, LimitesMapa, ViewportMapa } from '../../shared/interfaces/location.interface';
 
@@ -17,11 +18,7 @@ export class MapboxService {
   constructor() {
     // Inicializar token de acceso de Mapbox
     if (environment.mapbox?.accessToken) {
-      Object.defineProperty(mapboxgl, 'accessToken', {
-        value: environment.mapbox.accessToken,
-        writable: true,
-        configurable: true
-      });
+      (mapboxgl as any).accessToken = environment.mapbox.accessToken;
     }
   }
 
@@ -114,7 +111,7 @@ export class MapboxService {
 
     // Crear marcador
     const marcador = new mapboxgl.Marker(el)
-      .setLngLat([cancha.coordenadas.lng, cancha.coordenadas.lat])
+      .setLngLat([cancha.lng, cancha.lat])
       .addTo(this.mapa);
 
     // Agregar manejador de click
@@ -229,7 +226,7 @@ export class MapboxService {
     const limites = new mapboxgl.LngLatBounds();
 
     canchas.forEach(cancha => {
-      limites.extend([cancha.coordenadas.lng, cancha.coordenadas.lat]);
+      limites.extend([cancha.lng, cancha.lat]);
     });
 
     this.mapa.fitBounds(limites, {

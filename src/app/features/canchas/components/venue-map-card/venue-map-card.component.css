@@ -1,3 +1,5 @@
+@reference "../../../../../styles.css";
+
 /* Card Container */
 .venue-map-card {
   @apply cursor-pointer transition-all duration-300;

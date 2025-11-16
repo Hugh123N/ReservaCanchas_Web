@@ -11,15 +11,17 @@ export interface UbicacionCancha {
   direccion: string;
   distrito: string;
   provincia: string;
-  coordenadas: {
-    lat: number;
-    lng: number;
-  };
+  lat: number;
+  lng: number;
   precioDesde: number;
   deportes: string[];
   imagenUrl?: string;
   calificacion?: number;
   totalResenas?: number;
+}
+
+export interface UbicacionCanchaConDistancia extends UbicacionCancha {
+  distancia?: number;
 }
 
 /**
