@@ -1,0 +1,79 @@
+<mat-card
+  class="venue-map-card"
+  [class.highlighted]="isHighlighted"
+  (click)="alHacerClick()">
+
+  <div class="card-container">
+    <!-- Sección de Imagen -->
+    <div class="image-section">
+      <img [src]="imagenCancha" [alt]="venue.nombre" class="venue-image">
+
+      <!-- Badge de Distancia -->
+      @if (mostrarDistancia) {
+        <div class="distance-badge">
+          <mat-icon class="distance-icon">near_me</mat-icon>
+          <span>{{ mostrarDistancia }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Sección de Contenido -->
+    <div class="content-section">
+      <!-- Título y Ubicación -->
+      <div class="title-section">
+        <h3 class="venue-title">{{ venue.nombre }}</h3>
+        <div class="location-info">
+          <mat-icon class="location-icon">location_on</mat-icon>
+          <span class="location-text">{{ venue.distrito }}, {{ venue.provincia }}</span>
+        </div>
+      </div>
+
+      <!-- Chips de Deportes -->
+      <div class="sports-section">
+        <mat-chip-set>
+          @for (deporte of mostrarDeportes; track deporte) {
+            <mat-chip class="sport-chip">
+              {{ deporte }}
+            </mat-chip>
+          }
+          @if (tieneDeportesAdicionales) {
+            <mat-chip class="more-chip">
+              +{{ cantidadDeportesAdicionales }}
+            </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+
+      <!-- Sección de Precio y Calificación -->
+      <div class="info-footer">
+        <div class="price-section">
+          <span class="price-label">Desde</span>
+          <span class="price-value">{{ mostrarPrecio }}</span>
+          <span class="price-period">/hora</span>
+        </div>
+
+        @if (venue.calificacion) {
+          <div class="rating-section">
+            <mat-icon class="star-icon">star</mat-icon>
+            <span class="rating-value">{{ venue.calificacion.toFixed(1) }}</span>
+            @if (venue.totalResenas) {
+              <span class="reviews-count">
+                ({{ venue.totalResenas }})
+              </span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Botón de Acción -->
+      <button
+        mat-raised-button
+        color="primary"
+        class="details-btn"
+        (click)="verDetalles(); $event.stopPropagation()">
+        Ver Detalles
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-card>

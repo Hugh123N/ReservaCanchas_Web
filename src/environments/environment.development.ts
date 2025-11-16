@@ -9,7 +9,7 @@ export const environment = {
 		header: '', //head title
 	},
 	frontend: {
-		developerMode: false,
+		developerMode: true,
 		applicationCode: '',
 		baseUrl: 'http://localhost:4200'
 	},

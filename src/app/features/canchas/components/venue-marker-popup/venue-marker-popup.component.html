@@ -1,0 +1,61 @@
+<mat-card class="popup-card">
+  <mat-card-header class="popup-header">
+    <mat-card-title class="popup-title">{{ venue.nombre }}</mat-card-title>
+    <mat-card-subtitle class="popup-subtitle">
+      <mat-icon class="location-icon">location_on</mat-icon>
+      <span>{{ venue.distrito }}, {{ venue.provincia }}</span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="popup-content">
+    <!-- Imagen -->
+    @if (venue.imagenUrl) {
+      <div class="popup-image-container">
+        <img [src]="venue.imagenUrl" [alt]="venue.nombre" class="popup-image">
+      </div>
+    }
+
+    <!-- Precio y Calificación -->
+    <div class="popup-info">
+      <div class="price-section">
+        <span class="price-label">Desde</span>
+        <span class="price-value">{{ mostrarPrecio }}</span>
+      </div>
+
+      @if (venue.calificacion) {
+        <div class="rating-section">
+          <mat-icon class="star-icon">star</mat-icon>
+          <span class="rating-value">{{ venue.calificacion.toFixed(1) }}</span>
+          @if (venue.totalResenas) {
+            <span class="reviews-count">
+              ({{ venue.totalResenas }})
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Deportes -->
+    <div class="sports-section">
+      <mat-chip-set>
+        @for (deporte of mostrarDeportes; track deporte) {
+          <mat-chip class="sport-chip">
+            {{ deporte }}
+          </mat-chip>
+        }
+        @if (tieneDeportesAdicionales) {
+          <mat-chip class="more-chip">
+            +{{ cantidadDeportesAdicionales }}
+          </mat-chip>
+        }
+      </mat-chip-set>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="popup-actions">
+    <button mat-raised-button color="primary" (click)="verDetalles()" class="view-details-btn">
+      Ver Detalles
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>

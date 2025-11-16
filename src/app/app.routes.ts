@@ -4,7 +4,7 @@ import { pagesRoutes } from '@base/pages/pages.routes';
 import { canchaRoutes } from './features/canchas/cancha.routes';
 
 export const routes: Routes = [
-    { path: '', title: "Inicio",loadComponent: () => import('./features/home/components/home/home.component').then(m => m.HomeComponent), pathMatch: 'full' },
+    { path: '', title: "Inicio", loadComponent: () => import('./features/home/components/home/home.component').then(m => m.HomeComponent), pathMatch: 'full' },
     { path: 'cancha', loadChildren: () => import('./features/canchas/cancha.routes').then(m => m.canchaRoutes) },
     { path: 'auth', loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes) },
     { path: 'pago', loadChildren: () => import('./features/pago/pago.routes').then(m => m.pagoRoutes) },
