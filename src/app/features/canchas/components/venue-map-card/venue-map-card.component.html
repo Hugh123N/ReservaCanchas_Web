@@ -1,14 +1,43 @@
-<mat-card
+<div
   class="venue-map-card"
   [class.highlighted]="isHighlighted"
   (click)="alHacerClick()">
 
+  <!-- Sección Superior: Imagen + Contenido -->
   <div class="card-container">
-    <!-- Sección de Imagen -->
+    <!-- Sección de Imagen (Lado Izquierdo - 50%) -->
     <div class="image-section">
       <img [src]="imagenCancha" [alt]="venue.nombre" class="venue-image">
+    </div>
 
-      <!-- Badge de Distancia -->
+    <!-- Sección de Contenido (Lado Derecho - 50%) -->
+    <div class="content-section">
+      <!-- Título -->
+      <h3 class="venue-title">{{ venue.nombre }}</h3>
+
+      <!-- Calificación -->
+      @if (venue.calificacion) {
+        <div class="rating-section">
+          <mat-icon class="star-icon !text-yellow-400">star</mat-icon>
+          <span class="rating-value">{{ venue.calificacion.toFixed(1) }}</span>
+          @if (venue.totalResenas) {
+            <span class="reviews-count">
+              ({{ venue.totalResenas }})
+            </span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Sección Inferior (Ancho Completo) -->
+  <div class="bottom-section">
+    <!-- Ubicación con badge de distancia -->
+    <div class="location-row">
+      <div class="location-info">
+        <mat-icon class="location-icon">location_on</mat-icon>
+        <span class="location-text">{{ venue.direccion }}</span>
+      </div>
       @if (mostrarDistancia) {
         <div class="distance-badge">
           <mat-icon class="distance-icon">near_me</mat-icon>
@@ -17,63 +46,29 @@
       }
     </div>
 
-    <!-- Sección de Contenido -->
-    <div class="content-section">
-      <!-- Título y Ubicación -->
-      <div class="title-section">
-        <h3 class="venue-title">{{ venue.nombre }}</h3>
-        <div class="location-info">
-          <mat-icon class="location-icon">location_on</mat-icon>
-          <span class="location-text">{{ venue.distrito }}, {{ venue.provincia }}</span>
-        </div>
-      </div>
-
-      <!-- Chips de Deportes -->
-      <div class="sports-section">
-        <mat-chip-set>
-          @for (deporte of mostrarDeportes; track deporte) {
-            <mat-chip class="sport-chip">
-              {{ deporte }}
-            </mat-chip>
-          }
-          @if (tieneDeportesAdicionales) {
-            <mat-chip class="more-chip">
-              +{{ cantidadDeportesAdicionales }}
-            </mat-chip>
-          }
-        </mat-chip-set>
-      </div>
-
-      <!-- Sección de Precio y Calificación -->
-      <div class="info-footer">
-        <div class="price-section">
-          <span class="price-label">Desde</span>
-          <span class="price-value">{{ mostrarPrecio }}</span>
-          <span class="price-period">/hora</span>
-        </div>
-
-        @if (venue.calificacion) {
-          <div class="rating-section">
-            <mat-icon class="star-icon">star</mat-icon>
-            <span class="rating-value">{{ venue.calificacion.toFixed(1) }}</span>
-            @if (venue.totalResenas) {
-              <span class="reviews-count">
-                ({{ venue.totalResenas }})
-              </span>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Botón de Acción -->
-      <button
-        mat-raised-button
-        color="primary"
-        class="details-btn"
-        (click)="verDetalles(); $event.stopPropagation()">
-        Ver Detalles
-        <mat-icon>arrow_forward</mat-icon>
-      </button>
+    <!-- Chips de Deportes (sin mat-chip) -->
+    <div class="sports-section">
+      @for (deporte of mostrarDeportes; track deporte) {
+        <span class="sport-chip">{{ deporte }}</span>
+      }
+      @if (tieneDeportesAdicionales) {
+        <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
+      }
     </div>
+
+    <!-- Precio -->
+    <div class="price-section">
+      <span class="price-label">Desde</span>
+      <span class="price-value">{{ mostrarPrecio }}</span>
+      <span class="price-period">/hora</span>
+    </div>
+
+    <!-- Botón de Acción (sin mat-button) -->
+    <button
+      class="details-btn btn-primary"
+      (click)="verDetalles(); $event.stopPropagation()">
+      <span>Ver Detalles</span>
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
   </div>
-</mat-card>
+</div>

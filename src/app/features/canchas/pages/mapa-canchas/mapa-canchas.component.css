@@ -13,6 +13,7 @@
   flex-direction: column;
   background: rgb(250 250 250);
   z-index: 1000;
+  overflow: hidden;
 }
 
 /* Header */
@@ -27,10 +28,6 @@
   align-items: center;
   gap: 12px;
   max-width: 100%;
-}
-
-.close-btn {
-  flex-shrink: 0;
 }
 
 .search-container {
@@ -141,7 +138,7 @@
 
 /* Sidebar (Desktop) */
 .venues-sidebar {
-  width: 400px;
+  width: 480px;
   @apply bg-white;
   display: flex;
   flex-direction: column;
