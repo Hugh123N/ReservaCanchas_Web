@@ -27,6 +27,7 @@ import { CanchasFilter } from '../../core/types/canchas-filter';
 import { CanchaService } from '../../core/services/cancha.service';
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TypedFormGroup } from '@shared/types/types-form';
 import { CommonModule } from '@angular/common';
 import { CanchaEstadoService } from 'app/features/cancha-estado/core/services/cancha-estado.service';
@@ -34,11 +35,13 @@ import { GetEstadoCancha } from 'app/features/cancha-estado/core/model/getEstado
 import { CanchaTipoService } from 'app/features/cancha-tipo/core/services/cancha-tipo.service';
 import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
 import { UbigeoService } from '../../core/services/ubigeo.service';
+import { UbicacionCancha } from '@shared/interfaces/location.interface';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-canchas',
-  imports: [FooterComponent, NavVarComponent, SearchBarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, CommonModule],
+  imports: [FooterComponent, NavVarComponent, SearchBarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, CommonModule, MatButtonToggleModule, MatButtonModule],
   templateUrl: './canchas.component.html',
   styleUrl: './canchas.component.css',
   providers: [CanchaService]
@@ -54,6 +57,7 @@ export class CanchasComponent extends BaseSearchComponent {
   // States
   isLoading: boolean = false;
   isSearching: boolean = false;
+  vistaActual: 'lista' | 'mapa' = 'lista';
 
   // Date
   minDate = new Date();
@@ -508,6 +512,33 @@ export class CanchasComponent extends BaseSearchComponent {
     return fechaStr ? new Date(fechaStr + 'T00:00:00') : null;
   }
 
+  onCambiarVista(event: MatButtonToggleChange): void {
+    if (event.value === 'mapa') {
+      this.router.navigate(['/cancha/mapa'], {
+        state: {
+          canchas: this.convertirCanchasAUbicacion(this.canchas),
+          filtros: this.filterForm.value
+        }
+      });
+    }
+  }
+
+  private convertirCanchasAUbicacion(canchas: GetCancha[]): UbicacionCancha[] {
+    return canchas.map(c => ({
+      id: c.idCancha!,
+      nombre: c.nombre,
+      direccion: c.direccion || '',
+      distrito: c.ubigeo?.distrito || '',
+      provincia: c.ubigeo?.provincia || '',
+      lat: c.latitud!,
+      lng: c.longitud!,
+      precioDesde: c.precioHora || 0,
+      deportes: [c.tipoCancha?.nombre || ''],
+      imagenUrl: c.imagenesCancha?.[0]?.urlImagen || 'assets/images/default-field.png',
+      calificacion: c.calificacionPromedio || 0,
+      totalResenas: 0
+    }));
+  }
 
 }
 

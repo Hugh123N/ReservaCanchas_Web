@@ -7,12 +7,24 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
 
 import { MapboxService } from '../../../../core/services/mapbox.service';
 import { GeolocationService, ErrorGeolocalizacion } from '../../../../core/services/geolocation.service';
 import { UbicacionCancha } from '../../../../shared/interfaces/location.interface';
 import { VenueMapCardComponent } from '../../components/venue-map-card/venue-map-card.component';
+import { CanchaService } from '../../core/services/cancha.service';
+import { UbigeoService } from '../../core/services/ubigeo.service';
+import { CanchaTipoService } from '../../../cancha-tipo/core/services/cancha-tipo.service';
+import { QueryParamsModel } from '@base/models/query/query-params.model';
+import { SearchCanchaFilter } from '../../core/model/searchCanchaFilter.model';
+import { AreaGeografica } from '../../core/model/areaGeografica.model';
+import { SearchCancha } from '../../core/model/searchCancha.model';
+import { GetTipoCancha } from '../../../cancha-tipo/core/model/getTipoCancha.model';
+import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
+import { canchasSort } from '../../helper/canchas-sort';
 
 /**
  * Componente de página del contenedor de mapa
@@ -29,6 +41,8 @@ import { VenueMapCardComponent } from '../../components/venue-map-card/venue-map
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    MatPaginatorModule,
     FormsModule,
     VenueMapCardComponent
   ],
@@ -46,6 +60,14 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   mensajeError = signal<string | null>(null);
   mostrarBuscarEnArea = signal(false);
 
+  // Signals para filtros y paginación
+  filtroActual = signal<SearchCanchaFilter>({});
+  paginaActual = signal(1);
+  totalCanchas = signal(0);
+  tamanioPagina = 20;
+  tiposDeporte = signal<GetTipoCancha[]>([]);
+  ubigeos = signal<Ubigeo[]>([]);
+
   // Ubicación del usuario
   ubicacionUsuario: { lat: number; lng: number } | null = null;
 
@@ -53,94 +75,36 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly CENTRO_DEFECTO: [number, number] = [-77.0428, -12.0464];
   private readonly ZOOM_DEFECTO = 12;
 
-  // Datos mock para pruebas
-  private canchasMock: UbicacionCancha[] = [
-    {
-      id: 1,
-      nombre: 'Complejo Deportivo La Molina',
-      direccion: 'Av. La Universidad 1234',
-      distrito: 'La Molina',
-      provincia: 'Lima',
-      lat: -12.0794, lng: -76.9437,
-      precioDesde: 50,
-      deportes: ['Fútbol', 'Vóley'],
-      imagenUrl: 'assets/images/default-field.png',
-      calificacion: 4.5,
-      totalResenas: 128
-    },
-    {
-      id: 2,
-      nombre: 'Canchas San Borja Sport',
-      direccion: 'Av. Aviación 2567',
-      distrito: 'San Borja',
-      provincia: 'Lima',
-      lat: -12.0887, lng: -77.0025,
-      precioDesde: 60,
-      deportes: ['Fútbol', 'Básquet', 'Tenis'],
-      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
-      calificacion: 4.8,
-      totalResenas: 256
-    },
-    {
-      id: 3,
-      nombre: 'Arena Deportiva Surco',
-      direccion: 'Calle Las Begonias 789',
-      distrito: 'Santiago de Surco',
-      provincia: 'Lima',
-      lat: -12.1391, lng: -76.9979,
-      precioDesde: 45,
-      deportes: ['Fútbol', 'Vóley', 'Básquet'],
-      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
-      calificacion: 4.3,
-      totalResenas: 89
-    },
-    {
-      id: 4,
-      nombre: 'Club Miraflores Premium',
-      direccion: 'Av. Larco 1500',
-      distrito: 'Miraflores',
-      provincia: 'Lima',
-      lat: -12.1212, lng: -77.0295,
-      precioDesde: 80,
-      deportes: ['Fútbol', 'Tenis', 'Pádel'],
-      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
-      calificacion: 4.9,
-      totalResenas: 412
-    },
-    {
-      id: 5,
-      nombre: 'Losa Deportiva San Isidro',
-      direccion: 'Av. Javier Prado 890',
-      distrito: 'San Isidro',
-      provincia: 'Lima',
-      lat: -12.0981, lng: -77.0324,
-      precioDesde: 55,
-      deportes: ['Fútbol', 'Básquet'],
-      imagenUrl: 'https://picsum.photos/seed/futbol7/400/250',
-      calificacion: 4.6,
-      totalResenas: 167
-    }
-  ];
-
   constructor(
     private mapboxService: MapboxService,
     private geolocationService: GeolocationService,
+    private canchaService: CanchaService,
+    private ubigeoService: UbigeoService,
+    private canchaTipoService: CanchaTipoService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    // Cargar tipos de deporte y ubigeos
+    this.cargarTiposDeporte();
+    this.cargarUbigeos();
+
     // Verificar si se pasaron canchas vía state de la ruta
     const navigation = this.router.getCurrentNavigation();
     const stateCanchas = navigation?.extras?.state?.['canchas'];
+    const stateFiltros = navigation?.extras?.state?.['filtros'];
 
     if (stateCanchas && Array.isArray(stateCanchas)) {
+      // Usar canchas del state
       this.canchas.set(stateCanchas);
       this.canchasFiltradas.set(stateCanchas);
+      if (stateFiltros) {
+        this.filtroActual.set(stateFiltros);
+      }
     } else {
-      // Usar datos mock para pruebas
-      this.canchas.set(this.canchasMock);
-      this.canchasFiltradas.set(this.canchasMock);
+      // Cargar canchas iniciales del backend
+      this.cargarCanchasIniciales();
     }
 
     // Verificar si se debe solicitar geolocalización (modo cercanas)
@@ -162,9 +126,6 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mapboxService.destruir();
   }
 
-  /**
-   * Inicializa el mapa Mapbox
-   */
   private inicializarMapa(): void {
     try {
       const centro = this.ubicacionUsuario
@@ -202,9 +163,6 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Agrega marcadores de canchas al mapa
-   */
   private agregarMarcadoresCanchas(): void {
     this.mapboxService.agregarMarcadoresCanchas(
       this.canchasFiltradas(),
@@ -213,9 +171,6 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  /**
-   * Solicita la ubicación actual del usuario
-   */
   solicitarUbicacionUsuario(): void {
     if (!this.geolocationService.esGeolocalizacionSoportada()) {
       this.mensajeError.set('Tu navegador no soporta geolocalización.');
@@ -282,9 +237,6 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Maneja el click en una tarjeta
-   */
   alClickTarjeta(cancha: UbicacionCancha): void {
     this.mapboxService.volarA(cancha.lat, cancha.lng, 15);
     this.canchaResaltadaId.set(cancha.id);
@@ -295,9 +247,33 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   buscarEnEstaArea(): void {
     this.mostrarBuscarEnArea.set(false);
-    // En producción, esto llamaría al API backend con los límites actuales
-    // Por ahora, solo oculta el botón
-    console.log('Buscando en área actual del mapa...');
+    this.estaCargando.set(true);
+
+    // Obtener límites actuales del mapa
+    const limites = this.mapboxService.obtenerLimitesActuales();
+
+    if (!limites) {
+      this.mensajeError.set('No se pudo obtener el área del mapa.');
+      this.estaCargando.set(false);
+      return;
+    }
+
+    // Crear filtro con área geográfica
+    const filtroConArea: SearchCanchaFilter = {
+      ...this.filtroActual(),
+      codigoUbigeo: undefined, // Limpiar ubicación específica
+      area: {
+        norte: limites.norte,
+        sur: limites.sur,
+        este: limites.este,
+        oeste: limites.oeste
+      }
+    };
+
+    this.filtroActual.set(filtroConArea);
+    this.paginaActual.set(1); // Resetear a página 1
+
+    this.buscarCanchas();
   }
 
   /**
@@ -327,24 +303,15 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Limpia la búsqueda
-   */
   limpiarBusqueda(): void {
     this.consultaBusqueda.set('');
     this.alCambiarBusqueda();
   }
 
-  /**
-   * Cierra la vista del mapa
-   */
   cerrarMapa(): void {
     this.router.navigate(['/cancha/canchas']);
   }
 
-  /**
-   * Obtiene la distancia para una cancha
-   */
   obtenerDistanciaCancha(cancha: UbicacionCancha): number | undefined {
     if (!this.ubicacionUsuario) return undefined;
 
@@ -354,5 +321,121 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       cancha.lat,
       cancha.lng
     );
+  }
+
+  onCambiarPagina(event: PageEvent): void {
+    this.paginaActual.set(event.pageIndex + 1);
+    this.tamanioPagina = event.pageSize;
+    this.buscarCanchas();
+  }
+
+  onCambiarFiltroTipo(idTipoCancha: number | undefined): void {
+    this.filtroActual.update(f => ({ ...f, idTipoCancha }));
+    this.paginaActual.set(1);
+    this.buscarCanchas();
+  }
+
+  onCambiarFiltroUbigeo(codigoUbigeo: string | undefined): void {
+    this.filtroActual.update(f => ({ ...f, codigoUbigeo, area: undefined })); // Limpiar área al seleccionar ubicación
+    this.paginaActual.set(1);
+    this.buscarCanchas();
+  }
+
+  private cargarCanchasIniciales(): void {
+    this.estaCargando.set(true);
+
+    const queryParams: QueryParamsModel = {
+      page: { page: 1, pageSize: this.tamanioPagina },
+      sort: canchasSort(),
+      filter: this.filtroActual()
+    };
+
+    this.canchaService.search(queryParams).subscribe({
+      next: (response) => {
+        if (response.isValid && response.data) {
+          const canchasUbicacion = this.convertirSearchCanchaAUbicacion(response.data.items);
+          this.canchas.set(canchasUbicacion);
+          this.canchasFiltradas.set(canchasUbicacion);
+          this.totalCanchas.set(response.data.total);
+          this.paginaActual.set(1);
+        }
+        this.estaCargando.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar canchas:', err);
+        this.mensajeError.set('Error al cargar las canchas. Por favor, intenta nuevamente.');
+        this.estaCargando.set(false);
+      }
+    });
+  }
+
+  private buscarCanchas(): void {
+    const queryParams: QueryParamsModel = {
+      page: {
+        page: this.paginaActual(),
+        pageSize: this.tamanioPagina
+      },
+      sort: canchasSort(),
+      filter: this.filtroActual()
+    };
+
+    this.canchaService.search(queryParams).subscribe({
+      next: (response) => {
+        if (response.isValid && response.data) {
+          const canchasUbicacion = this.convertirSearchCanchaAUbicacion(response.data.items);
+          this.canchas.set(canchasUbicacion);
+          this.canchasFiltradas.set(canchasUbicacion);
+          this.totalCanchas.set(response.data.total);
+          // Actualizar marcadores en el mapa
+          this.mapboxService.eliminarTodosMarcadoresCanchas();
+          this.agregarMarcadoresCanchas();
+        }
+        this.estaCargando.set(false);
+      },
+      error: (err) => {
+        console.error('Error en búsqueda de canchas:', err);
+        this.mensajeError.set('Error al buscar canchas. Por favor, intenta nuevamente.');
+        this.estaCargando.set(false);
+      }
+    });
+  }
+
+  private convertirSearchCanchaAUbicacion(canchas: SearchCancha[]): UbicacionCancha[] {
+    return canchas.map(c => ({
+      id: c.idCancha!,
+      nombre: c.nombre,
+      direccion: c.direccion || '',
+      distrito: c.ubigeo?.distrito || '',
+      provincia: c.ubigeo?.provincia || '',
+      lat: c.latitud!,
+      lng: c.longitud!,
+      precioDesde: c.precioHora || 0,
+      deportes: [c.tipoCancha?.nombre || ''],
+      imagenUrl: c.imagenesCancha?.[0]?.urlImagen || 'assets/images/default-field.png',
+      calificacion: c.calificacionPromedio || 0,
+      totalResenas: 0
+    }));
+  }
+
+  private cargarTiposDeporte(): void {
+    this.canchaTipoService.SelectCombo().subscribe({
+      next: (response) => {
+        if (response.isValid && response.data) {
+          this.tiposDeporte.set(response.data);
+        }
+      },
+      error: (err) => console.error('Error al cargar tipos de deporte:', err)
+    });
+  }
+
+  private cargarUbigeos(): void {
+    this.ubigeoService.listAll().subscribe({
+      next: (response) => {
+        if (response.isValid && response.data) {
+          this.ubigeos.set(response.data);
+        }
+      },
+      error: (err) => console.error('Error al cargar ubigeos:', err)
+    });
   }
 }

@@ -311,6 +311,10 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     this.router.navigate(['/cancha/canchas']);
   }
 
+  onVerMapa() {
+    this.router.navigate(['/cancha/mapa']);
+  }
+
   private cargarUbigeos(): void {
     this.ubigeoService.listAll().subscribe({
       next: (response) => {

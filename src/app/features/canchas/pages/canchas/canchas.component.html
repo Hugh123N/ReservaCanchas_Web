@@ -27,6 +27,21 @@
         <section class="results-section py-8 bg-neutral-50">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
+
+              <!-- View Toggle -->
+              <div class="view-toggle-container mb-6 flex justify-center md:justify-end">
+                <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
+                  <mat-button-toggle value="lista">
+                    <mat-icon class="mr-1">view_list</mat-icon>
+                    Lista
+                  </mat-button-toggle>
+                  <mat-button-toggle value="mapa">
+                    <mat-icon class="mr-1">map</mat-icon>
+                    Mapa
+                  </mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+
               <!-- Results Header -->
               <div
                 class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"

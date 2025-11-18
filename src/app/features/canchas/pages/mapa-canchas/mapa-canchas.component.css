@@ -32,7 +32,11 @@
 
 .search-container {
   flex: 1;
-  max-width: 600px;
+  max-width: 60%;
+  width: 60%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .search-field {
@@ -165,6 +169,13 @@
   gap: 16px;
 }
 
+/* Pagination */
+.pagination-container {
+  padding: 16px;
+  border-top: 1px solid rgb(228 228 231);
+  background: white;
+}
+
 /* Empty State */
 .empty-state {
   @apply text-center py-12 px-6;
@@ -219,6 +230,17 @@
   .location-btn {
     min-width: 44px;
     height: 44px;
+  }
+
+  .filters-container {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .filter-field {
+    width: 100%;
+    min-width: auto;
   }
 
   /* Bottom Sheet instead of Sidebar */
