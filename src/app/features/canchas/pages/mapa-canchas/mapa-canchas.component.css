@@ -32,8 +32,6 @@
 
 .search-container {
   flex: 1;
-  max-width: 60%;
-  width: 60%;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -359,4 +357,37 @@
   100% {
     box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
   }
+}
+
+/* ========== BOTÓN FILTROS MOBILE (HEADER) ========== */
+
+.btn-filtros-mobile {
+  flex-shrink: 0;
+  min-width: 56px !important;
+  height: 56px !important;
+  padding: 0 16px !important;
+  position: relative;
+}
+
+.btn-filtros-mobile.has-filters {
+  background: var(--color-primary-500) !important;
+  color: white !important;
+  border-color: var(--color-primary-500) !important;
+}
+
+.btn-filtros-mobile .badge-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--color-accent-500);
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }

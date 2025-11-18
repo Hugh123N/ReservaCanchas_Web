@@ -1,0 +1,95 @@
+<div class="filtros-modal-container">
+  <!-- Header -->
+  <div class="modal-header">
+    <h2 class="text-responsive-lg font-semibold">Filtros</h2>
+    <button mat-icon-button (click)="cerrar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="modal-content">
+    <form [formGroup]="filtrosForm">
+      <!-- Tipo de Deporte -->
+      <section class="filter-section">
+        <h3 class="section-title">Tipo de Deporte</h3>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Selecciona un deporte</mat-label>
+          <mat-select formControlName="idTipoCancha">
+            <mat-option [value]="undefined">Todos los deportes</mat-option>
+            @for (tipo of data.tiposDeporte; track tipo.idTipoCancha) {
+              <mat-option [value]="tipo.idTipoCancha">
+                {{ tipo.nombre }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <!-- Ubicación -->
+      <section class="filter-section">
+        <h3 class="section-title">Ubicación</h3>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Selecciona un distrito</mat-label>
+          <mat-select formControlName="codigoUbigeo">
+            <mat-option [value]="undefined">Todas las ubicaciones</mat-option>
+            @for (ubigeo of data.ubigeos; track ubigeo.codigoUbigeo) {
+              <mat-option [value]="ubigeo.codigoUbigeo">
+                {{ ubigeo.distrito }}, {{ ubigeo.provincia }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <!-- Precio -->
+      <section class="filter-section">
+        <h3 class="section-title">Precio Máximo por Hora</h3>
+        <div class="precio-slider-container">
+          <mat-slider
+            min="0"
+            max="200"
+            step="10"
+            discrete
+            [displayWith]="formatLabel"
+            class="full-width"
+          >
+            <input matSliderThumb formControlName="precioMax">
+          </mat-slider>
+          <p class="precio-display">Hasta <strong>S/ {{ precioMaxDisplay }}</strong></p>
+        </div>
+      </section>
+
+      <!-- Fecha (Opcional para futuro) -->
+      <!--
+      <section class="filter-section">
+        <h3 class="section-title">Fecha</h3>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Selecciona una fecha</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fecha">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </section>
+      -->
+    </form>
+  </div>
+
+  <!-- Footer Sticky -->
+  <div class="modal-footer">
+    <button
+      mat-stroked-button
+      class="btn-outline-primary"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar Todo
+    </button>
+    <button
+      mat-raised-button
+      class="btn-primary"
+      (click)="aplicarFiltros()"
+    >
+      Aplicar Filtros
+    </button>
+  </div>
+</div>

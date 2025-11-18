@@ -9,6 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 
 import { MapboxService } from '../../../../core/services/mapbox.service';
@@ -25,6 +29,7 @@ import { SearchCancha } from '../../core/model/searchCancha.model';
 import { GetTipoCancha } from '../../../cancha-tipo/core/model/getTipoCancha.model';
 import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
 import { canchasSort } from '../../helper/canchas-sort';
+import { MapaFiltrosModalComponent } from '../../components/mapa-filtros-modal/mapa-filtros-modal.component';
 
 /**
  * Componente de página del contenedor de mapa
@@ -43,6 +48,8 @@ import { canchasSort } from '../../helper/canchas-sort';
     MatInputModule,
     MatSelectModule,
     MatPaginatorModule,
+    MatDialogModule,
+    LayoutModule,
     FormsModule,
     VenueMapCardComponent
   ],
@@ -60,6 +67,9 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   mensajeError = signal<string | null>(null);
   mostrarBuscarEnArea = signal(false);
 
+  // Detección mobile
+  isMobile$!: Observable<boolean>;
+
   // Signals para filtros y paginación
   filtroActual = signal<SearchCanchaFilter>({});
   paginaActual = signal(1);
@@ -75,6 +85,16 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly CENTRO_DEFECTO: [number, number] = [-77.0428, -12.0464];
   private readonly ZOOM_DEFECTO = 12;
 
+  // Contador de filtros activos
+  get cantidadFiltrosActivos(): number {
+    let count = 0;
+    const filtro = this.filtroActual();
+    if (filtro.idTipoCancha) count++;
+    if (filtro.codigoUbigeo) count++;
+    if (filtro.fecha) count++;
+    return count;
+  }
+
   constructor(
     private mapboxService: MapboxService,
     private geolocationService: GeolocationService,
@@ -82,8 +102,18 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     private ubigeoService: UbigeoService,
     private canchaTipoService: CanchaTipoService,
     private router: Router,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private breakpointObserver: BreakpointObserver,
+    private dialog: MatDialog
+  ) {
+    // Inicializar detección mobile
+    this.isMobile$ = this.breakpointObserver
+      .observe(Breakpoints.Handset)
+      .pipe(
+        map(result => result.matches),
+        shareReplay()
+      );
+  }
 
   ngOnInit(): void {
     // Cargar tipos de deporte y ubigeos
@@ -436,6 +466,38 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       error: (err) => console.error('Error al cargar ubigeos:', err)
+    });
+  }
+
+  /**
+   * Abre el modal de filtros para mobile
+   */
+  abrirFiltrosModal(): void {
+    const dialogRef = this.dialog.open(MapaFiltrosModalComponent, {
+      width: '100%',
+      maxWidth: '100vw',
+      height: '100%',
+      maxHeight: '100vh',
+      panelClass: 'filtros-fullscreen-dialog',
+      data: {
+        tiposDeporte: this.tiposDeporte(),
+        ubigeos: this.ubigeos(),
+        filtrosActuales: this.filtroActual()
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(filtros => {
+      if (filtros) {
+        // Aplicar filtros
+        this.filtroActual.set({
+          ...this.filtroActual(),
+          idTipoCancha: filtros.idTipoCancha,
+          codigoUbigeo: filtros.codigoUbigeo,
+          fecha: filtros.fecha
+        });
+        this.paginaActual.set(1);
+        this.buscarCanchas();
+      }
     });
   }
 }

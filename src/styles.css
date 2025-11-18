@@ -867,3 +867,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .error-page-actions {
   @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
 }
+
+/* ========== MODAL FULLSCREEN DIALOG ========== */
+/* Estilos para modal de filtros fullscreen en mobile */
+
+.filtros-fullscreen-dialog {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+}
+
+.filtros-fullscreen-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 0 !important;
+}

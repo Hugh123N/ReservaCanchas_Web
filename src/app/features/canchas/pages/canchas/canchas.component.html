@@ -28,19 +28,7 @@
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
 
-              <!-- View Toggle -->
-              <div class="view-toggle-container mb-6 flex justify-center md:justify-end">
-                <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
-                  <mat-button-toggle value="lista">
-                    <mat-icon class="mr-1">view_list</mat-icon>
-                    Lista
-                  </mat-button-toggle>
-                  <mat-button-toggle value="mapa">
-                    <mat-icon class="mr-1">map</mat-icon>
-                    Mapa
-                  </mat-button-toggle>
-                </mat-button-toggle-group>
-              </div>
+              
 
               <!-- Results Header -->
               <div
@@ -56,26 +44,22 @@
                   </h2>
                 </div>
 
-                <!-- Sort Options -->
-                <div class="sort-options flex items-center gap-3">
-                  <span class="text-responsive-sm text-neutral-600">Ordenar por:</span>
-                  <mat-form-field appearance="outline" class="w-48">
-                    <mat-select
-                      (selectionChange)="onSortChange()"
-                      [disabled]="isLoading"
-                      >
-                      <mat-option value="nombre_asc">Nombre A-Z</mat-option>
-                      <mat-option value="nombre_desc">Nombre Z-A</mat-option>
-                      <mat-option value="precio_asc">Precio menor a mayor</mat-option>
-                      <mat-option value="precio_desc">Precio mayor a menor</mat-option>
-                      <mat-option value="calificacion_desc"
-                        >Mejor calificados</mat-option
-                        >
-                        <mat-option value="distancia_asc">Más cercanos</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                </div>
+                <!-- View Toggle -->
+              <div class="view-toggle-container flex justify-center md:justify-end">
+                <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
+                  <mat-button-toggle value="lista">
+                    <mat-icon class="mr-1">view_list</mat-icon>
+                    Lista
+                  </mat-button-toggle>
+                  <mat-button-toggle value="mapa">
+                    <mat-icon class="mr-1">map</mat-icon>
+                    Mapa
+                  </mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+              </div>
+
+                
 
                 <!-- Results Grid -->
                 <div class="lg:col-span-3">

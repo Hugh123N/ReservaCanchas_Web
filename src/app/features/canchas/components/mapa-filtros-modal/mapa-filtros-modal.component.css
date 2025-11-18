@@ -1,0 +1,77 @@
+@reference "../../../../../styles.css";
+
+.filtros-modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: white;
+}
+
+.modal-header {
+  @apply flex items-center justify-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgb(228 228 231);
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: rgb(24 24 27);
+}
+
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.filter-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  @apply text-base font-semibold mb-4;
+  color: rgb(63 63 70);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.precio-slider-container {
+  padding: 8px 0;
+}
+
+.precio-display {
+  @apply text-sm text-center mt-4;
+  color: rgb(113 113 122);
+}
+
+.precio-display strong {
+  @apply text-lg;
+  color: var(--color-primary-500);
+}
+
+.modal-footer {
+  @apply flex gap-3;
+  padding: 16px 20px;
+  border-top: 1px solid rgb(228 228 231);
+  background: white;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  bottom: 0;
+}
+
+.modal-footer button {
+  flex: 1;
+}
+
+/* Formato del label del slider */
+:host ::ng-deep .mat-mdc-slider {
+  --mdc-slider-active-track-color: var(--color-primary-500);
+  --mdc-slider-handle-color: var(--color-primary-500);
+  --mdc-slider-with-tick-marks-active-container-color: var(--color-primary-500);
+}
