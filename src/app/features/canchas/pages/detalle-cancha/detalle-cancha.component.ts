@@ -274,10 +274,10 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
-  scrollToReserva() {
-    this.selectedTabIndex = 0;
+  scrollToReserva(sectionClass: string, numberOfTabs: number = 0) {
+    this.selectedTabIndex = numberOfTabs;
     setTimeout(() => {
-      document.querySelector('.date-section')?.scrollIntoView({
+      document.querySelector(sectionClass)?.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });

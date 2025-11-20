@@ -143,5 +143,15 @@
   .summary-card {
     @apply mx-2;
   }
+
+  /* Fix para iconos en cards con poco padding */
+  .card-base mat-icon.icon-sm {
+    flex-shrink: 0;
+    min-width: 20px;
+  }
+
+  .card-base li {
+    @apply items-start;
+  }
 }
 
