@@ -51,6 +51,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   selectedTime: string = '';
   idTipoCancha: string = '';
   selectedUbigeo: Ubigeo | null = null;
+  mostrarFiltros: boolean = false;
 
   canchaTipos: GetTipoCancha[] = [];
   canchasEjemplo: SearchCancha[] = [
@@ -313,6 +314,13 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
 
   onVerMapa() {
     this.router.navigate(['/cancha/mapa']);
+  }
+
+  /**
+   * Toggle mostrar/ocultar filtros
+   */
+  toggleFiltros(): void {
+    this.mostrarFiltros = !this.mostrarFiltros;
   }
 
   private cargarUbigeos(): void {

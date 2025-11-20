@@ -1,131 +1,42 @@
 @reference "../../../../../styles.css";
 
-/* ========== CARD HEADERS ========== */
+/* ========== CARD DE TOTAL RESPONSIVE ========== */
 
-.methods-header {
-  @apply flex items-center gap-3 mb-6 pb-4 border-b border-neutral-200;
-}
+/* Mobile/Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  .total-card-content {
+    @apply !text-left;
+  }
 
-.methods-header mat-icon {
-  @apply text-primary-500;
-  font-size: 1.5rem;
-}
+  .total-header-wrapper {
+    @apply mb-2;
+  }
 
-.methods-title {
-  @apply text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800;
-}
+  .total-header-content {
+    @apply flex justify-between items-center;
+  }
 
+  .total-label {
+    @apply !text-left text-base mb-0;
+  }
 
-/* ========== PAYMENT METHODS ========== */
+  .total-amount {
+    @apply !text-right !text-2xl mb-0;
+  }
 
-.methods-list {
-  @apply space-y-3 mb-6;
-}
+  .total-detail {
+    @apply !text-right;
+  }
 
-.method-option {
-  @apply relative flex items-center p-4 border-2 border-neutral-200 rounded-xl cursor-pointer transition-all duration-300;
-  @apply hover:border-primary-300 hover:bg-primary-50/30 hover:transform hover:translate-x-1;
-}
+  /* Fix para iconos en cards con poco padding */
+  .card-base mat-icon.icon-sm {
+    flex-shrink: 0;
+    min-width: 20px;
+  }
 
-.method-option.selected {
-  @apply border-primary-500 bg-primary-50 shadow-sm;
-}
-
-.method-radio {
-  @apply mr-3 sm:mr-4 flex-shrink-0;
-}
-
-.method-icon {
-  @apply w-10 h-10 sm:w-12 sm:h-12 mr-3 sm:mr-4 rounded-lg flex items-center justify-center flex-shrink-0;
-}
-
-.method-icon img {
-  @apply w-full h-full object-contain p-1;
-}
-
-.method-icon mat-icon {
-  font-size: 1.25rem;
-}
-
-.method-info {
-  @apply flex-1 min-w-0;
-}
-
-.method-name {
-  @apply text-sm sm:text-base font-semibold text-neutral-800 mb-0.5;
-}
-
-.method-description {
-  @apply text-xs sm:text-sm text-neutral-600;
-}
-
-.method-badge {
-  @apply ml-auto px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium flex-shrink-0;
-}
-
-/* ========== QR CODE SECTION ========== */
-
-.qr-container {
-  @apply text-center p-6 bg-gradient-to-br from-white to-neutral-50 rounded-xl border-2 border-dashed border-primary-300 mt-6;
-}
-
-.qr-title {
-  @apply text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-4;
-}
-
-.qr-code-wrapper {
-  @apply inline-block p-4 bg-white rounded-xl shadow-lg mb-6;
-}
-
-.qr-code-wrapper img {
-  @apply w-48 h-48 sm:w-56 sm:h-56;
-}
-
-.qr-steps {
-  @apply text-sm sm:text-base text-neutral-600 leading-relaxed mb-4 text-left sm:text-center;
-}
-
-.qr-timer-display {
-  @apply flex items-center justify-center gap-2 px-4 py-2 bg-accent-50 rounded-lg;
-  @apply text-accent-600 font-semibold text-sm sm:text-base;
-}
-
-.qr-timer-display mat-icon {
-  font-size: 1.25rem;
-}
-
-/* ========== PAYMENT INFO ========== */
-
-.payment-info {
-  @apply p-4 bg-blue-50 border border-blue-200 rounded-xl mt-6;
-}
-
-.payment-info-content {
-  @apply flex items-start gap-3;
-}
-
-.payment-info mat-icon {
-  @apply text-blue-600 flex-shrink-0;
-  font-size: 1.25rem;
-}
-
-.payment-info-text {
-  @apply text-sm sm:text-base text-blue-700 leading-relaxed;
-}
-
-/* ========== SECURITY BADGES ========== */
-
-.security-section {
-  @apply flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 pt-6 border-t border-neutral-200;
-}
-
-.security-item {
-  @apply flex items-center gap-2 text-sm sm:text-base text-neutral-600;
-}
-
-.security-item mat-icon {
-  @apply text-green-600;
-  font-size: 1.25rem;
+  .card-base li {
+    @apply items-start;
+  }
 }
 
 

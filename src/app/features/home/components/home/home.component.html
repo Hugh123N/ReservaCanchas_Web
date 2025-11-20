@@ -40,14 +40,28 @@
 <!-- Search Bar Flotante -->
 <section class="search-floating-section relative -mt-12 mb-16 z-10">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <app-search-bar
-      [canchaTipos]="canchaTipos"
-      [ubigeos]="ubigeos"
-      [isLoading]="false"
-      [maxWidth]="'medium'"
-      (search)="onSearchBarSearch($event)"
-      (clear)="onSearchBarClear()"
-    ></app-search-bar>
+    <!-- Botón Filtros (Solo Mobile/Tablet - max 768px) -->
+    <div class="filter-toggle-container mb-4 text-center">
+      <button
+        mat-raised-button
+        class="btn-primary"
+        (click)="toggleFiltros()">
+        <mat-icon class="mr-2">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+        {{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
+      </button>
+    </div>
+
+    <!-- Search Bar Component (Oculto en mobile/tablet por defecto) -->
+    <div class="search-bar-wrapper" [class.show-filters]="mostrarFiltros">
+      <app-search-bar
+        [canchaTipos]="canchaTipos"
+        [ubigeos]="ubigeos"
+        [isLoading]="false"
+        [maxWidth]="'medium'"
+        (search)="onSearchBarSearch($event)"
+        (clear)="onSearchBarClear()"
+      ></app-search-bar>
+    </div>
   </div>
 </section>
 

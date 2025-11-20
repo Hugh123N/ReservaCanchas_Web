@@ -34,13 +34,6 @@
             }}</mat-icon>
           </button>
 
-          <!-- Status Badge -->
-          <div class="absolute top-4 left-4">
-            <mat-chip [ngClass]="getStatusClass()" class="font-medium">
-              {{ getStatusText() }}
-            </mat-chip>
-          </div>
-
           <!-- Gallery indicator -->
           @if ( canchaData.imagenesCancha && canchaData.imagenesCancha.length >
           1 ) {
@@ -88,7 +81,7 @@
               </div>
               <div class="flex items-center gap-2 mb-4">
                 <div class="flex items-center">
-                  <mat-icon class="text-yellow-500 mr-1">star</mat-icon>
+                  <mat-icon class="!text-yellow-500 mr-1">star</mat-icon>
                   <span class="font-semibold">{{
                     canchaData.calificacionPromedio || 4.5
                   }}</span>
@@ -235,7 +228,7 @@
                 <mat-card class="p-6 rounded-xl shadow-sm">
                   <h3 class="h3 text-primary mb-4 flex items-center">
                     <mat-icon class="icon-primary mr-2">person</mat-icon>
-                    Datos del Responsable
+                    Información de Contacto
                   </h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <mat-form-field appearance="outline" class="w-full">
@@ -288,14 +281,16 @@
                       }}</span>
                     </div>
                     <div
-                      class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
+                      class="summary-row flex justify-between items-start py-3 border-b border-neutral-200"
                     >
                       <span class="text-neutral-600">Hora</span>
-                      @for (f of selectedTime; track f) {
-                      <span class="font-semibold text-neutral-800">{{
-                        f.hora || "-"
-                      }}</span>
-                      }
+                      <div class="flex flex-wrap gap-1 justify-end max-w-[80%]">
+                        @for (f of selectedTime; track f; let isLast = $last) {
+                        <span class="font-semibold text-neutral-800">
+                          {{ f.hora || "-" }}@if (!isLast) {<span>,</span>}
+                        </span>
+                        }
+                      </div>
                     </div>
                     <div
                       class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
@@ -321,7 +316,6 @@
                       mat-raised-button
                       class="btn-primary w-full !py-4 !text-lg !font-bold shadow-lg"
                       type="submit"
-                      [disabled]="reservaForm.invalid"
                     >
                       <mat-icon class="mr-2">payment</mat-icon>
                       Continuar al Pago

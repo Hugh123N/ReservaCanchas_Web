@@ -18,8 +18,32 @@
   @apply bg-white rounded-xl shadow-sm border border-neutral-100;
 }
 
-/* Responsive Design */
+/* ========== FILTROS RESPONSIVE ========== */
+
+/* En desktop: botón de filtros oculto, search-bar siempre visible */
+.filter-toggle-container {
+  display: none;
+}
+
+.search-bar-wrapper {
+  display: block;
+}
+
+/* En tablet/mobile (max-width: 768px): botón visible, search-bar oculto por defecto */
 @media (max-width: 768px) {
+  .filter-toggle-container {
+    display: block;
+  }
+
+  .search-bar-wrapper {
+    display: none;
+  }
+
+  .search-bar-wrapper.show-filters {
+    display: block;
+    animation: fadeInUp 0.3s ease-out;
+  }
+
   .search-card {
     @apply mx-2 p-4;
   }
@@ -30,5 +54,17 @@
 
   .cancha-item {
     animation-delay: 0ms !important;
+  }
+}
+
+/* Animación fadeInUp */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

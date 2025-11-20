@@ -58,6 +58,7 @@ export class CanchasComponent extends BaseSearchComponent {
   isLoading: boolean = false;
   isSearching: boolean = false;
   vistaActual: 'lista' | 'mapa' = 'lista';
+  mostrarFiltros: boolean = false;
 
   // Date
   minDate = new Date();
@@ -538,6 +539,13 @@ export class CanchasComponent extends BaseSearchComponent {
       calificacion: c.calificacionPromedio || 0,
       totalResenas: 0
     }));
+  }
+
+  /**
+   * Toggle mostrar/ocultar filtros
+   */
+  toggleFiltros(): void {
+    this.mostrarFiltros = !this.mostrarFiltros;
   }
 
 }

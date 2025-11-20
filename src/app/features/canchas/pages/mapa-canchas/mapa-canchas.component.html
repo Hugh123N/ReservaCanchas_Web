@@ -37,42 +37,50 @@
 
         <!-- Filtros Desktop -->
         @if (!(isMobile$ | async)) {
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Tipo de Deporte</mat-label>
-            <mat-select [value]="filtroActual().idTipoCancha" (selectionChange)="onCambiarFiltroTipo($event.value)">
-              <mat-option [value]="undefined">Todos</mat-option>
-              @for (tipo of tiposDeporte(); track tipo.idTipoCancha) {
-                <mat-option [value]="tipo.idTipoCancha">{{ tipo.nombre }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Tipo de Deporte</mat-label>
+          <mat-select
+            [value]="filtroActual().idTipoCancha"
+            (selectionChange)="onCambiarFiltroTipo($event.value)"
+          >
+            <mat-option [value]="undefined">Todos</mat-option>
+            @for (tipo of tiposDeporte(); track tipo.idTipoCancha) {
+            <mat-option [value]="tipo.idTipoCancha">{{
+              tipo.nombre
+            }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Ubicación</mat-label>
-            <mat-select [value]="filtroActual().codigoUbigeo" (selectionChange)="onCambiarFiltroUbigeo($event.value)">
-              <mat-option [value]="undefined">Todas</mat-option>
-              @for (ubigeo of ubigeos(); track ubigeo.codigoUbigeo) {
-                <mat-option [value]="ubigeo.codigoUbigeo">
-                  {{ ubigeo.distrito }}, {{ ubigeo.provincia }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Ubicación</mat-label>
+          <mat-select
+            [value]="filtroActual().codigoUbigeo"
+            (selectionChange)="onCambiarFiltroUbigeo($event.value)"
+          >
+            <mat-option [value]="undefined">Todas</mat-option>
+            @for (ubigeo of ubigeos(); track ubigeo.codigoUbigeo) {
+            <mat-option [value]="ubigeo.codigoUbigeo">
+              {{ ubigeo.distrito }}, {{ ubigeo.provincia }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
         }
 
         <!-- Botón Filtros Mobile -->
         @if (isMobile$ | async) {
-          <button
-            mat-stroked-button
-            class="btn-outline-primary btn-filtros-mobile"
-            (click)="abrirFiltrosModal()"
-            [class.has-filters]="cantidadFiltrosActivos > 0"
-          >
-            <mat-icon>tune</mat-icon>
-            @if (cantidadFiltrosActivos > 0) {
-              <span class="badge-count">{{ cantidadFiltrosActivos }}</span>
-            }
-          </button>
+        <button
+          mat-stroked-button
+          class="btn-outline-primary btn-filtros-mobile"
+          (click)="abrirFiltrosModal()"
+          [class.has-filters]="cantidadFiltrosActivos > 0"
+        >
+          <mat-icon>tune</mat-icon>
+          @if (cantidadFiltrosActivos > 0) {
+          <span class="badge-count">{{ cantidadFiltrosActivos }}</span>
+          }
+        </button>
         }
       </div>
     </div>
@@ -164,8 +172,7 @@
         >
         </mat-paginator>
       </div>
-      }
-      }
+      } }
 
       <!-- Estado Vacío -->
       @if (canchasFiltradas().length === 0 && !estaCargando()) {

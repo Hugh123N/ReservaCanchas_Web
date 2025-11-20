@@ -6,7 +6,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from '../../../auth/services/users.service';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -26,7 +26,8 @@ import Swal from 'sweetalert2';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    RouterModule
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
@@ -34,15 +35,7 @@ import Swal from 'sweetalert2';
 export class PaymentComponent extends BaseComponent implements OnInit {
 
   userData: User | null = null;
-  reservaData: ReservaData = {
-    canchaId: 0,
-    fecha: '',
-    selectedTime: null,
-    duracion: 1,
-    telefono: '',
-    precioHora: 0,
-    total: 0
-  };
+  reservaData: ReservaData | null = null;
 
   // States
   isLoading: boolean = false;
@@ -192,7 +185,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       idCancha: this.reservaData.canchaId,
       fecha: this.reservaData.fecha,
       monto: this.reservaData.total,
-      idEstadoReserva: 1, 
+      idEstadoReserva: 1,
       codigoMetodoPago: '02', //SOLO EFECTIVO
       // NO enviamos montoAdelanto (lo registra el operador al confirmar)
       detalles
@@ -233,18 +226,18 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     const horasRestantes = data.duracionPreReservaHoras || 24;
 
     // Formatear horarios
-    const horarios = this.reservaData.selectedTime
+    const horarios = this.reservaData?.selectedTime
       .map((t: any) => t.hora)
       .join(', ');
 
     Swal.fire({
       icon: 'success',
-      title: '¡Pre-Reserva Creada Exitosamente!',
+      title: '¡Reserva Creada Exitosamente!',
       html: `
         <div style="text-align: left; padding: 1rem;">
           <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #0ea5e9;">
             <h4 style="margin: 0 0 0.5rem 0; color: #0369a1; font-size: 1.1rem;">
-              📋 Código de Reserva
+              Código de Reserva
             </h4>
             <p style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #0c4a6e;">
               ${data.codigoReserva || 'N/A'}
@@ -252,52 +245,43 @@ export class PaymentComponent extends BaseComponent implements OnInit {
           </div>
 
           <div style="margin-bottom: 1rem;">
-            <h4 style="margin: 0 0 0.5rem 0; color: #334155;">📅 Detalles de tu Reserva</h4>
-            <p style="margin: 0.25rem 0;"><strong>Cancha:</strong> ${this.reservaData.cancha?.nombre || 'N/A'}</p>
-            <p style="margin: 0.25rem 0;"><strong>Fecha:</strong> ${this.formatDate(this.reservaData.fecha)}</p>
+            <h4 style="margin: 0 0 0.5rem 0; color: #334155;">Detalles de tu Reserva</h4>
+            <p style="margin: 0.25rem 0;"><strong>Cancha:</strong> ${this.reservaData?.cancha?.nombre || 'N/A'}</p>
+            <p style="margin: 0.25rem 0;"><strong>Fecha:</strong> ${this.formatDate(this.reservaData?.fecha!)}</p>
             <p style="margin: 0.25rem 0;"><strong>Horarios:</strong> ${horarios}</p>
-            <p style="margin: 0.25rem 0;"><strong>Monto Total:</strong> S/ ${data.montoFormateado || this.reservaData.total.toFixed(2)}</p>
-            <p style="margin: 0.25rem 0;"><strong>Estado:</strong> <span style="color: #f59e0b; font-weight: bold;">PENDIENTE</span></p>
+            <p style="margin: 0.25rem 0;"><strong>Monto Total:</strong> S/ ${data.montoFormateado || this.reservaData?.total.toFixed(2)}</p>
           </div>
 
           <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
-            <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">⏰ IMPORTANTE</h4>
-            <p style="margin: 0.25rem 0;">Tu pre-reserva expirará el:</p>
+            <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">IMPORTANTE</h4>
+            <p style="margin: 0.25rem 0;">Tu reserva expirará el:</p>
             <p style="margin: 0.25rem 0; font-weight: bold; font-size: 1.1rem; color: #78350f;">
               ${fechaExpiracion}
             </p>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #92400e;">
-              ⏳ Tienes <strong>${horasRestantes} horas</strong> para que el operador confirme tu reserva
+              Tienes <strong>${horasRestantes} horas</strong> para que el operador confirme tu reserva
             </p>
           </div>
 
           <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
-            <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">📞 Próximos Pasos</h4>
+            <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">Próximos Pasos</h4>
             <p style="margin: 0.25rem 0;">El operador de la cancha se contactará contigo al:</p>
             <p style="margin: 0.25rem 0; font-size: 1.2rem; font-weight: bold; color: #047857;">
-              📱 ${this.reservaData.telefono || this.userData?.telefono || 'N/A'}
+              📱 ${this.reservaData?.telefono || this.userData?.telefono || 'N/A'}
             </p>
-            <p style="margin: 0.5rem 0 0 0;">Para coordinar el <strong>pago en EFECTIVO</strong></p>
             ${data.telefonoCancha ? `
               <p style="margin: 0.5rem 0 0 0; padding-top: 0.5rem; border-top: 1px solid #d1fae5;">
                 También puedes contactar a la cancha al: <strong>${data.telefonoCancha}</strong>
               </p>
             ` : ''}
           </div>
-
-          <div style="background: #eff6ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
-            <p style="margin: 0; color: #1e40af; font-size: 0.95rem;">
-              ✅ <strong>Una vez confirmada</strong>, recibirás un recordatorio por email y WhatsApp
-              <strong>1 hora antes</strong> de tu reserva.
-            </p>
-          </div>
         </div>
       `,
       width: '650px',
-      confirmButtonText: '📋 Ver Mis Reservas',
+      confirmButtonText: 'Ver Mis Reservas',
       confirmButtonColor: '#10b981',
       showCancelButton: true,
-      cancelButtonText: '🏠 Ir al Inicio',
+      cancelButtonText: 'Ir al Inicio',
       cancelButtonColor: '#6b7280',
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -341,7 +325,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
         if (this.reservaData?.canchaId) {
           localStorage.removeItem(`reserva_draft_${this.reservaData.canchaId}`);
         }
-        this.router.navigate(['/cancha/', this.reservaData.canchaId]);
+        this.router.navigate(['/cancha/', this.reservaData?.canchaId]);
       }
     });
   }
@@ -350,7 +334,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
    * Volver atrás
    */
   onBack(): void {
-    this.router.navigate(['/cancha/', this.reservaData.canchaId], {
+    this.router.navigate(['/cancha/', this.reservaData?.canchaId], {
       queryParams: { reserva: 'true' }
     });
   }

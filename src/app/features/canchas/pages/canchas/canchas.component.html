@@ -6,20 +6,34 @@
   class="search-section bg-gradient-to-br from-primary-50 to-secondary-50 py-8"
   >
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Page Title -->
-    <div class="text-center mb-8">
-      <h1 class="text-responsive-2xl font-bold text-primary mb-4">{{ getPageTitle() }}</h1>
+    <!-- Page Title with Filter Button (Mobile/Tablet) -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div class="text-center sm:text-left flex-1">
+        <h1 class="text-responsive-2xl font-bold text-primary mb-2">{{ getPageTitle() }}</h1>
+      </div>
+      <!-- Botón Filtros (Solo Mobile/Tablet - max 768px) -->
+      <div class="filter-toggle-container">
+        <button
+          mat-raised-button
+          class="btn-primary"
+          (click)="toggleFiltros()">
+          <mat-icon class="mr-2">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+          {{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
+        </button>
+      </div>
     </div>
 
-    <!-- Search Bar Component -->
-    <app-search-bar
-      [canchaTipos]="canchaTipos"
-      [ubigeos]="ubigeos"
-      [isLoading]="isLoading"
-      [maxWidth]="'large'"
-      (search)="onSearchBarSearch($event)"
-      (clear)="onSearchBarClear()"
-    ></app-search-bar>
+    <!-- Search Bar Component (Oculto en mobile/tablet por defecto) -->
+    <div class="search-bar-wrapper" [class.show-filters]="mostrarFiltros">
+      <app-search-bar
+        [canchaTipos]="canchaTipos"
+        [ubigeos]="ubigeos"
+        [isLoading]="isLoading"
+        [maxWidth]="'large'"
+        (search)="onSearchBarSearch($event)"
+        (clear)="onSearchBarClear()"
+      ></app-search-bar>
+    </div>
   </div>
 </section>
 

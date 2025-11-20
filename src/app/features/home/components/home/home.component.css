@@ -69,6 +69,17 @@
   animation-delay: 4s;
 }
 
+/* ========== FILTROS RESPONSIVE ========== */
+
+/* En desktop: botón de filtros oculto, search-bar siempre visible */
+.filter-toggle-container {
+  display: none;
+}
+
+.search-bar-wrapper {
+  display: block;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .floating-icon {
@@ -81,5 +92,30 @@
 
   .search-card {
     margin: 0 1rem;
+  }
+
+  /* En tablet/mobile: botón visible, search-bar oculto por defecto */
+  .filter-toggle-container {
+    display: block;
+  }
+
+  .search-bar-wrapper {
+    display: none;
+  }
+
+  .search-bar-wrapper.show-filters {
+    display: block;
+    animation: fadeInUp 0.3s ease-out;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

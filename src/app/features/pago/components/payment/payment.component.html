@@ -9,7 +9,7 @@
           <mat-icon class="icon-responsive">arrow_back</mat-icon>
         </button>
         <div>
-          <h1 class="text-responsive-2xl font-bold text-primary-600">Confirmar Pre-Reserva</h1>
+          <h1 class="text-responsive-2xl font-bold text-primary-600">Confirmar Reserva</h1>
           <p class="text-responsive-base text-neutral-600">Revisa los detalles de tu reserva</p>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <mat-icon class="empty-state-icon">receipt_long</mat-icon>
         <h3 class="empty-state-title">No hay reserva pendiente</h3>
         <p class="empty-state-description">No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
-        <button mat-raised-button class="btn-primary" (click)="onBack()">
+        <button mat-raised-button class="btn-primary" routerLink="/cancha/canchas">
           Volver al Inicio
         </button>
       </div>
@@ -109,19 +109,15 @@
           <!-- Información Importante -->
           <mat-card class="card-base bg-yellow-100! border-l-4 border-amber-500 p-2">
               <div class="flex-1">
-                <h3 class="font-bold text-neutral-800 mb-2">⚠️ Información Importante</h3>
+                <h3 class="font-bold text-neutral-800 mb-2">Información Importante</h3>
                 <ul class="space-y-2 text-sm text-neutral-700">
                   <li class="flex items-start gap-2">
-                    <mat-icon class="icon-sm text-amber-600 mt-0.5">check_circle</mat-icon>
-                    <span>Al confirmar, crearás una <strong>PRE-RESERVA</strong> con estado PENDIENTE</span>
-                  </li>
-                  <li class="flex items-start gap-2">
                     <mat-icon class="icon-sm text-amber-600 mt-0.5">phone</mat-icon>
-                    <span>El operador de la cancha se contactará contigo para coordinar el <strong>pago en EFECTIVO</strong></span>
+                    <span>El operador de la cancha se contactará contigo para coordinar el <strong>metodo de Pago</strong></span>
                   </li>
                   <li class="flex items-start gap-2">
                     <mat-icon class="icon-sm text-amber-600 mt-0.5">schedule</mat-icon>
-                    <span>Tu pre-reserva expirará en <strong>24-48 horas</strong> si no es confirmada por el operador</span>
+                    <span>Tu reserva expirará en <strong>{{reservaData.cancha!.duracionPreReserva }} horas</strong> si no es confirmada por el operador</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <mat-icon class="icon-sm text-amber-600 mt-0.5">notifications</mat-icon>
@@ -138,12 +134,16 @@
 
             <!-- Card de Total -->
             <mat-card class="card-base bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200! p-2">
-              <div class="text-center">
-                <p class="text-sm text-neutral-600 mb-1">Monto Total</p>
-                <p class="text-4xl font-bold text-primary-600 mb-2">
-                  S/ {{ reservaData.total }}
-                </p>
-                <p class="text-sm text-neutral-500">
+              <div class="total-card-content text-center">
+                <div class="total-header-wrapper">
+                  <div class="total-header-content">
+                    <p class="total-label text-sm text-neutral-600 mb-1 font-bold">Monto Total</p>
+                    <p class="total-amount text-4xl font-bold text-primary-600 mb-2">
+                      S/ {{ reservaData.total }}
+                    </p>
+                  </div>
+                </div>
+                <p class="total-detail text-sm text-neutral-500">
                   {{ reservaData.duracion }} hora(s) × S/ {{ reservaData.precioHora }}
                 </p>
 
@@ -168,18 +168,12 @@
 
             <!-- Botón de Acción Principal -->
             <button
-              mat-raised-button
+              mat-stroked-button
               class="btn-primary w-full py-4 text-lg font-bold shadow-lg hover:shadow-xl"
               [disabled]="isProcessing"
               (click)="onConfirmPreReserva()">
-              @if (isProcessing) {
-                <mat-spinner diameter="24" class="mr-2"></mat-spinner>
-                <span>Procesando...</span>
-              }
-              @if (!isProcessing) {
-                <mat-icon class="mr-2">check_circle</mat-icon>
-                <span>Crear Pre-Reserva</span>
-              }
+              <mat-icon class="mr-2">check_circle</mat-icon>
+                Crear Reserva
             </button>
 
             <!-- Botón Cancelar -->
@@ -191,6 +185,7 @@
               <mat-icon class="mr-2">close</mat-icon>
               Cancelar
             </button>
+            
 
             <!-- Información de Contacto -->
             <mat-card class="card-base bg-blue-50 border border-blue-200">

@@ -185,9 +185,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     if (sport.includes('voley')) return 'sports_volleyball';
     return 'sports';
   }
-  getStatusText(): string {
-    return this.canchaData.estadoCancha?.nombre || 'Disponible';
-  }
+
   getStatusClass(): string {
     const status = this.canchaData.estadoCancha?.nombre?.toLowerCase() || '';
     if (status.includes('disponible') || status.includes('aprobado')) return 'status-disponible';
@@ -296,7 +294,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     } else {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Enlace copiado al portapapeles');
+        this.openSuccessAlert('Enlace copiado al portapapeles');
       });
     }
   }
@@ -312,11 +310,11 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     if (this.reservaForm.valid && this.selectedDate && this.selectedTime) {
       const reservaData = {
         canchaId: this.canchaData.idCancha,
+        cancha: this.canchaData,
         fecha: this.selectedDate.fecha,
         selectedTime: this.selectedTime,
         duracion: this.reservaForm.value.duracion,
         telefono: this.reservaForm.value.telefono,
-        recordatorioWhatsApp: this.reservaForm.value.recordatorioWhatsApp,
         precioHora: this.canchaData.precioHora,
         total: this.calculateTotal()
       };
@@ -332,7 +330,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         state: { reservaData }
       });
     } else {
-      alert('Por favor completa todos los campos requeridos');
+      this.openWarningAlert('Por favor completa todos los campos requeridos');
     }
   }
 
@@ -343,7 +341,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     // In a real app, this would call a service to update favorites
     console.log('Favorite toggled:', this.isFavorite);
   }
-  
+
 }
 
 function formatDateLocal(date: Date): string {
