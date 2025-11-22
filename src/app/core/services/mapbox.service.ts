@@ -87,30 +87,52 @@ export class MapboxService {
       throw new Error('Mapa no inicializado');
     }
 
-    // Crear elemento personalizado para el marcador
+    // Crear elemento personalizado para el marcador usando SVG
     const el = document.createElement('div');
     el.className = 'marcador-personalizado';
-    el.style.width = '32px';
-    el.style.height = '32px';
-    el.style.backgroundImage = 'url(/assets/images/marker-icon.png)';
-    el.style.backgroundSize = 'cover';
     el.style.cursor = 'pointer';
     el.style.transition = 'transform 0.2s ease';
+    el.style.transformOrigin = 'center bottom'; // Escalar desde la punta del pin
     el.dataset['canchaId'] = cancha.id.toString();
+
+    // Crear SVG del marcador usando las variables CSS del proyecto
+    el.innerHTML = `
+      <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="shadow-${cancha.id}" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Pin principal -->
+        <path d="M20 0C11.716 0 5 6.716 5 15c0 8.284 15 35 15 35s15-26.716 15-35c0-8.284-6.716-15-15-15z"
+              fill="var(--color-primary-500)"
+              filter="url(#shadow-${cancha.id})"/>
+        <!-- Círculo interior blanco -->
+        <circle cx="20" cy="15" r="6" fill="white"/>
+        <!-- Icono de cancha -->
+        <path d="M20 11.5c-1.933 0-3.5 1.567-3.5 3.5s1.567 3.5 3.5 3.5 3.5-1.567 3.5-3.5-1.567-3.5-3.5-3.5zm0 5.5c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"
+              fill="var(--color-primary-500)"/>
+      </svg>
+    `;
 
     // Agregar efecto hover
     el.addEventListener('mouseenter', () => {
       el.style.transform = 'scale(1.2)';
+      el.style.zIndex = '1000';
       if (alPasarMouse) alPasarMouse(cancha, true);
     });
 
     el.addEventListener('mouseleave', () => {
       el.style.transform = 'scale(1)';
+      el.style.zIndex = '';
       if (alPasarMouse) alPasarMouse(cancha, false);
     });
 
-    // Crear marcador
-    const marcador = new mapboxgl.Marker(el)
+    // Crear marcador con punto de anclaje en la punta del pin
+    const marcador = new mapboxgl.Marker({
+      element: el,
+      anchor: 'bottom' // Anclar en la punta del pin (parte inferior)
+    })
       .setLngLat([cancha.lng, cancha.lat])
       .addTo(this.mapa);
 
@@ -200,17 +222,35 @@ export class MapboxService {
       this.marcadorUbicacionUsuario.remove();
     }
 
-    // Crear marcador personalizado de ubicación del usuario
+    // Crear marcador personalizado de ubicación del usuario usando SVG
     const el = document.createElement('div');
     el.className = 'marcador-ubicacion-usuario';
-    el.style.width = '20px';
-    el.style.height = '20px';
-    el.style.borderRadius = '50%';
-    el.style.backgroundColor = '#4285F4';
-    el.style.border = '3px solid white';
-    el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+    el.style.cursor = 'default';
 
-    this.marcadorUbicacionUsuario = new mapboxgl.Marker(el)
+    // SVG del marcador de usuario (punto azul con anillo pulsante)
+    el.innerHTML = `
+      <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="shadow-user" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.4"/>
+          </filter>
+        </defs>
+        <!-- Anillo exterior pulsante -->
+        <circle cx="12" cy="12" r="10" fill="var(--color-secondary-500)" opacity="0.2">
+          <animate attributeName="r" values="8;11;8" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Círculo principal -->
+        <circle cx="12" cy="12" r="6" fill="var(--color-secondary-500)" filter="url(#shadow-user)"/>
+        <!-- Borde blanco -->
+        <circle cx="12" cy="12" r="6" fill="none" stroke="white" stroke-width="2"/>
+      </svg>
+    `;
+
+    this.marcadorUbicacionUsuario = new mapboxgl.Marker({
+      element: el,
+      anchor: 'center' // Centrar el marcador en las coordenadas
+    })
       .setLngLat([lng, lat])
       .addTo(this.mapa);
   }

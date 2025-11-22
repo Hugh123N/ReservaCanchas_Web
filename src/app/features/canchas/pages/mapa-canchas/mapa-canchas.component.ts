@@ -179,7 +179,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
         zoom: this.ZOOM_DEFECTO
       });
 
-      // Agregar marcadores de canchas
+      // Limpiar marcadores existentes antes de agregar nuevos
+      this.mapboxService.eliminarTodosMarcadoresCanchas();
+
+      // Agregar marcadores de canchas (tanto si vienen del state como del backend)
       this.agregarMarcadoresCanchas();
 
       // Ajustar límites para mostrar todas las canchas
@@ -418,6 +421,15 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
           this.canchasFiltradas.set(canchasUbicacion);
           this.totalCanchas.set(response.data.total);
           this.paginaActual.set(1);
+
+          // Actualizar marcadores si el mapa ya está inicializado
+          if (this.mapboxService.obtenerMapa()) {
+            this.mapboxService.eliminarTodosMarcadoresCanchas();
+            this.agregarMarcadoresCanchas();
+            if (canchasUbicacion.length > 0) {
+              this.mapboxService.ajustarLimitesACanchas(canchasUbicacion, 80);
+            }
+          }
         }
         this.estaCargando.set(false);
       },
