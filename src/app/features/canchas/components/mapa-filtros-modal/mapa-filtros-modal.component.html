@@ -42,22 +42,22 @@
         </mat-form-field>
       </section>
 
-      <!-- Precio -->
+      <!-- Solo Favoritos -->
       <section class="filter-section">
-        <h3 class="section-title">Precio Máximo por Hora</h3>
-        <div class="precio-slider-container">
-          <mat-slider
-            min="0"
-            max="200"
-            step="10"
-            discrete
-            [displayWith]="formatLabel"
-            class="full-width"
-          >
-            <input matSliderThumb formControlName="precioMax">
-          </mat-slider>
-          <p class="precio-display">Hasta <strong>S/ {{ precioMaxDisplay }}</strong></p>
-        </div>
+        <h3 class="section-title">Favoritos</h3>
+        <mat-slide-toggle
+          formControlName="soloFavoritos"
+          color="primary"
+          class="full-width-toggle"
+        >
+          <div class="toggle-label">
+            <mat-icon class="icon-favorito">favorite</mat-icon>
+            <span>Mostrar solo mis favoritos</span>
+            @if (data.cantidadFavoritos > 0) {
+              <span class="badge-count-inline">({{ data.cantidadFavoritos }})</span>
+            }
+          </div>
+        </mat-slide-toggle>
       </section>
 
       <!-- Fecha (Opcional para futuro) -->

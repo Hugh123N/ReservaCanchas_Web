@@ -90,15 +90,18 @@
 
 /* ========== UBICACIÓN ========== */
 .location-row {
-  @apply flex justify-between items-center gap-2;
+  @apply flex justify-between items-start gap-2;
 }
 
 .location-info {
-  @apply flex items-center gap-1 flex-1 min-w-0;
+  @apply flex items-start gap-1 flex-1 min-w-0;
 }
 
 .location-text {
-  @apply text-xs text-neutral-600 font-normal overflow-hidden text-ellipsis whitespace-nowrap;
+  @apply text-xs text-neutral-600 font-normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
 
 .distance-badge {

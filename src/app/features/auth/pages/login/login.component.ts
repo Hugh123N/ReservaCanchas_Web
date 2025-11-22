@@ -131,10 +131,11 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
     const subscription = this.usersService
       .login(loginData)
       .pipe(
-        tap((response) => {
+        tap(async (response) => {
           if (response) {
             if (response.isValid) {
-              this.authService.logIn(response.data.accessToken);
+              // CASUÍSTICA 2: Login ahora es async y carga favoritos automáticamente
+              await this.authService.logIn(response.data.accessToken);
               const redirectUrl = sessionStorage.getItem('redirect_after_login');
               if (redirectUrl) {
                 sessionStorage.removeItem('redirect_after_login');

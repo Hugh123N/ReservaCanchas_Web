@@ -9,24 +9,22 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
 import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
 
 export interface FiltrosModalData {
   tiposDeporte: GetTipoCancha[];
   ubigeos: Ubigeo[];
+  cantidadFavoritos: number;
   filtrosActuales: {
     idTipoCancha?: number;
     codigoUbigeo?: string;
-    precioMax?: number;
     fecha?: string;
+    soloFavoritos?: boolean;
   };
 }
 
-/**
- * Componente de modal fullscreen para filtros de mapa en mobile
- * Permite seleccionar tipo de deporte, ubicación, precio máximo y fecha
- */
 @Component({
   selector: 'app-mapa-filtros-modal',
   standalone: true,
@@ -40,14 +38,14 @@ export interface FiltrosModalData {
     MatInputModule,
     MatIconModule,
     MatSliderModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatSlideToggleModule
   ],
   templateUrl: './mapa-filtros-modal.component.html',
   styleUrl: './mapa-filtros-modal.component.css'
 })
 export class MapaFiltrosModalComponent implements OnInit {
   filtrosForm!: FormGroup;
-  precioMaxDisplay = 100;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: FiltrosModalData,
@@ -59,16 +57,10 @@ export class MapaFiltrosModalComponent implements OnInit {
     this.filtrosForm = this.fb.group({
       idTipoCancha: [this.data.filtrosActuales?.idTipoCancha],
       codigoUbigeo: [this.data.filtrosActuales?.codigoUbigeo],
-      precioMax: [this.data.filtrosActuales?.precioMax || 100],
-      fecha: [this.data.filtrosActuales?.fecha]
+      fecha: [this.data.filtrosActuales?.fecha],
+      soloFavoritos: [this.data.filtrosActuales?.soloFavoritos || false]
     });
-
-    this.precioMaxDisplay = this.filtrosForm.value.precioMax;
-
-    // Escuchar cambios en precioMax para actualizar display
-    this.filtrosForm.get('precioMax')?.valueChanges.subscribe(value => {
-      this.precioMaxDisplay = value;
-    });
+ 
   }
 
   aplicarFiltros(): void {
@@ -79,10 +71,9 @@ export class MapaFiltrosModalComponent implements OnInit {
     this.filtrosForm.reset({
       idTipoCancha: undefined,
       codigoUbigeo: undefined,
-      precioMax: 100,
-      fecha: undefined
+      fecha: undefined,
+      soloFavoritos: false
     });
-    this.precioMaxDisplay = 100;
   }
 
   cerrar(): void {

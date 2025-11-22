@@ -32,6 +32,8 @@ import { generateFutureDates, getNombreDia, getNombreMes, formatParaInput } from
 import { DateOption } from '../../core/types/date-option';
 import { TimeOption } from '../../core/types/time-option.interface';
 import { ServiceItem } from '../../core/types/service-item.interface';
+import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detalle-cancha',
@@ -66,7 +68,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   // Selected States
   selectedDate: DateOption | null = null;
   selectedTime: TimeOption[] | null = null;
-  isFavorite: boolean = false;
 
   // Data
   canchaData: GetCancha;
@@ -95,6 +96,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     private disponibilidadService: DisponibilidadService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private canchaFavoritaService: CanchaFavoritaService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
@@ -335,11 +337,23 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
 
-  // Toggle favorite status
-  toggleFavorite() {
-    this.isFavorite = !this.isFavorite;
-    // In a real app, this would call a service to update favorites
-    console.log('Favorite toggled:', this.isFavorite);
+  esFavorito(): boolean {
+    if (!this.canchaData?.idCancha) return false;
+    return this.canchaFavoritaService.isFavorito(this.canchaData.idCancha);
+  }
+
+  async onToggleFavorito(): Promise<void> {
+    // Verificar si el usuario está autenticado
+    if (!this.authService.isAuthenticated()) {
+      this.openWarningAlert('Debes iniciar sesión para agregar a favoritos');
+      return;
+    }
+    try {
+      await this.canchaFavoritaService.toggleFavorito(this.canchaData.idCancha!);
+    } catch (error) {
+      console.error('Error al actualizar favorito:', error);
+      this.openErrorAlert('Error al actualizar favoritos. Por favor, intenta nuevamente.');
+    }
   }
 
 }

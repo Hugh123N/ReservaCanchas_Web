@@ -9,3 +9,25 @@
     filter: grayscale(100%) brightness(0.7);
   }
 }
+
+.heart-button {
+  transition: transform 0.2s ease;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.heart-button:hover {
+  transform: scale(1.15);
+}
+
+.heart-button:active {
+  transform: scale(0.95);
+}
+
+.heart-button mat-icon {
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

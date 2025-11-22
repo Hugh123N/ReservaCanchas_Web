@@ -41,20 +41,6 @@
   width: 100%;
 }
 
-.precio-slider-container {
-  padding: 8px 0;
-}
-
-.precio-display {
-  @apply text-sm text-center mt-4;
-  color: rgb(113 113 122);
-}
-
-.precio-display strong {
-  @apply text-lg;
-  color: var(--color-primary-500);
-}
-
 .modal-footer {
   @apply flex gap-3;
   padding: 16px 20px;
@@ -74,4 +60,25 @@
   --mdc-slider-active-track-color: var(--color-primary-500);
   --mdc-slider-handle-color: var(--color-primary-500);
   --mdc-slider-with-tick-marks-active-container-color: var(--color-primary-500);
+}
+
+/* ========== TOGGLE FAVORITOS ========== */
+
+.full-width-toggle {
+  width: 100%;
+}
+
+.toggle-label {
+  @apply flex items-center gap-2;
+}
+
+.icon-favorito {
+  color: var(--color-accent-500);
+  font-size: 20px;
+}
+
+.badge-count-inline {
+  @apply ml-2 text-sm;
+  color: var(--color-primary-500);
+  font-weight: 600;
 }

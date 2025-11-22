@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -22,6 +23,8 @@ import { VenueMapCardComponent } from '../../components/venue-map-card/venue-map
 import { CanchaService } from '../../core/services/cancha.service';
 import { UbigeoService } from '../../core/services/ubigeo.service';
 import { CanchaTipoService } from '../../../cancha-tipo/core/services/cancha-tipo.service';
+import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
+import { AuthService } from '@core/auth/services/auth.service';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { SearchCanchaFilter } from '../../core/model/searchCanchaFilter.model';
 import { AreaGeografica } from '../../core/model/areaGeografica.model';
@@ -49,6 +52,7 @@ import { MapaFiltrosModalComponent } from '../../components/mapa-filtros-modal/m
     MatSelectModule,
     MatPaginatorModule,
     MatDialogModule,
+    MatSlideToggleModule,
     LayoutModule,
     FormsModule,
     VenueMapCardComponent
@@ -92,6 +96,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     if (filtro.idTipoCancha) count++;
     if (filtro.codigoUbigeo) count++;
     if (filtro.fecha) count++;
+    if (filtro.soloFavoritos) count++;
     return count;
   }
 
@@ -101,6 +106,8 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     private canchaService: CanchaService,
     private ubigeoService: UbigeoService,
     private canchaTipoService: CanchaTipoService,
+    public canchaFavoritaService: CanchaFavoritaService,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
@@ -116,6 +123,11 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Cargar favoritos del usuario si está autenticado
+    if (this.authService.isAuthenticated()) {
+      this.canchaFavoritaService.cargarFavoritosUsuario();
+    }
+
     // Cargar tipos de deporte y ubigeos
     this.cargarTiposDeporte();
     this.cargarUbigeos();
@@ -371,6 +383,24 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     this.buscarCanchas();
   }
 
+  onCambiarFiltroFavoritos(soloFavoritos: boolean): void {
+    const user = this.authService.loadUserProfile();
+    if (!user?.id) {
+      this.mensajeError.set('Debes iniciar sesión para ver tus favoritos');
+      return;
+    }
+
+    this.filtroActual.update(f => ({
+      ...f,
+      soloFavoritos: soloFavoritos,
+      idUsuario: soloFavoritos ? user.id : undefined,
+      codigoUbigeo: soloFavoritos ? undefined : f.codigoUbigeo // Limpiar ubicación si filtra favoritos
+    }));
+
+    this.paginaActual.set(1);
+    this.buscarCanchas();
+  }
+
   private cargarCanchasIniciales(): void {
     this.estaCargando.set(true);
 
@@ -482,18 +512,23 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {
         tiposDeporte: this.tiposDeporte(),
         ubigeos: this.ubigeos(),
+        cantidadFavoritos: this.canchaFavoritaService.cantidadFavoritos(),
         filtrosActuales: this.filtroActual()
       }
     });
 
     dialogRef.afterClosed().subscribe(filtros => {
       if (filtros) {
+        const user = this.authService.loadUserProfile();
+
         // Aplicar filtros
         this.filtroActual.set({
           ...this.filtroActual(),
           idTipoCancha: filtros.idTipoCancha,
-          codigoUbigeo: filtros.codigoUbigeo,
-          fecha: filtros.fecha
+          codigoUbigeo: filtros.soloFavoritos ? undefined : filtros.codigoUbigeo, // Limpiar ubicación si favoritos
+          fecha: filtros.fecha,
+          soloFavoritos: filtros.soloFavoritos,
+          idUsuario: filtros.soloFavoritos ? user?.id : undefined
         });
         this.paginaActual.set(1);
         this.buscarCanchas();

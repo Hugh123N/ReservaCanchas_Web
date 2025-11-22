@@ -126,6 +126,23 @@
   @apply transition-all duration-300 hover:bg-primary-50;
 }
 
+/* Heart Button Animation */
+.heart-button {
+  transition: transform 0.2s ease;
+}
+
+.heart-button:hover {
+  transform: scale(1.15);
+}
+
+.heart-button:active {
+  transform: scale(0.95);
+}
+
+.heart-button mat-icon {
+  transition: color 0.3s ease;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .cancha-hero .container {

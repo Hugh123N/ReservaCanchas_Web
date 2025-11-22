@@ -12,4 +12,6 @@ export interface SearchCanchaFilter {
   idEstadoCancha?: number;
   activo?: boolean;
   area?: AreaGeografica;
+  idUsuario?: string;
+  soloFavoritos?: boolean;
 }

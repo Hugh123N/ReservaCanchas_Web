@@ -1,5 +1,5 @@
 import { Observable, Subject } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -15,7 +15,11 @@ export class AuthService {
   user$: Subject<User>;
   access_token_key = `access_token_${environment.application.code}`;
 
-  constructor(private router: Router, private usersService: UsersService) {
+  constructor(
+    private router: Router,
+    private usersService: UsersService,
+    private injector: Injector
+  ) {
     this.user$ = new Subject<User>();
   }
 
@@ -57,11 +61,21 @@ export class AuthService {
     }
   }
 
-  public logIn(accessToken: any): void {
+  public async logIn(accessToken: any): Promise<void> {
     if (accessToken) {
       if (accessToken.access_token) {
         localStorage.setItem(this.access_token_key, accessToken.access_token);
         this.loadUserProfile();
+
+        //TODO: Cargar favoritos automáticamente al iniciar sesión
+        try {
+          // Usar lazy loading para evitar dependencia circular
+          const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
+          const favoritosService = this.injector.get(CanchaFavoritaService);
+          await favoritosService.cargarFavoritosUsuario();
+        } catch (error) {
+          console.error('Error al cargar favoritos en login:', error);
+        }
       }
     }
   }
@@ -97,7 +111,17 @@ export class AuthService {
     }
   }
 
-  public cleanAndRedirect() {
+  public async cleanAndRedirect(): Promise<void> {
+    //TODO: Limpiar favoritos al cerrar sesión o cambiar de usuario
+    try {
+      // Usar lazy loading para evitar dependencia circular
+      const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
+      const favoritosService = this.injector.get(CanchaFavoritaService);
+      favoritosService.limpiarFavoritos();
+    } catch (error) {
+      console.error('Error al limpiar favoritos en logout:', error);
+    }
+
     //localStorage.removeItem('menuConfigV1');
     localStorage.removeItem(this.access_token_key);
     sessionStorage.clear();

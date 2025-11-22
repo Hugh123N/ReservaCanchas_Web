@@ -234,11 +234,8 @@
           class="btn-primary"
           [disabled]="form.invalid || isSaving"
         >
-          @if (isSaving) {
-          <mat-spinner diameter="20" class="inline-block mr-2"></mat-spinner>
-          Guardando... } @else {
           <mat-icon class="mr-2">save</mat-icon>
-          Guardar Cambios }
+          Guardar Cambios
         </button>
       </div>
     </form>

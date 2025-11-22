@@ -66,6 +66,20 @@
             }
           </mat-select>
         </mat-form-field>
+
+        <!-- Toggle Solo Favoritos -->
+        <mat-slide-toggle
+          [checked]="filtroActual().soloFavoritos || false"
+          (change)="onCambiarFiltroFavoritos($event.checked)"
+          color="primary"
+          class="favoritos-toggle"
+        >
+          <mat-icon class="icon-favorito">favorite</mat-icon>
+          Solo Favoritos
+          @if (canchaFavoritaService.cantidadFavoritos() > 0) {
+            <span class="badge-favoritos">({{ canchaFavoritaService.cantidadFavoritos() }})</span>
+          }
+        </mat-slide-toggle>
         }
 
         <!-- Botón Filtros Mobile -->

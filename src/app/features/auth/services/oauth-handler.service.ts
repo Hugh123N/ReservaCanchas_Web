@@ -33,9 +33,9 @@ export class OAuthHandlerService {
         this.usersService
           .loginWithOAuth('Google', credential)
           .pipe(
-            tap((response) => {
+            tap(async (response) => {
               if (response && response.isValid) {
-                this.authService.logIn(response.data.accessToken);
+                await this.authService.logIn(response.data.accessToken);
                 onSuccess('¡Autenticación exitosa con Google!');
 
                 setTimeout(() => {
@@ -78,9 +78,9 @@ export class OAuthHandlerService {
         this.usersService
           .loginWithOAuth('Facebook', accessToken)
           .pipe(
-            tap((response) => {
+            tap(async (response) => {
               if (response && response.isValid) {
-                this.authService.logIn(response.data.accessToken);
+                await this.authService.logIn(response.data.accessToken);
                 onSuccess('¡Autenticación exitosa con Facebook!');
 
                 setTimeout(() => {

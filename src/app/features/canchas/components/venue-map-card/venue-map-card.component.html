@@ -15,44 +15,33 @@
       <!-- Título -->
       <h3 class="venue-title">{{ venue.nombre }}</h3>
 
-      <!-- Calificación -->
-      @if (venue.calificacion) {
-        <div class="rating-section">
-          <mat-icon class="star-icon !text-yellow-400">star</mat-icon>
-          <span class="rating-value">{{ venue.calificacion.toFixed(1) }}</span>
-          @if (venue.totalResenas) {
-            <span class="reviews-count">
-              ({{ venue.totalResenas }})
-            </span>
-          }
-        </div>
-      }
+      <!-- Ubicación con badge de distancia -->
+    <div class="location-row">
+      <div class="location-info">
+        <mat-icon class="location-icon">location_on</mat-icon>
+        <span class="location-text">{{ venue.direccion }}</span>
+      </div>
+    </div>
     </div>
   </div>
 
   <!-- Sección Inferior (Ancho Completo) -->
   <div class="bottom-section">
-    <!-- Ubicación con badge de distancia -->
+    <!-- Chips de Deportes (sin mat-chip) -->
     <div class="location-row">
-      <div class="location-info">
-        <mat-icon class="location-icon">location_on</mat-icon>
-        <span class="location-text">{{ venue.direccion }}</span>
+      <div class="sports-section">
+        @for (deporte of mostrarDeportes; track deporte) {
+          <span class="sport-chip">{{ deporte }}</span>
+        }
+        @if (tieneDeportesAdicionales) {
+          <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
+        }
       </div>
       @if (mostrarDistancia) {
         <div class="distance-badge">
           <mat-icon class="distance-icon">near_me</mat-icon>
           <span>{{ mostrarDistancia }}</span>
         </div>
-      }
-    </div>
-
-    <!-- Chips de Deportes (sin mat-chip) -->
-    <div class="sports-section">
-      @for (deporte of mostrarDeportes; track deporte) {
-        <span class="sport-chip">{{ deporte }}</span>
-      }
-      @if (tieneDeportesAdicionales) {
-        <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
       }
     </div>
 

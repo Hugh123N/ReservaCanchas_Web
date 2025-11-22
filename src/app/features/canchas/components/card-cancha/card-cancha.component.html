@@ -20,13 +20,19 @@
 
     <!-- Contenido -->
     <mat-card-content class="flex flex-col gap-2">
-      <!-- Título y rating -->
+      <!-- Título y favorito -->
       <div class="flex justify-between items-center">
-        <h3 class="font-semibold text-lg">{{ field?.nombre }}</h3>
-        <div class="flex items-center gap-1">
-          <mat-icon class="!text-yellow-400">star</mat-icon>
-          <span>{{ field?.calificacionPromedio || "N/A" }}</span>
-        </div>
+        <h3 class="font-semibold text-lg flex-1 mr-2">{{ field?.nombre }}</h3>
+        <button
+          mat-icon-button
+          class="heart-button !w-9 !h-9 flex-shrink-0"
+          (click)="onToggleFavorito($event)"
+          [attr.aria-label]="esFavorito() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        >
+          <mat-icon [class.!text-red-500]="esFavorito()" [class.!text-gray-400]="!esFavorito()">
+            {{ esFavorito() ? 'favorite' : 'favorite_border' }}
+          </mat-icon>
+        </button>
       </div>
 
       <!-- Ubicación -->
