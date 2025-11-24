@@ -1,0 +1,68 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definir gradiente -->
+  <defs>
+    <linearGradient id="hexGradient" x1="150" y1="60" x2="150" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0d9488" stop-opacity="0.25"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Hexágono exterior -->
+  <path 
+    d="M150 60 L210 95 L210 165 L150 200 L90 165 L90 95 Z"
+    fill="url(#hexGradient)"
+    stroke="#14b8a6" 
+    stroke-width="10" 
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  
+  <!-- Cancha interior rectangular -->
+  <rect 
+    x="120" 
+    y="80" 
+    width="60" 
+    height="105" 
+    rx="4"
+    fill="none"
+    stroke="#14b8a6" 
+    stroke-width="6" 
+  />
+  
+  <!-- Línea central de cancha -->
+  <line 
+    x1="120" 
+    y1="132.5" 
+    x2="180" 
+    y2="132.5" 
+    stroke="#14b8a6" 
+    stroke-width="5"
+    stroke-linecap="round"
+  />
+  
+  <!-- Círculos de media cancha -->
+  <circle 
+    cx="150" 
+    cy="106" 
+    r="12" 
+    stroke="#14b8a6" 
+    stroke-width="4" 
+    fill="none"
+  />
+  <circle 
+    cx="150" 
+    cy="159" 
+    r="12" 
+    stroke="#14b8a6" 
+    stroke-width="4" 
+    fill="none"
+  />
+  
+  <!-- Punto central -->
+  <circle 
+    cx="150" 
+    cy="132.5" 
+    r="6" 
+    fill="#14b8a6"
+  />
+</svg>

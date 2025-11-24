@@ -441,14 +441,6 @@ export class CanchasComponent extends BaseSearchComponent {
     this.router.navigate(['/cancha', cancha.idCancha]);
   }
 
-  // UI Helper Methods
-  getPageTitle(): string {
-    if (this.isSearching) {
-      return 'Resultados de búsqueda';
-    }
-    return 'Explora todas las canchas';
-  }
-
   trackByCancha(index: number, cancha: GetCancha): number {
     return cancha.idCancha;
   }

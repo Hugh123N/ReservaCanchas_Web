@@ -8,9 +8,7 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title with Filter Button (Mobile/Tablet) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-      <div class="text-center sm:text-left flex-1">
-        <h1 class="text-responsive-2xl font-bold text-primary mb-2">{{ getPageTitle() }}</h1>
-      </div>
+      
       <!-- Botón Filtros (Solo Mobile/Tablet - max 768px) -->
       <div class="filter-toggle-container">
         <button
@@ -49,7 +47,7 @@
                 class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
                 >
                 <div class="results-info">
-                  <h2 class="text-responsive-xl font-semibold text-neutral-800 mb-2">
+                  <h2 class="text-responsive-xl font-semibold text-primary mb-2">
                     {{
                     isSearching
                     ? "Resultados de búsqueda"

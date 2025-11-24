@@ -90,9 +90,8 @@ export class MapboxService {
     // Crear elemento personalizado para el marcador usando SVG
     const el = document.createElement('div');
     el.className = 'marcador-personalizado';
-    el.style.cursor = 'pointer';
-    el.style.transition = 'transform 0.2s ease';
-    el.style.transformOrigin = 'center bottom'; // Escalar desde la punta del pin
+    el.style.width = '40px';
+    el.style.height = '50px';
     el.dataset['canchaId'] = cancha.id.toString();
 
     // Crear SVG del marcador usando las variables CSS del proyecto
@@ -115,16 +114,14 @@ export class MapboxService {
       </svg>
     `;
 
-    // Agregar efecto hover
+    // Agregar efecto hover usando clases CSS
     el.addEventListener('mouseenter', () => {
-      el.style.transform = 'scale(1.2)';
-      el.style.zIndex = '1000';
+      el.classList.add('marcador-hover');
       if (alPasarMouse) alPasarMouse(cancha, true);
     });
 
     el.addEventListener('mouseleave', () => {
-      el.style.transform = 'scale(1)';
-      el.style.zIndex = '';
+      el.classList.remove('marcador-hover');
       if (alPasarMouse) alPasarMouse(cancha, false);
     });
 
@@ -184,28 +181,29 @@ export class MapboxService {
   }
 
   /**
-   * Resalta un marcador específico
+   * Resalta un marcador específico agregando clase CSS directamente
    * @param canchaId ID de la cancha a resaltar
    */
   resaltarMarcador(canchaId: number): void {
     const marcador = this.marcadores.get(canchaId);
     if (marcador) {
       const el = marcador.getElement();
-      el.style.transform = 'scale(1.3)';
-      el.style.zIndex = '1000';
+      // Agregar clase directamente en lugar de simular evento
+      // Esto evita que Mapbox GL JS recalcule la posición del marcador
+      el.classList.add('marcador-hover');
     }
   }
 
   /**
-   * Quita el resaltado de un marcador
+   * Quita el resaltado de un marcador removiendo clase CSS directamente
    * @param canchaId ID de la cancha
    */
   quitarResaltadoMarcador(canchaId: number): void {
     const marcador = this.marcadores.get(canchaId);
     if (marcador) {
       const el = marcador.getElement();
-      el.style.transform = 'scale(1)';
-      el.style.zIndex = '';
+      // Remover clase directamente
+      el.classList.remove('marcador-hover');
     }
   }
 
