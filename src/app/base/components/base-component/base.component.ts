@@ -13,6 +13,7 @@ const DEFAULT_DELAY = 5000;
 @Inject("BaseComponent")
 export abstract class BaseComponent implements OnDestroy {
   readonly ESTADO_CANCHA = ESTADO_CANCHA;
+  readonly TITULO_LOGO: string = 'Cancha Reservas';
   public PERMISSIONS: Record<string, string>;
   protected viewContainerRef: ViewContainerRef;
   protected subscriptions: Subscription[] = [];

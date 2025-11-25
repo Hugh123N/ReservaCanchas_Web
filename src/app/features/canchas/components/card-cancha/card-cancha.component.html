@@ -6,7 +6,7 @@
     >
     <img
       [src]="mainImage"
-      alt="{{ field?.nombre }}"
+      alt="{{ field.nombre }}"
       class="w-full h-full object-cover"
       />
       @if (estadoTexto) {
@@ -22,7 +22,7 @@
     <mat-card-content class="flex flex-col gap-2">
       <!-- Título y favorito -->
       <div class="flex justify-between items-center">
-        <h3 class="font-semibold text-lg flex-1 mr-2">{{ field?.nombre }}</h3>
+        <h3 class="font-semibold text-lg flex-1 mr-2">{{ field.nombre }}</h3>
         <button
           mat-icon-button
           class="heart-button !w-9 !h-9 flex-shrink-0"
@@ -46,7 +46,7 @@
 
       <!-- Precio -->
       <div class="price font-bold text-primary flex items-baseline gap-1">
-        <span class="amount text-xl">S/ {{ field?.precioHora }}</span>
+        <span class="amount text-xl">S/ {{ field.precioHora }}</span>
         <span class="text-sm">/hora</span>
       </div>
 
@@ -63,7 +63,7 @@
         <button
           mat-raised-button
           class="w-full btn-white-primary"
-          (click)="verDetalle(field?.idCancha!)"
+          (click)="verDetalle(field.idCancha!)"
           >
           Reservar Ahora
         </button>

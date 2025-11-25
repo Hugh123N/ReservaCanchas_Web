@@ -4,7 +4,7 @@ import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layo
 import { Observable, Subject } from 'rxjs';
 import { finalize, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 // Material Modules
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +28,7 @@ import { AUTH_FEATURES_FORGOT_PASSWORD } from '../../constants/auth-features.con
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatIconModule,
     MatCardModule,

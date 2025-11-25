@@ -7,7 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
@@ -33,7 +33,7 @@ import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha
   standalone: true,
   imports: [
     MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule,
-    DecimalPipe, CommonModule,
+    CommonModule,
     FooterComponent, NavVarComponent, CardCanchaComponent, SearchBarComponent,
     MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
     FormsModule, ReactiveFormsModule, MatInputModule, MatAutocompleteModule

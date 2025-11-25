@@ -10,8 +10,7 @@ import { Location } from '@angular/common';
   selector: 'app-page404',
   standalone: true,
   imports: [MatButtonModule, MatIconModule, MatCardModule],
-  templateUrl: './page404.component.html',
-  styleUrl: './page404.component.css'
+  templateUrl: './page404.component.html'
 })
 export class Page404Component {
   constructor(

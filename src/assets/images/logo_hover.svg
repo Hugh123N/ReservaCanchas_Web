@@ -1,17 +1,17 @@
 <svg width="140" height="140" viewBox="85 55 130 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Definir gradiente -->
+  <!-- Definir gradiente blanco -->
   <defs>
-    <linearGradient id="hexGradient" x1="150" y1="60" x2="150" y2="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#0d9488" stop-opacity="0.25"/>
+    <linearGradient id="hexGradientWhite" x1="150" y1="60" x2="150" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.25"/>
     </linearGradient>
   </defs>
   
   <!-- Hexágono exterior -->
   <path 
     d="M150 60 L210 95 L210 165 L150 200 L90 165 L90 95 Z"
-    fill="url(#hexGradient)"
-    stroke="#14b8a6" 
+    fill="url(#hexGradientWhite)"
+    stroke="#ffffff" 
     stroke-width="10" 
     stroke-linecap="round"
     stroke-linejoin="round"
@@ -25,7 +25,7 @@
     height="105" 
     rx="4"
     fill="none"
-    stroke="#14b8a6" 
+    stroke="#ffffff" 
     stroke-width="6" 
   />
   
@@ -35,7 +35,7 @@
     y1="132.5" 
     x2="180" 
     y2="132.5" 
-    stroke="#14b8a6" 
+    stroke="#ffffff" 
     stroke-width="5"
     stroke-linecap="round"
   />
@@ -45,7 +45,7 @@
     cx="150" 
     cy="106" 
     r="12" 
-    stroke="#14b8a6" 
+    stroke="#ffffff" 
     stroke-width="4" 
     fill="none"
   />
@@ -53,7 +53,7 @@
     cx="150" 
     cy="159" 
     r="12" 
-    stroke="#14b8a6" 
+    stroke="#ffffff" 
     stroke-width="4" 
     fill="none"
   />
@@ -63,6 +63,6 @@
     cx="150" 
     cy="132.5" 
     r="6" 
-    fill="#14b8a6"
+    fill="#ffffff"
   />
 </svg>

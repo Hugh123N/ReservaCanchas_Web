@@ -1,28 +1,23 @@
-<div class="error-container flex items-center justify-center min-h-screen px-5">
-
-  <mat-card class="error-card flex flex-col items-center justify-center w-[90%] sm:w-[70%] md:w-[50%]">
-
-    <mat-card-content class="flex flex-col items-center justify-center gap-5 w-full">
+<div class="error-page-container hero-gradient-soft">
+  <mat-card class="error-page-card">
+    <mat-card-content class="flex flex-col items-center justify-center gap-5 !p-0">
       <!-- Icono y código de error -->
       <div class="flex flex-col items-center justify-center gap-2.5">
-        <mat-icon class="error-icon text-blue-500">search_off</mat-icon>
-        <h1 class="error-code">404</h1>
+        <h1 class="error-page-code text-primary-600">404</h1>
       </div>
 
       <!-- Mensaje principal -->
-      <div class="error-content flex flex-col items-center justify-center gap-4">
-        <h2 class="error-title">Página No Encontrada</h2>
-        <p class="error-description flex flex-col xs:flex-row items-center justify-center text-center gap-2">
-          <span>Lo sentimos, la página que buscas no existe</span>
-          <span class="hidden xs:inline">&nbsp;</span>
-          <span>o ha sido movida a otra ubicación.</span>
+      <div class="flex flex-col items-center justify-center gap-4">
+        <h2 class="error-page-title text-center">Página No Encontrada</h2>
+        <p class="error-page-description text-center">
+          Lo sentimos, la página que buscas no existe o ha sido movida a otra ubicación.
         </p>
       </div>
 
       <!-- Sugerencias -->
-      <div class="suggestions flex flex-col items-start justify-center gap-2 w-full">
-        <h3>Posibles soluciones:</h3>
-        <ul class="list-disc pl-5 text-left">
+      <div class="w-full bg-neutral-50 rounded-xl border border-neutral-200 p-4 sm:p-6 flex flex-col gap-3">
+        <h3 class="text-base sm:text-lg font-medium text-neutral-800">Posibles soluciones:</h3>
+        <ul class="list-disc pl-5 text-left text-sm sm:text-base text-neutral-600 space-y-1">
           <li>Verifica que la URL esté escrita correctamente</li>
           <li>Regresa a la página anterior</li>
           <li>Visita nuestra página de inicio</li>
@@ -30,13 +25,13 @@
       </div>
 
       <!-- Botones de acción -->
-      <div class="error-actions flex flex-col xs:flex-row items-center justify-center gap-4 xs:gap-5 mt-2 w-full">
-        <button mat-raised-button color="primary" (click)="goBack()" class="w-full xs:w-auto">
+      <div class="error-page-actions w-full">
+        <button mat-raised-button class="btn-primary w-full sm:w-auto" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon>
           Volver Atrás
         </button>
 
-        <button mat-stroked-button color="accent" (click)="goHome()" class="w-full xs:w-auto">
+        <button mat-stroked-button class="btn-outline-primary w-full sm:w-auto" (click)="goHome()">
           <mat-icon>home</mat-icon>
           Página Principal
         </button>

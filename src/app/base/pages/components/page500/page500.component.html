@@ -1,83 +1,62 @@
-<div class="flex flex-col items-center justify-center min-h-screen px-5 bg-gradient-to-br from-red-400 to-orange-600">
-  <mat-card class="flex flex-col items-center justify-center w-[90%] sm:w-[70%] md:w-[50%] max-w-[650px] p-8 sm:p-10 rounded-2xl shadow-2xl bg-white text-center">
-
-    <mat-card-content class="flex flex-col items-center justify-center gap-6 w-full">
+<div class="error-page-container hero-gradient-soft">
+  <mat-card class="error-page-card">
+    <mat-card-content class="flex flex-col items-center justify-center gap-6 !p-0">
 
       <!-- Icono y código de error -->
-      <div class="flex flex-col items-center justify-center gap-3">
-        <mat-icon class="error-icon text-red-500">warning</mat-icon>
-        <h1 class="text-5xl sm:text-6xl font-bold text-orange-600 drop-shadow-md">500</h1>
+      <div class="flex flex-col items-center justify-center gap-2.5">
+        <h1 class="error-page-code text-accent-600">500</h1>
       </div>
 
       <!-- Mensaje principal -->
       <div class="flex flex-col items-center justify-center gap-4">
-        <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">Error Interno del Servidor</h2>
-        <p class="flex flex-col xs:flex-row items-center justify-center text-center gap-2 text-gray-600 text-base sm:text-lg leading-relaxed">
-          <span>Ups! Algo salió mal en nuestros servidores.</span>
-          <span class="hidden xs:inline">&nbsp;</span>
-          <span>Estamos trabajando para solucionarlo.</span>
+        <h2 class="error-page-title text-center">Error Interno del Servidor</h2>
+        <p class="error-page-description text-center">
+          Ups! Algo salió mal en nuestros servidores. Estamos trabajando para solucionarlo.
         </p>
       </div>
 
       <!-- Estado de reconexión -->
-      <div class="w-full min-h-[50px] rounded-lg border px-4 py-3 flex flex-col items-center justify-center gap-2 bg-blue-50 border-blue-100"
-        [ngClass]="{'bg-yellow-50 border-yellow-400': isReconnecting}">
+      <div class="w-full min-h-[50px] rounded-lg border px-3 sm:px-4 py-3 flex flex-col items-center justify-center gap-2 bg-primary-50 border-primary-200"
+        [ngClass]="{'bg-accent-50 border-accent-300': isReconnecting}">
 
         @if (isReconnecting) {
-          <div class="flex items-center justify-center gap-2">
+          <div class="flex items-center justify-center gap-2 flex-wrap text-center">
             <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
-            <span class="text-orange-600 font-medium">Reintentando conexión...</span>
+            <span class="text-accent-600 font-medium text-sm sm:text-base">Reintentando conexión...</span>
           </div>
         }
 
         @if (!isReconnecting) {
-          <div class="flex items-center gap-2 text-blue-600 text-sm">
-            <mat-icon color="accent">info</mat-icon>
+          <div class="flex items-center gap-2 text-primary-600 text-xs sm:text-sm flex-wrap justify-center text-center">
+            <mat-icon class="text-primary-600">info</mat-icon>
             <span>Última verificación: {{ lastCheck | date:'short' }}</span>
           </div>
         }
       </div>
 
-      <!-- Información técnica -->
-      <div class="w-full bg-gray-50 rounded-xl border border-gray-200 p-5 sm:p-6 flex flex-col gap-3 text-left">
-        <h3 class="text-lg font-medium text-gray-800">Información técnica:</h3>
-        <div class="flex flex-col sm:flex-row gap-5">
-          <div class="sm:w-1/2"><strong class="text-gray-700">Error ID:</strong> {{ errorId }}</div>
-          <div class="sm:w-1/2"><strong class="text-gray-700">Tiempo:</strong> {{ errorTime | date:'short' }}</div>
-        </div>
-        <p class="text-sm text-gray-600 leading-relaxed">
-          Si el problema persiste, por favor contacta al equipo de soporte proporcionando el ID de error.
-        </p>
-      </div>
-
       <!-- Botones de acción -->
-      <div class="flex flex-col xs:flex-row items-center justify-center gap-4 sm:gap-5 mt-3 w-full">
-
+      <div class="error-page-actions w-full mt-4">
         <button mat-raised-button
-          color="primary"
+          class="btn-primary w-full sm:w-auto"
           (click)="retryConnection()"
-          [disabled]="isReconnecting"
-          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          [disabled]="isReconnecting">
           <mat-icon>refresh</mat-icon>
           Reintentar
         </button>
 
         <button mat-stroked-button
-          color="accent"
-          (click)="goHome()"
-          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          class="btn-outline-primary w-full sm:w-auto"
+          (click)="goHome()">
           <mat-icon>home</mat-icon>
           Ir al Inicio
         </button>
 
         <button mat-stroked-button
-          color="warn"
-          (click)="reportError()"
-          class="w-full xs:w-auto min-w-[140px] flex items-center justify-center gap-2">
+          class="btn-outline-primary w-full sm:w-auto"
+          (click)="reportError()">
           <mat-icon>bug_report</mat-icon>
           Reportar Error
         </button>
-
       </div>
 
     </mat-card-content>

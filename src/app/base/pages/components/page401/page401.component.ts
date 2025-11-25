@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-page401',
   standalone: true,
   imports: [MatButtonModule, MatIconModule, MatCardModule],
-  templateUrl: './page401.component.html',
-  styleUrl: './page401.component.css'
+  templateUrl: './page401.component.html'
 })
 export class Page401Component {
 

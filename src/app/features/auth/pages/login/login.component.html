@@ -24,9 +24,9 @@
         @if (isHandset$ | async) {
         <div class="auth-logo-mobile">
           <div class="logo-icon">
-            <mat-icon>sports_soccer</mat-icon>
+            <img src="assets/images/logo_hover.svg" alt="Logo" class="w-12" />
           </div>
-          <h1 class="title-main">CanchaReservas</h1>
+          <h1 class="title-main">{{ TITULO_LOGO }}</h1>
         </div>
         }
 
@@ -105,14 +105,8 @@
 
           <!-- Remember Me & Forgot Password -->
           <div class="form-options">
-            <button
-              mat-button
-              type="button"
-              class="auth-forgot-link"
-              (click)="onForgotPassword()"
-            >
-              ¿Olvidaste tu contraseña?
-            </button>
+            <a routerLink="/auth/forgot-password" class="auth-alt-link no-underline"
+              >¿Olvidaste tu contraseña?</a>
           </div>
 
           <!-- Submit Button -->
@@ -148,14 +142,8 @@
         <!-- Register Link -->
         <div class="auth-alt-section">
           <span class="text-neutral-600">¿No tienes cuenta?</span>
-          <button
-            mat-button
-            class="auth-alt-link"
-            type="button"
-            (click)="onRegister()"
-          >
-            Regístrate aquí
-          </button>
+          <a routerLink="/auth/register" class="auth-alt-link no-underline"
+              >Regístrate aquí</a>
         </div>
 
         <!-- Back to Home Link (Desktop Only) -->

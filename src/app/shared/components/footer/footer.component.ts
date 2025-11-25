@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Inject, ViewContainerRef } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { BaseComponent } from '@base/components/base-component/base.component';
 
 @Component({
   selector: 'app-footer',
@@ -10,6 +11,12 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css'
 })
-export class FooterComponent {
+export class FooterComponent extends BaseComponent {
+
+  constructor(
+    @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
+  ) {
+    super('FOOTER', viewContainerRef);
+  }
 
 }

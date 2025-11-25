@@ -3,5 +3,5 @@ import { Routes } from "@angular/router";
 
 
 export const pagoRoutes: Routes = [
-    { path: '', loadComponent: () => import('./components/payment/payment.component').then(m => m.PaymentComponent) }
+    { path: '', title: "Pago", loadComponent: () => import('./components/payment/payment.component').then(m => m.PaymentComponent) }
 ];

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { User } from 'app/features/auth/models/user';
+import { BaseComponent } from '@base/components/base-component/base.component';
 
 @Component({
   selector: 'app-nav-var',
@@ -22,15 +23,18 @@ import { User } from 'app/features/auth/models/user';
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'
 })
-export class NavVarComponent implements OnInit {
+export class NavVarComponent extends BaseComponent implements OnInit {
 
   isAuthenticated: boolean = false;
   currentUser: User | null = null;
 
   constructor(
     private router: Router,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
+  ) {
+    super('NAV-BAR', viewContainerRef);
+  }
 
   ngOnInit(): void {
     this.checkAuthentication();

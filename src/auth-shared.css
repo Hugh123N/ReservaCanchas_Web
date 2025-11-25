@@ -7,9 +7,8 @@
 /* Visual Panel - PANEL ISQUIERDO con imagen y contenido visual */
 .auth-visual-panel {
   @apply flex-1 relative flex items-center justify-center p-12 overflow-hidden;
-  background: linear-gradient(135deg, theme('colors.primary.500') 0%, theme('colors.secondary.500') 50%, theme('colors.accent.500') 100%);
-  background-image: 
-    linear-gradient(135deg, rgb(147 51 234 / 0.95) 0%, rgb(6 182 212 / 0.9) 50%, rgb(249 115 22 / 0.95) 100%),
+  background-image:
+    linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 50%, var(--color-accent-500) 100%),
     url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=2070');
   background-size: cover;
   background-position: center;
@@ -135,8 +134,8 @@
 
 .auth-logo-mobile .logo-icon {
   @apply w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg;
-  background: linear-gradient(135deg, theme('colors.primary.500'), theme('colors.secondary.500'));
-  box-shadow: 0 8px 24px rgb(147 51 234 / 0.3);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
+  box-shadow: 0 8px 24px var(--color-primary-500);
   animation: authPulse 2s ease-in-out infinite;
 }
 
@@ -205,10 +204,6 @@
   @apply flex items-center justify-between -mt-2 mb-4;
 }
 
-.auth-forgot-link {
-  @apply text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg px-2 transition-colors;
-}
-
 /* Submit Button */
 .submit-btn {
   @apply h-12 text-lg font-semibold shadow-lg mt-6 transition-all duration-300;
@@ -248,7 +243,7 @@
 }
 
 .auth-alt-link {
-  @apply text-primary-600 hover:text-primary-700 font-semibold ml-2 transition-colors;
+  @apply text-primary-600 hover:text-primary-700 font-semibold ml-2 transition-colors cursor-pointer;
 }
 
 /* ========== ANIMATIONS ========== */

@@ -3,7 +3,18 @@
 
 <!-- Hero Section with Gallery -->
 <section class="hero-gradient-soft">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Back Button -->
+  <div class="container mx-auto sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 sm:gap-4">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon class="icon-responsive">arrow_back</mat-icon>
+      </button>
+      <div>
+        <p class="text-responsive-base text-neutral-600">Volver</p>
+      </div>
+    </div>
+  </div>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-0">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
       <!-- Main Image -->
       <div class="lg:col-span-2">

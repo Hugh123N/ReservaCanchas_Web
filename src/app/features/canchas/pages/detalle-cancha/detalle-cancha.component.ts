@@ -356,6 +356,10 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     }
   }
 
+  goBack(): void {
+    this.router.navigate(['/cancha/canchas']);
+  }
+
 }
 
 function formatDateLocal(date: Date): string {

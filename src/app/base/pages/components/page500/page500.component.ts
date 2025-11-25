@@ -14,8 +14,7 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule],
-  templateUrl: './page500.component.html',
-  styleUrl: './page500.component.css'
+  templateUrl: './page500.component.html'
 })
 export class Page500Component {
   isReconnecting = false;

@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
@@ -44,7 +44,8 @@ import { AUTH_FEATURES_LOGIN_REGISTER } from '../../constants/auth-features.cons
     LayoutModule,
     AuthVisualPanelComponent,
     AuthSocialButtonsComponent,
-    AuthMessageComponent
+    AuthMessageComponent,
+    RouterLink
   ],
   templateUrl: './register.component.html'
 })
@@ -219,9 +220,6 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     );
   }
 
-  onLogin(): void {
-    this.router.navigate(['/auth/login']);
-  }
   close(): void {
     this.router.navigate(['/']);
   }

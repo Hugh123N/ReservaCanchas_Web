@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/auth/services/auth.service';
@@ -47,7 +47,8 @@ import { AUTH_FEATURES_LOGIN_REGISTER } from '../../constants/auth-features.cons
     MatChipsModule,
     AuthVisualPanelComponent,
     AuthSocialButtonsComponent,
-    AuthMessageComponent
+    AuthMessageComponent,
+    RouterLink
   ],
   templateUrl: './login.component.html'
 })
@@ -198,14 +199,6 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       }
     );
-  }
-
-  onForgotPassword(): void {
-    this.router.navigate(['/auth/forgot-password']);
-  }
-
-  onRegister(): void {
-    this.router.navigate(['/auth/register']);
   }
 
   close(): void {
