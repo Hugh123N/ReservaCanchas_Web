@@ -916,6 +916,45 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   @apply flex flex-col sm:flex-row gap-4 justify-center items-center;
 }
 
+/* ========== SNACKBAR / TOAST NOTIFICATIONS ========== */
+/* Estilos para notificaciones tipo toast */
+
+.snackbar-success {
+  background-color: var(--color-success-500) !important;
+  color: white !important;
+}
+
+.snackbar-success .mat-mdc-button {
+  color: white !important;
+}
+
+.snackbar-error {
+  background-color: var(--color-accent-500) !important;
+  color: white !important;
+}
+
+.snackbar-error .mat-mdc-button {
+  color: white !important;
+}
+
+.snackbar-warning {
+  background-color: var(--color-accent-300) !important;
+  color: var(--color-neutral-900) !important;
+}
+
+.snackbar-warning .mat-mdc-button {
+  color: var(--color-neutral-900) !important;
+}
+
+.snackbar-info {
+  background-color: var(--color-primary-500) !important;
+  color: white !important;
+}
+
+.snackbar-info .mat-mdc-button {
+  color: white !important;
+}
+
 /* ========== MODAL FULLSCREEN DIALOG ========== */
 /* Estilos para modal de filtros fullscreen en mobile */
 

@@ -4,7 +4,7 @@ import { AuthGuard } from '@core/auth/guards/auth.guard';
 export const userProfileRoutes: Routes = [
   {
     path: '',
-    //canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',

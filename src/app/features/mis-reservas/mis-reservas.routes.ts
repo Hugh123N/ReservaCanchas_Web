@@ -4,11 +4,11 @@ import { AuthGuard } from '@core/auth/guards/auth.guard';
 export const misReservasRoutes: Routes = [
   {
     path: '',
+    canActivate: [AuthGuard],
     loadComponent: () =>
       import('./components/lista-reservas/lista-reservas.component').then(
         (m) => m.ListaReservasComponent
       ),
-    //canActivate: [AuthGuard],
     data: {
       title: 'Mis Reservas',
       breadcrumb: 'Mis Reservas'

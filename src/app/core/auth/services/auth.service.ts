@@ -1,5 +1,6 @@
 import { Observable, Subject } from 'rxjs';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -14,6 +15,8 @@ import { environment } from '@environments/environment';
 export class AuthService {
   user$: Subject<User>;
   access_token_key = `access_token_${environment.application.code}`;
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser: boolean;
 
   constructor(
     private router: Router,
@@ -21,6 +24,7 @@ export class AuthService {
     private injector: Injector
   ) {
     this.user$ = new Subject<User>();
+    this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   public loadUserProfile() {
@@ -48,6 +52,7 @@ export class AuthService {
   }
 
   public getToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem(this.access_token_key);
   }
 
@@ -62,6 +67,7 @@ export class AuthService {
   }
 
   public async logIn(accessToken: any): Promise<void> {
+    if (!this.isBrowser) return;
     if (accessToken) {
       if (accessToken.access_token) {
         localStorage.setItem(this.access_token_key, accessToken.access_token);
@@ -112,6 +118,8 @@ export class AuthService {
   }
 
   public async cleanAndRedirect(): Promise<void> {
+    if (!this.isBrowser) return;
+
     //TODO: Limpiar favoritos al cerrar sesión o cambiar de usuario
     try {
       // Usar lazy loading para evitar dependencia circular
@@ -147,18 +155,23 @@ export class AuthService {
   }
 
   public saveCredentials(processId: string, password: string) {
+    if (!this.isBrowser) return;
     sessionStorage.setItem(processId, password);
   }
 
   public getCredentials(processId: string): string | null {
+    if (!this.isBrowser) return null;
     return sessionStorage.getItem(processId);
   }
 
   public getRemoveCredentials(_: string) {
+    if (!this.isBrowser) return;
     sessionStorage.clear();
   }
 
   public keepAlive() {
+    if (!this.isBrowser) return;
+
     let access_token = this.getToken();
     if (access_token) {
       let tokeninfo = JSON.parse(atob(access_token.split('.')[1]));

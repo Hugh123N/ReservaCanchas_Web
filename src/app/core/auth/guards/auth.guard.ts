@@ -1,47 +1,45 @@
-// Angular
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-// RxJS
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-// Services
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { PermissionService } from '@base/permissions/services/permission.service'
-import { environment } from '@environments/environment';
-import { PermissionModel } from '@base/permissions/models/permission.model';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanActivate {
-  constructor(
-    private router: Router,
-    private authService: AuthService,
-    private permissionService: PermissionService,
-    private ngxPermissionsService: NgxPermissionsService
-  ) {
+/**
+ * AuthGuard - Protege rutas que requieren autenticación
+ *
+ * Verifica si el usuario está autenticado (tiene token JWT válido).
+ * No valida permisos ni roles - solo autenticación.
+ *
+ * @usage En routes: { path: 'ruta', component: Component, canActivate: [AuthGuard] }
+ *
+ * @behavior
+ * - Si está autenticado: Permite acceso
+ * - Si NO está autenticado: Redirige a /auth/login y guarda la URL destino
+ * - Compatible con SSR: En servidor permite acceso (se re-valida en cliente)
+ */
+export const AuthGuard: CanActivateFn = (
+  _route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+): boolean => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const platformId = inject(PLATFORM_ID);
+  const isBrowser = isPlatformBrowser(platformId);
 
+  // En SSR: Permitir acceso (se validará en el cliente)
+  if (!isBrowser) {
+    return true;
   }
 
-  canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): Observable<boolean> {
-    if (this.authService.isAuthenticated()) {
-      return this.permissionService.userPermissions(environment.application.code).pipe(
-        map(result => {
-          let permissions = result.data.map((permission: PermissionModel) => permission.actionCode);
-          this.ngxPermissionsService.flushPermissions();
-          this.ngxPermissionsService.loadPermissions(permissions);
-
-          let permissionsVersion = sessionStorage.getItem('permissionsVersion') ?? '';
-          let updateMenuConfig = permissionsVersion != `${permissions.length}`;
-          sessionStorage.setItem('updateMenuConfig', `${updateMenuConfig}`);
-          sessionStorage.setItem('permissionsVersion', `${permissions.length}`);
-          return true;
-        }));
-    }
-
-    this.router.navigate(['auth/login']);
-
-    return of(false);
+  // Verificar autenticación
+  if (authService.isAuthenticated()) {
+    return true;
   }
-}
+
+  // No autenticado: Guardar URL destino para redirigir después del login
+  const returnUrl = state.url;
+  sessionStorage.setItem('redirect_after_login', returnUrl);
+
+  // Redirigir a login
+  router.navigate(['/401']);
+  return false;
+};
