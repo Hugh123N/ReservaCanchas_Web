@@ -93,7 +93,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   get cantidadFiltrosActivos(): number {
     let count = 0;
     const filtro = this.filtroActual();
-    if (filtro.idTipoCancha) count++;
+    if (filtro.idTipoDeporte) count++;
     if (filtro.codigoUbigeo) count++;
     if (filtro.fecha) count++;
     if (filtro.soloFavoritos) count++;
@@ -375,7 +375,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onCambiarFiltroTipo(idTipoCancha: number | undefined): void {
-    this.filtroActual.update(f => ({ ...f, idTipoCancha }));
+    this.filtroActual.update(f => ({ ...f, idTipoDeporte: idTipoCancha }));
     this.paginaActual.set(1);
     this.buscarCanchas();
   }
@@ -536,7 +536,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
         // Aplicar filtros
         this.filtroActual.set({
           ...this.filtroActual(),
-          idTipoCancha: filtros.idTipoCancha,
+          idTipoDeporte: filtros.idTipoCancha,
           codigoUbigeo: filtros.soloFavoritos ? undefined : filtros.codigoUbigeo, // Limpiar ubicación si favoritos
           fecha: filtros.fecha,
           soloFavoritos: filtros.soloFavoritos,
