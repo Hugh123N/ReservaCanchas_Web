@@ -40,7 +40,6 @@
 
         <!-- Social Login Buttons -->
         <app-auth-social-buttons
-          [isLoading]="isLoading"
           [mode]="'login'"
           (googleClick)="onGoogleLogin()"
           (facebookClick)="onFacebookLogin()">
@@ -114,16 +113,9 @@
             mat-raised-button
             type="submit"
             class="btn-primary submit-btn w-full"
-            [disabled]="loginForm.invalid || isLoading"
+            [disabled]="loginForm.invalid"
           >
-            @if (isLoading) {
-            <mat-spinner diameter="20" class="spinner-white mr-2">
-            </mat-spinner>
-            } @if (!isLoading) {
             <span>Iniciar Sesión</span>
-            } @if (isLoading) {
-            <span>Iniciando...</span>
-            }
           </button>
 
           <!-- Error Message -->

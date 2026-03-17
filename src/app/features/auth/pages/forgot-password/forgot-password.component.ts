@@ -49,7 +49,6 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
   private unsubscribe: Subject<any>;
 
   // States
-  isLoading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
   emailSent: boolean = false;
@@ -106,7 +105,6 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
     }
 
     this.clearMessages();
-    this.isLoading = true;
 
     const email = this.forgotPasswordForm.value.email;
     const host = window.location.hostname; // URL del frontend para el enlace de reset
@@ -123,11 +121,7 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit, On
             this.openErrorAlert(response);
           }
         }),
-        takeUntil(this.unsubscribe),
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        })
+        takeUntil(this.unsubscribe)
       )
       .subscribe({
         error: (err) => {

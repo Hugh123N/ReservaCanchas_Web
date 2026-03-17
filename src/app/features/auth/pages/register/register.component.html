@@ -39,7 +39,6 @@
 
         <!-- Social Login Buttons -->
         <app-auth-social-buttons
-          [isLoading]="isLoading"
           [mode]="'register'"
           (googleClick)="onGoogleRegister()"
           (facebookClick)="onFacebookRegister()"
@@ -179,16 +178,9 @@
             mat-raised-button
             type="submit"
             class="btn-primary submit-btn w-full"
-            [disabled]="registerForm.invalid || isLoading"
+            [disabled]="registerForm.invalid"
           >
-            @if (isLoading) {
-            <mat-spinner diameter="20" class="spinner-white mr-2">
-            </mat-spinner>
-            } @if (!isLoading) {
             <span>Crear Cuenta</span>
-            } @if (isLoading) {
-            <span>Creando cuenta...</span>
-            }
           </button>
 
           <!-- Error Message -->

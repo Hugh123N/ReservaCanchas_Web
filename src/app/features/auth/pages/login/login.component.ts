@@ -1,13 +1,13 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ViewContainerRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, ViewContainerRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, type FormGroup, Validators } from "@angular/forms"
-import { BreakpointObserver, Breakpoints, LayoutModule } from "@angular/cdk/layout"
+import { LayoutModule } from "@angular/cdk/layout"
 import { Observable, Subject } from "rxjs"
-import { finalize, map, shareReplay, takeUntil, tap } from "rxjs/operators"
+import { takeUntil, tap } from "rxjs/operators"
+import { ResponsiveService } from '@core/services/responsive.service';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
@@ -23,6 +23,7 @@ import { UsersService } from '../../services/users.service';
 import { LoginModel } from '../../models/login.model';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { OAuthHandlerService } from '../../services/oauth-handler.service';
+import { OAuthProvider } from '../../services/oauth';
 import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
 import { AuthSocialButtonsComponent } from '../../components/auth-social-buttons/auth-social-buttons.component';
 import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
@@ -57,7 +58,6 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   private unsubscribe: Subject<any>;
 
-  isLoading: boolean = false;
   hidePassword: boolean = true;
   errorMessage: string = '';
   successMessage: string = '';
@@ -72,7 +72,7 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private breakpointObserver: BreakpointObserver,
+    private responsiveService: ResponsiveService,
     private authService: AuthService,
     private usersService: UsersService,
     private oauthHandler: OAuthHandlerService,
@@ -86,16 +86,10 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
       rememberMe: [false]
     });
 
-    // Initialize responsive observer
-    this.isHandset$ = this.breakpointObserver
-      .observe(Breakpoints.Handset)
-      .pipe(
-        map(result => result.matches),
-        shareReplay()
-      );
+    // Use shared responsive service
+    this.isHandset$ = this.responsiveService.isHandset$;
 
     this.unsubscribe = new Subject<any>();
-
   }
 
   ngOnInit(): void {
@@ -111,16 +105,11 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    const controls = this.loginForm.controls;
-    if (this.loginForm.invalid) {
-      Object.keys(controls).forEach((controlName) =>
-        controls[controlName].markAsTouched()
-      );
+    if (!this.validateForm(this.loginForm)) {
       return;
     }
 
     this.clearMessages();
-    this.isLoading = true;
 
     const loginData: LoginModel = {
       applicationCode: 'Cliente',
@@ -149,11 +138,7 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
             this.openErrorAlert(response);
           }
         }),
-        takeUntil(this.unsubscribe),
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        })
+        takeUntil(this.unsubscribe)
       )
       .subscribe();
 
@@ -161,44 +146,35 @@ export class LoginComponent extends BaseComponent implements OnInit, OnDestroy {
 
   }
 
-  onGoogleLogin(): void {
+  /**
+   * Maneja la autenticación OAuth para cualquier proveedor.
+   * @param provider - Proveedor OAuth (Google, Facebook, etc.)
+   */
+  onOAuthLogin(provider: OAuthProvider): void {
     this.clearMessages();
-    this.isLoading = true;
 
-    this.oauthHandler.handleGoogleAuth(
-      (message) => {
+    this.oauthHandler.authenticate(provider, {
+      onSuccess: (message) => {
         this.successMessage = message;
         this.cdr.markForCheck();
       },
-      (message) => {
+      onError: (message) => {
         this.errorMessage = message;
         this.cdr.markForCheck();
       },
-      () => {
-        this.isLoading = false;
+      onFinally: () => {
         this.cdr.markForCheck();
       }
-    );
+    });
+  }
+
+  // Helpers para template (mantienen compatibilidad)
+  onGoogleLogin(): void {
+    this.onOAuthLogin(OAuthProvider.GOOGLE);
   }
 
   onFacebookLogin(): void {
-    this.clearMessages();
-    this.isLoading = true;
-
-    this.oauthHandler.handleFacebookAuth(
-      (message) => {
-        this.successMessage = message;
-        this.cdr.markForCheck();
-      },
-      (message) => {
-        this.errorMessage = message;
-        this.cdr.markForCheck();
-      },
-      () => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    );
+    this.onOAuthLogin(OAuthProvider.FACEBOOK);
   }
 
   close(): void {

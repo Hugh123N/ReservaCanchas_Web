@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, ViewContainerRef, type OnInit } from '@angular/core';
-import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from "@angular/forms"
+import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule } from "@angular/forms"
+import { passwordMatchValidator } from '@shared/validators/password-match-validator';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,11 +15,13 @@ import { Router, RouterLink } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { finalize, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs';
-import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { LayoutModule } from '@angular/cdk/layout';
+import { ResponsiveService } from '@core/services/responsive.service';
 import { UsersService } from '../../services/users.service';
 import { CreateUserModel } from '../../models/create-user.model';
 import { OAuthHandlerService } from '../../services/oauth-handler.service';
+import { OAuthProvider } from '../../services/oauth';
 import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/auth-visual-panel.component';
 import { AuthSocialButtonsComponent } from '../../components/auth-social-buttons/auth-social-buttons.component';
 import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
@@ -55,7 +58,6 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
   private unsubscribe: Subject<any>;
 
   // States
-  isLoading: boolean = false;
   hidePassword: boolean = true;
   hideConfirmPassword: boolean = true;
   errorMessage: string = '';
@@ -68,7 +70,7 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     private formBuilder: FormBuilder,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private breakpointObserver: BreakpointObserver,
+    private responsiveService: ResponsiveService,
     private usersService: UsersService,
     private oauthHandler: OAuthHandlerService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
@@ -87,16 +89,11 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
       ],
       confirmPassword: ['', [Validators.required]]
     }, {
-      validators: this.passwordMatchValidator
+      validators: passwordMatchValidator()
     });
 
-    // Initialize responsive observer
-    this.isHandset$ = this.breakpointObserver
-      .observe(Breakpoints.Handset)
-      .pipe(
-        map(result => result.matches),
-        shareReplay()
-      );
+    // Use shared responsive service
+    this.isHandset$ = this.responsiveService.isHandset$;
 
     this.unsubscribe = new Subject<any>();
   }
@@ -111,29 +108,12 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     this.unsubscribe.complete();
   }
 
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (!password || !confirmPassword) {
-      return null;
-    }
-
-    return password.value === confirmPassword.value ? null : { passwordMismatch: true };
-  }
-
   onSubmit(): void {
-    const controls = this.registerForm.controls;
-
-    if (this.registerForm.invalid) {
-      Object.keys(controls).forEach((controlName) =>
-        controls[controlName].markAsTouched()
-      );
+    if (!this.validateForm(this.registerForm)) {
       return;
     }
 
     this.clearMessages();
-    this.isLoading = true;
     const registerData: CreateUserModel = {
       username: this.registerForm.value.email.trim().toLowerCase(),
       firstName: this.registerForm.value.firstName.trim(),
@@ -158,11 +138,7 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
             this.openErrorAlert(response);
           }
         }),
-        takeUntil(this.unsubscribe),
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        })
+        takeUntil(this.unsubscribe)
       )
       .subscribe();
 
@@ -180,44 +156,35 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     }, 2000);
   }
 
-  onGoogleRegister(): void {
+  /**
+   * Maneja la autenticación OAuth para cualquier proveedor.
+   * @param provider - Proveedor OAuth (Google, Facebook, etc.)
+   */
+  onOAuthRegister(provider: OAuthProvider): void {
     this.clearMessages();
-    this.isLoading = true;
 
-    this.oauthHandler.handleGoogleAuth(
-      (message) => {
+    this.oauthHandler.authenticate(provider, {
+      onSuccess: (message) => {
         this.successMessage = message;
         this.cdr.markForCheck();
       },
-      (message) => {
+      onError: (message) => {
         this.errorMessage = message;
         this.cdr.markForCheck();
       },
-      () => {
-        this.isLoading = false;
+      onFinally: () => {
         this.cdr.markForCheck();
       }
-    );
+    });
+  }
+
+  // Helpers para template (mantienen compatibilidad)
+  onGoogleRegister(): void {
+    this.onOAuthRegister(OAuthProvider.GOOGLE);
   }
 
   onFacebookRegister(): void {
-    this.clearMessages();
-    this.isLoading = true;
-
-    this.oauthHandler.handleFacebookAuth(
-      (message) => {
-        this.successMessage = message;
-        this.cdr.markForCheck();
-      },
-      (message) => {
-        this.errorMessage = message;
-        this.cdr.markForCheck();
-      },
-      () => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    );
+    this.onOAuthRegister(OAuthProvider.FACEBOOK);
   }
 
   close(): void {
