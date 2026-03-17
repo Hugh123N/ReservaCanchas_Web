@@ -6,8 +6,10 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from '@core/auth/interceptor/token.interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { tokenInterceptor } from '@core/auth/interceptor/token.interceptor.functional';
+import { loadingInterceptor } from '@core/interceptors/loading.interceptor';
+import { provideSpinnerConfig } from 'ngx-spinner';
 
 
 export const appConfig: ApplicationConfig = {
@@ -17,12 +19,14 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideClientHydration(withEventReplay()),
     importProvidersFrom(CommonModule, FormsModule),
-    provideHttpClient(),
-    // Registrar TokenInterceptor
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true
-    }
+
+    // Configuración global de ngx-spinner
+    provideSpinnerConfig({ type: 'ball-spin-fade' }),
+
+    // Interceptors funcionales (Angular 20+)
+    // Orden: loadingInterceptor primero para mostrar loading, luego tokenInterceptor para auth
+    provideHttpClient(
+      withInterceptors([loadingInterceptor, tokenInterceptor])
+    )
   ]
 };

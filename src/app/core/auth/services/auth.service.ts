@@ -33,7 +33,7 @@ export class AuthService {
       const user = new User();
 
       user.id = claims.UserId;
-      user.email = claims.Email == 'no_information' ? '' : claims.Email;
+      user.email = claims.email == 'no_information' ? '' : claims.email;
       user.username = claims.UserName;
       user.fullname = claims.DisplayName;
       user.telefono = claims.Telefono == 'no_information' ? '' : claims.Telefono;
@@ -142,10 +142,14 @@ export class AuthService {
 
   public getRoles(): string[] {
     let claims = this.getUserClaims();
-    return Array.isArray(claims.role)
-      ? claims.role
-      : claims.role
-        ? [claims.role]
+    if (!claims) return [];
+
+    const roles = claims.Roles || claims.roles || claims.role;
+
+    return Array.isArray(roles)
+      ? roles
+      : roles
+        ? [roles]
         : [];
   }
 

@@ -1,1 +1,15 @@
 <router-outlet />
+
+<!-- Loading Global -->
+<ngx-spinner
+  name="global-loading"
+  [fullScreen]="true"
+  type="ball-spin-fade"
+  size="medium"
+  bdColor="rgba(0, 0, 0, 0.7)"
+  color="#ffffff"
+>
+  <p class="text-white text-lg font-medium mt-4">
+    {{ loadingService.loadingMessage$ | async }}
+  </p>
+</ngx-spinner>
