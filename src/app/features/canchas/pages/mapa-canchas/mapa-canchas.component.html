@@ -40,7 +40,7 @@
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Tipo de Deporte</mat-label>
           <mat-select
-            [value]="filtroActual().idTipoCancha"
+            [value]="filtroActual().idTipoDeporte"
             (selectionChange)="onCambiarFiltroTipo($event.value)"
           >
             <mat-option [value]="undefined">Todos</mat-option>

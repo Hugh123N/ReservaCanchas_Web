@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { LayoutModule } from '@angular/cdk/layout';
-import { ResponsiveService } from '@core/services/responsive.service';
 import { UsersService } from '../../services/users.service';
 import { CreateUserModel } from '../../models/create-user.model';
 import { OAuthHandlerService } from '../../services/oauth-handler.service';
@@ -26,6 +25,7 @@ import { AuthVisualPanelComponent } from '../../components/auth-visual-panel/aut
 import { AuthSocialButtonsComponent } from '../../components/auth-social-buttons/auth-social-buttons.component';
 import { AuthMessageComponent } from '../../components/auth-message/auth-message.component';
 import { AUTH_FEATURES_LOGIN_REGISTER } from '../../constants/auth-features.constants';
+import { ResponsiveService } from '@core/services/responsive.service';
 
 
 

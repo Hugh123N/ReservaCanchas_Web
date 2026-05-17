@@ -7,6 +7,13 @@ import Swal from "sweetalert2";
 import { ApplicationMessage } from "@base/models/api/application-message.dto";
 import { PERMISSIONS } from "@core/config/permissions/permissions";
 import { ESTADO_CANCHA } from "@core/constants/constants.constant";
+import { FormGroup } from "@angular/forms";
+
+import {
+  validateForm as validateFormUtil,
+  getFieldError as getFieldErrorUtil,
+  isFieldInvalid as isFieldInvalidUtil
+} from "@shared/utils/form.utils";
 
 const DEFAULT_DELAY = 5000;
 
@@ -178,5 +185,9 @@ export abstract class BaseComponent implements OnDestroy {
     });
 
     this.subscriptions.push(subscription);
+  }
+
+  protected validateForm(form: FormGroup): boolean {
+    return validateFormUtil(form);
   }
 }

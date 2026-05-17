@@ -5,4 +5,10 @@ export type ValidationErrorKeyType =
   | 'pattern'
   | 'email'
   | 'max'
-  | 'min';
+  | 'min'
+  // Validadores personalizados
+  | 'passwordMismatch'
+  | 'invalidPhone'
+  | 'invalidDate'
+  | 'dateInPast'
+  | 'dateInFuture';

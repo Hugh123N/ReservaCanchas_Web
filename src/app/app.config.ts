@@ -9,7 +9,6 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from '@core/auth/interceptor/token.interceptor.functional';
 import { loadingInterceptor } from '@core/interceptors/loading.interceptor';
-import { provideSpinnerConfig } from 'ngx-spinner';
 
 
 export const appConfig: ApplicationConfig = {
@@ -19,12 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideClientHydration(withEventReplay()),
     importProvidersFrom(CommonModule, FormsModule),
-
-    // Configuración global de ngx-spinner
-    provideSpinnerConfig({ type: 'ball-spin-fade' }),
-
-    // Interceptors funcionales (Angular 20+)
-    // Orden: loadingInterceptor primero para mostrar loading, luego tokenInterceptor para auth
     provideHttpClient(
       withInterceptors([loadingInterceptor, tokenInterceptor])
     )
