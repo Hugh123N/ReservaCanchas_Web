@@ -113,10 +113,12 @@
 
             <!-- Sport Type -->
             <div class="flex items-center gap-2">
-              <mat-chip color="primary" selected class="sport-chip">
-                <mat-icon class="mr-1">{{ getSportIcon() }}</mat-icon>
-                {{ canchaData.tipoCancha?.nombre }}
-              </mat-chip>
+              @for (tipo of canchaData.tipoDeportes; track tipo) {
+                <mat-chip color="primary" selected class="sport-chip">
+                  <mat-icon class="mr-1">{{ tipo.icono }}</mat-icon>
+                  {{ tipo.nombre }}
+                </mat-chip>
+              }
             </div>
 
             <!-- Price -->

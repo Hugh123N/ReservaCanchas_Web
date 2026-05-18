@@ -3,6 +3,6 @@ export interface CanchasFilter {
   codigoUbigeo: string | null;
   fecha: string | null;
   hora: string | null;
-  idTipoCancha: number | null;
+  idTipoDeporte: number | null;
   idEstadoCancha: number | null;
 }

@@ -179,15 +179,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     return this.canchaData.direccion || this.canchaData.ubicacion || 'Dirección no disponible';
   }
 
-  getSportIcon(): string {
-    const sport = this.canchaData.tipoCancha?.nombre?.toLowerCase() || '';
-    if (sport.includes('futbol')) return 'sports_soccer';
-    if (sport.includes('basquet')) return 'sports_basketball';
-    if (sport.includes('tenis')) return 'sports_tennis';
-    if (sport.includes('voley')) return 'sports_volleyball';
-    return 'sports';
-  }
-
   getStatusClass(): string {
     const status = this.canchaData.estadoCancha?.nombre?.toLowerCase() || '';
     if (status.includes('disponible') || status.includes('aprobado')) return 'status-disponible';

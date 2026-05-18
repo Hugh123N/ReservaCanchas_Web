@@ -25,8 +25,8 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UbigeoService } from 'app/features/canchas/core/services/ubigeo.service';
 import { BaseSearchComponent } from '@base/components/base-search-component/search-base.component';
-import { CanchaTipoService } from 'app/features/cancha-tipo/core/services/cancha-tipo.service';
-import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
+import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 
 @Component({
   selector: 'app-home',
@@ -49,16 +49,15 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   selectedCity: string = '';
   selectedDate: Date | null = null;
   selectedTime: string = '';
-  idTipoCancha: string = '';
+  idTipoDeporte: string = '';
   selectedUbigeo: Ubigeo | null = null;
   mostrarFiltros: boolean = false;
 
-  canchaTipos: GetTipoCancha[] = [];
+  tipoDeportes: GetTipoDeporte[] = [];
   canchasEjemplo: SearchCancha[] = [
     {
       idCancha: 1,
       nombre: "Arena Vóley Pro",
-      idTipoCancha: 1,
       descripcion: "Cancha techada con arena especial para torneos de vóley.",
       ubicacion: "Av. Javier Prado Este 1234",
       direccion: "Av. Javier Prado Este 1234, Surco, Lima",
@@ -69,7 +68,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       codigoUbigeo: "150141",
       idEstadoCancha: 1,
       calificacionPromedio: 4.8,
-      tipoCancha: { idTipoCancha: 1, nombre: "Vóley" },
+      tipoDeportes: [{ idTipoDeporte: 1, codigo: 'VOL', nombre: "Vóley", icono: 'sports_volleyball' }],
       imagenesCancha: [
         {
           idImagenCancha: 101,
@@ -92,7 +91,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     {
       idCancha: 2,
       nombre: "Cancha Municipal",
-      idTipoCancha: 2,
       descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
       ubicacion: "Av. La Fontana 567",
       direccion: "Av. La Fontana 567, La Molina, Lima",
@@ -103,7 +101,10 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       codigoUbigeo: "150135",
       idEstadoCancha: 5,
       calificacionPromedio: 4.1,
-      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 11" },
+      tipoDeportes: [{ idTipoDeporte: 2, codigo: 'FUT', nombre: "Fútbol 11", icono: 'sports_soccer' }, 
+        { idTipoDeporte: 2, codigo: 'FUT', nombre: "Fútbol 11", icono: 'sports_soccer' },
+      { idTipoDeporte: 1, codigo: 'VOL', nombre: "Vóley", icono: 'sports_volleyball' },
+    { idTipoDeporte: 1, codigo: 'VOL', nombre: "Vóley", icono: 'sports_volleyball' }],
       imagenesCancha: [
         {
           idImagenCancha: 102,
@@ -126,7 +127,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     {
       idCancha: 3,
       nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
       descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
       ubicacion: "Av. San Luis 999",
       direccion: "Av. San Luis 999, San Borja, Lima",
@@ -137,7 +137,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       codigoUbigeo: "150120",
       idEstadoCancha: 2,
       calificacionPromedio: 3.9,
-      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 7" },
+      tipoDeportes: [{ idTipoDeporte: 2, codigo: 'FUT', nombre: "Fútbol 7", icono: 'sports_soccer' }],
       imagenesCancha: [
         {
           idImagenCancha: 103,
@@ -169,7 +169,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   constructor(
     private router: Router,
     private ubigeoService: UbigeoService,
-    private canchaTipoService: CanchaTipoService,
+    private TipoDeporteService: TipoDeporteService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
@@ -197,7 +197,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       }
     });
     this.cargarUbigeos();
-    this.cargarCanchaTipo();
+    this.cargarTipoDeportes();
 
   }
 
@@ -220,7 +220,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     // Actualizar variables locales
     this.selectedDate = searchData.fecha || null;
     this.selectedTime = searchData.hora || '';
-    this.idTipoCancha = searchData.idTipoCancha || '';
+    this.idTipoDeporte = searchData.idTipoDeporte || '';
 
     if (searchData.ciudad && typeof searchData.ciudad === 'object') {
       this.selectedUbigeo = searchData.ciudad;
@@ -232,7 +232,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       queryParams: {
         fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
         hora: this.selectedTime,
-        idTipoCancha: this.idTipoCancha,
+        idTipoDeporte: this.idTipoDeporte,
         codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
       }
     });
@@ -242,7 +242,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     this.selectedCity = '';
     this.selectedDate = null;
     this.selectedTime = '';
-    this.idTipoCancha = '';
+    this.idTipoDeporte = '';
     this.selectedUbigeo = null;
     this.cityControl.setValue('');
   }
@@ -251,7 +251,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     const searchParams = {
       fecha: this.selectedDate,
       hora: this.selectedTime,
-      idTipoCancha: this.idTipoCancha,
+      idTipoDeporte: this.idTipoDeporte,
       codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
     };
 
@@ -259,7 +259,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       queryParams: {
         fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
         hora: this.selectedTime,
-        idTipoCancha: this.idTipoCancha,
+        idTipoDeporte: this.idTipoDeporte,
         codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
       }
     });
@@ -269,7 +269,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     this.selectedCity = '';
     this.selectedDate = null;
     this.selectedTime = '';
-    this.idTipoCancha = '';
+    this.idTipoDeporte = '';
     this.selectedUbigeo = null;
     this.cityControl.setValue('');
   }
@@ -333,11 +333,11 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       error: (err) => this.openAlert(err),
     });
   }
-  private cargarCanchaTipo(): void {
-    this.canchaTipoService.SelectCombo().subscribe({
+  private cargarTipoDeportes(): void {
+    this.TipoDeporteService.SelectCombo().subscribe({
       next: (response) => {
         if (response.isValid) {
-          this.canchaTipos = response.data;
+          this.tipoDeportes = response.data;
         }
       },
       error: (err) => this.openAlert(err),

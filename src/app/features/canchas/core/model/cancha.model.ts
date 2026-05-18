@@ -1,6 +1,5 @@
 export interface Cancha {
   nombre: string;
-  idTipoCancha: number;
   descripcion?: string;
   ubicacion?: string;
   latitud?: number;

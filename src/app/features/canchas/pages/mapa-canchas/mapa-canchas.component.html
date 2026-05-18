@@ -44,8 +44,8 @@
             (selectionChange)="onCambiarFiltroTipo($event.value)"
           >
             <mat-option [value]="undefined">Todos</mat-option>
-            @for (tipo of tiposDeporte(); track tipo.idTipoCancha) {
-            <mat-option [value]="tipo.idTipoCancha">{{
+            @for (tipo of tiposDeporte(); track tipo.idTipoDeporte) {
+            <mat-option [value]="tipo.idTipoDeporte">{{
               tipo.nombre
             }}</mat-option>
             }

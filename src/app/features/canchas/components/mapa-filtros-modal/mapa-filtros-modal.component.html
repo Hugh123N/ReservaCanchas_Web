@@ -17,8 +17,8 @@
           <mat-label>Selecciona un deporte</mat-label>
           <mat-select formControlName="idTipoCancha">
             <mat-option [value]="undefined">Todos los deportes</mat-option>
-            @for (tipo of data.tiposDeporte; track tipo.idTipoCancha) {
-              <mat-option [value]="tipo.idTipoCancha">
+            @for (tipo of data.tipoDeportes; track tipo.idTipoDeporte) {
+              <mat-option [value]="tipo.idTipoDeporte">
                 {{ tipo.nombre }}
               </mat-option>
             }

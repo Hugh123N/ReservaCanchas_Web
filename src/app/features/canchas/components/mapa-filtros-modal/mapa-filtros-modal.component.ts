@@ -11,10 +11,10 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
-import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 
 export interface FiltrosModalData {
-  tiposDeporte: GetTipoCancha[];
+  tipoDeportes: GetTipoDeporte[];
   ubigeos: Ubigeo[];
   cantidadFavoritos: number;
   filtrosActuales: {

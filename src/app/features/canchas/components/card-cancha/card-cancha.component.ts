@@ -48,10 +48,6 @@ export class CardCanchaComponent extends BaseComponent{
       : '';
   }
 
-  get deporte(): string {
-    return this.field?.tipoCancha?.nombre || '';
-  }
-
   get horarios(): string[] {
     return this.field?.horariosDisponibles || [];
   }

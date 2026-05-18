@@ -32,11 +32,11 @@ import { TypedFormGroup } from '@shared/types/types-form';
 import { CommonModule } from '@angular/common';
 import { CanchaEstadoService } from 'app/features/cancha-estado/core/services/cancha-estado.service';
 import { GetEstadoCancha } from 'app/features/cancha-estado/core/model/getEstadoCancha.model';
-import { CanchaTipoService } from 'app/features/cancha-tipo/core/services/cancha-tipo.service';
-import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 import { UbigeoService } from '../../core/services/ubigeo.service';
 import { UbicacionCancha } from '@shared/interfaces/location.interface';
 import { MatButtonModule } from '@angular/material/button';
+import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 
 
 @Component({
@@ -64,7 +64,7 @@ export class CanchasComponent extends BaseSearchComponent {
   minDate = new Date();
 
   estados: GetEstadoCancha[] = [];
-  canchaTipos: GetTipoCancha[] = [];
+  tipoDeportes: GetTipoDeporte[] = [];
   ubigeos: Ubigeo[] = [];
 
   filteredUbigeos: Observable<Ubigeo[]>;
@@ -74,7 +74,6 @@ export class CanchasComponent extends BaseSearchComponent {
     {
       idCancha: 1,
       nombre: "Arena Vóley Pro",
-      idTipoCancha: 1,
       descripcion: "Cancha techada con arena especial para torneos de vóley.",
       ubicacion: "Av. Javier Prado Este 1234",
       direccion: "Av. Javier Prado Este 1234, Surco, Lima",
@@ -85,7 +84,9 @@ export class CanchasComponent extends BaseSearchComponent {
       codigoUbigeo: "150141",
       idEstadoCancha: 1,
       calificacionPromedio: 4.8,
-      tipoCancha: { nombre: "Vóley", idTipoCancha: 1 },
+      tipoDeportes: [
+        {idTipoDeporte: 1, codigo: "VOL", nombre: "Vóley",descripcion: "Vóley", icono: 'sports_volleyball'}
+      ],
       imagenesCancha: [
         {
           idCancha: 1,
@@ -108,7 +109,6 @@ export class CanchasComponent extends BaseSearchComponent {
     {
       idCancha: 2,
       nombre: "Cancha Municipal",
-      idTipoCancha: 2,
       descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
       ubicacion: "Av. La Fontana 567",
       direccion: "Av. La Fontana 567, La Molina, Lima",
@@ -119,7 +119,7 @@ export class CanchasComponent extends BaseSearchComponent {
       codigoUbigeo: "150135",
       idEstadoCancha: 1,
       calificacionPromedio: 4.1,
-      tipoCancha: { nombre: "Fútbol 11", idTipoCancha: 2 },
+      tipoDeportes: [{ nombre: "Fútbol 11", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 11", icono: "sports_soccer" }],
       imagenesCancha: [
         {
           idCancha: 2,
@@ -142,7 +142,6 @@ export class CanchasComponent extends BaseSearchComponent {
     {
       idCancha: 3,
       nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
       descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
       ubicacion: "Av. San Luis 999",
       direccion: "Av. San Luis 999, San Borja, Lima",
@@ -153,7 +152,7 @@ export class CanchasComponent extends BaseSearchComponent {
       codigoUbigeo: "150120",
       idEstadoCancha: 1,
       calificacionPromedio: 3.9,
-      tipoCancha: { nombre: "Fútbol 7", idTipoCancha: 2 },
+      tipoDeportes: [{ nombre: "Fútbol 7", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 7", icono: "sports_soccer" }],
       imagenesCancha: [
         {
           idCancha: 3,
@@ -176,7 +175,6 @@ export class CanchasComponent extends BaseSearchComponent {
     {
       idCancha: 4,
       nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
       descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
       ubicacion: "Av. San Luis 999",
       direccion: "Av. San Luis 999, San Borja, Lima",
@@ -187,75 +185,7 @@ export class CanchasComponent extends BaseSearchComponent {
       codigoUbigeo: "150120",
       idEstadoCancha: 1,
       calificacionPromedio: 3.9,
-      tipoCancha: { nombre: "Fútbol 7", idTipoCancha: 2 },
-      imagenesCancha: [
-        {
-          idCancha: 3,
-          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-          esPrincipal: true,
-          idImagenCancha: 103,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150120",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "San Borja"
-      },
-      horariosDisponibles: ["09:00", "11:00", "13:00"]
-    },
-    {
-      idCancha: 5,
-      nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
-      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      ubicacion: "Av. San Luis 999",
-      direccion: "Av. San Luis 999, San Borja, Lima",
-      latitud: -12.095,
-      longitud: -76.995,
-      precioHora: 60,
-      idProveedor: "prov-003",
-      codigoUbigeo: "150120",
-      idEstadoCancha: 1,
-      calificacionPromedio: 3.9,
-      tipoCancha: { nombre: "Fútbol 7", idTipoCancha: 2 },
-      imagenesCancha: [
-        {
-          idCancha: 3,
-          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-          esPrincipal: true,
-          idImagenCancha: 103,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150120",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "San Borja"
-      },
-      horariosDisponibles: ["09:00", "11:00", "13:00"]
-    },
-    {
-      idCancha: 6,
-      nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
-      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      ubicacion: "Av. San Luis 999",
-      direccion: "Av. San Luis 999, San Borja, Lima",
-      latitud: -12.095,
-      longitud: -76.995,
-      precioHora: 60,
-      idProveedor: "prov-003",
-      codigoUbigeo: "150120",
-      idEstadoCancha: 1,
-      calificacionPromedio: 3.9,
-      tipoCancha: { nombre: "Fútbol 7", idTipoCancha: 2 },
+      tipoDeportes: [{ nombre: "Fútbol 7", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 7", icono: "sports_soccer" }],
       imagenesCancha: [
         {
           idCancha: 3,
@@ -280,7 +210,7 @@ export class CanchasComponent extends BaseSearchComponent {
   constructor(
     private canchaService: CanchaService,
     private canchaEstadoService: CanchaEstadoService,
-    private canchaTipoService: CanchaTipoService,
+    private tipoDeporteService: TipoDeporteService,
     private ubigeoService: UbigeoService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -304,12 +234,12 @@ export class CanchasComponent extends BaseSearchComponent {
       codigoUbigeo: [null],
       fecha: [null],
       hora: [null],
-      idTipoCancha: [null],
+      idTipoDeporte: [null],
       idEstadoCancha: [null]
     }) as TypedFormGroup<CanchasFilter>;
 
     this.cargarCanchaEstados();
-    this.cargarCanchaTipo();
+    this.cargarTipoDeporte();
     this.cargarUbigeos();
 
     this.setupCityControlSync();
@@ -317,22 +247,22 @@ export class CanchasComponent extends BaseSearchComponent {
     this.route.queryParams.subscribe(params => {
       const fecha = params['fecha'] || null;
       const hora = params['hora'] || null;
-      const idTipoCanchaParam = params['idTipoCancha'];
+      const idTipoDeporteParam = params['idTipoDeporte'] || null;
       const codigoUbigeo = params['codigoUbigeo'] || null;
 
       const fechaNormalizada = fecha ? normalizeDateString(fecha) : null;
-      const idTipoCancha = idTipoCanchaParam ? Number(idTipoCanchaParam) : null;
+      const idTipoDeporte = idTipoDeporteParam ? Number(idTipoDeporteParam) : null;
 
       this.filterForm.patchValue({
         nombre: null,
         codigoUbigeo: codigoUbigeo,
         fecha: fechaNormalizada,
         hora: hora,
-        idTipoCancha: idTipoCancha,
+        idTipoDeporte: idTipoDeporte,
         idEstadoCancha: null
       });
 
-      const hasFilters = fecha !== null || hora !== null || idTipoCancha !== null || codigoUbigeo !== null;
+      const hasFilters = fecha !== null || hora !== null || idTipoDeporte !== null || codigoUbigeo !== null;
 
       if (hasFilters) {
         this.isSearching = true;
@@ -397,11 +327,11 @@ export class CanchasComponent extends BaseSearchComponent {
 
     // Convertir fecha a string si existe
     const fechaStr = searchData.fecha ? formatDateLocal(searchData.fecha) : null;
-    // Convertir idTipoCancha a number si existe
-    const idTipoCanchaNum = searchData.idTipoCancha ? parseInt(searchData.idTipoCancha) : null;
+    // Convertir idTipoDeporte a number si existe
+    const idTipoDeporteNum = searchData.idTipoDeporte ? parseInt(searchData.idTipoDeporte) : null;
 
     this.filterForm.patchValue({
-      idTipoCancha: idTipoCanchaNum,
+      idTipoDeporte: idTipoDeporteNum,
       fecha: fechaStr,
       hora: searchData.hora || ''
     });
@@ -470,11 +400,11 @@ export class CanchasComponent extends BaseSearchComponent {
       error: (err) => this.openAlert(err),
     });
   }
-  private cargarCanchaTipo(): void {
-    this.canchaTipoService.SelectCombo().subscribe({
+  private cargarTipoDeporte(): void {
+    this.tipoDeporteService.SelectCombo().subscribe({
       next: (response) => {
         if (response.isValid) {
-          this.canchaTipos = response.data;
+          this.tipoDeportes = response.data;
         }
       },
       error: (err) => this.openAlert(err),
@@ -526,7 +456,7 @@ export class CanchasComponent extends BaseSearchComponent {
       lat: c.latitud!,
       lng: c.longitud!,
       precioDesde: c.precioHora || 0,
-      deportes: [c.tipoCancha?.nombre || ''],
+      deportes: c.tipoDeportes?.map((t: any) => t.nombre) || [''],
       imagenUrl: c.imagenesCancha?.[0]?.urlImagen || 'assets/images/default-field.png',
       calificacion: c.calificacionPromedio || 0,
       totalResenas: 0
