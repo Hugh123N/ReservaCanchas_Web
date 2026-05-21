@@ -37,23 +37,21 @@
 
       <!-- Ubicación -->
       <div class="flex items-center text-gray-600 text-sm">
-        <mat-icon class="text-base mr-1">location_on</mat-icon>
+        <mat-icon class="text-base mr-1 icon-primary">location_on</mat-icon>
         <span>{{ ubicacion }}</span>
       </div>
 
       <!-- Deporte -->
-      <mat-chip color="primary" selected>{{ deporte }}</mat-chip>
+      <div class="flex flex-row flex-wrap gap-2">
+        @for (tipo of field.tipoDeportes; track tipo) {
+            <span class="sport-chip">{{ tipo.nombre }}</span>
+        }
+      </div>
 
       <!-- Precio -->
       <div class="price font-bold text-primary flex items-baseline gap-1">
-        <span class="amount text-xl">S/ {{ field.precioHora }}</span>
+        <span class="amount text-xl">S/ {{ field.precio }}</span>
         <span class="text-sm">/hora</span>
-      </div>
-
-      <!-- Horarios -->
-      <div class="flex items-center text-gray-700 text-sm">
-        <mat-icon class="text-base mr-1">schedule</mat-icon>
-        <span>Horarios: {{ horarios.join(", ") }}</span>
       </div>
     </mat-card-content>
 

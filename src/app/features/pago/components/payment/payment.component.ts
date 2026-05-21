@@ -15,6 +15,7 @@ import { ReservaService } from 'app/features/reserva/core/services/reserva.servi
 import { CreateReserva } from 'app/features/reserva/core/model/createReserva.model';
 import { ReservaConPagoDto } from 'app/features/reserva/core/model/reservaConPago.model';
 import { ReservaData } from '../../core/types/reserva-data.interface';
+import { desagruparHorasPorMediaHora } from '@shared/utils/horario.utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -164,31 +165,18 @@ export class PaymentComponent extends BaseComponent implements OnInit {
 
     this.isProcessing = true;
 
-    // Construir detalles de la reserva con los horarios seleccionados
-    const detalles = this.reservaData.selectedTime.map((t: any) => {
-      const [hours, minutes] = t.hora.split(':').map(Number);
-
-      const horaInicio = t.hora;
-      const horaFinDate = new Date();
-      horaFinDate.setHours(hours + 1, minutes, 0);
-      const horaFin = horaFinDate.toTimeString().slice(0, 5); // HH:mm
-
-      return {
-        horaInicio,
-        horaFin
-      };
-    });
+    // Desagrupar horarios de vuelta a medias horas
+    const horariosDesagrupados = desagruparHorasPorMediaHora(this.reservaData.selectedTime);
 
     // DTO para crear pre-reserva con EFECTIVO
     const createReservaDto: CreateReserva = {
-      idUsuario: this.userData.id,
+      idCliente: this.userData.id,
       idCancha: this.reservaData.canchaId,
-      fecha: this.reservaData.fecha,
-      monto: this.reservaData.total,
-      idEstadoReserva: 1,
+      fechaReserva: this.reservaData.fecha,
+      montoTotal: this.reservaData.total,
+      idTipoDeporte: this.reservaData.idTipoDeporte,
       codigoMetodoPago: '02', //SOLO EFECTIVO
-      // NO enviamos montoAdelanto (lo registra el operador al confirmar)
-      detalles
+      idsHorarioCancha: horariosDesagrupados.map((t: any) => t.idHorarioCancha)
     };
 
     const subscription = this.reservaService.create(createReservaDto)

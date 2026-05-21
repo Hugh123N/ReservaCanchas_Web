@@ -177,10 +177,10 @@ export const routes: Routes = [
 #### Clases de Texto Responsive
 ```html
 <!-- ✅ USAR SIEMPRE -->
-<h1 class="text-responsive-2xl font-bold">Título Hero</h1>
-<h2 class="text-responsive-xl font-bold">Título Sección</h2>
-<h3 class="text-responsive-lg font-semibold">Subtítulo</h3>
-<p class="text-responsive-base">Texto párrafo</p>
+<h1 class="title-main">Título Hero</h1>
+<h2 class="title-main">Título Sección</h2>
+<h3 class="text-lg font-semibold">Subtítulo</h3>
+<p class="text-base">Texto párrafo</p>
 
 <!-- ❌ NO USAR -->
 <h1 class="text-4xl">Título</h1>
@@ -189,7 +189,7 @@ export const routes: Routes = [
 **Mapeo**:
 - `.text-responsive-2xl` → `text-2xl sm:text-3xl md:text-4xl lg:text-5xl`
 - `.text-responsive-xl` → `text-xl sm:text-2xl md:text-3xl`
-- `.text-responsive-lg` → `text-lg sm:text-xl md:text-2xl`
+- `.text-lg` → `text-lg sm:text-xl md:text-2xl`
 
 #### Grids y Componentes
 ```html
@@ -198,7 +198,7 @@ export const routes: Routes = [
 <div class="grid-responsive-3">3 columnas</div>
 
 <!-- Iconos -->
-<mat-icon class="icon-responsive">search</mat-icon>
+<mat-icon class="icon-lg">search</mat-icon>
 ```
 
 ### Botones Globales
@@ -218,7 +218,7 @@ export const routes: Routes = [
 ### Hero Sections
 ```html
 <section class="hero-section gradient-primary">
-  <h1 class="text-responsive-2xl font-bold text-white">Título</h1>
+  <h1 class="title-main text-white">Título</h1>
 </section>
 ```
 

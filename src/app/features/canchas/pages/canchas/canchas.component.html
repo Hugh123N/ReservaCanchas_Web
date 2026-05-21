@@ -2,9 +2,7 @@
 <app-nav-var></app-nav-var>
 
 <!-- Search Section -->
-<section
-  class="search-section bg-gradient-to-br from-primary-50 to-secondary-50 py-8"
-  >
+<section class="relative py-8 bg-gradient-to-br from-primary-50 to-secondary-50">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title with Filter Button (Mobile/Tablet) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -24,7 +22,7 @@
     <!-- Search Bar Component (Oculto en mobile/tablet por defecto) -->
     <div class="search-bar-wrapper" [class.show-filters]="mostrarFiltros">
       <app-search-bar
-        [canchaTipos]="canchaTipos"
+        [tipoDeportes]="tipoDeportes"
         [ubigeos]="ubigeos"
         [isLoading]="isLoading"
         [maxWidth]="'large'"
@@ -40,14 +38,12 @@
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
 
-              
-
               <!-- Results Header -->
               <div
                 class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
                 >
                 <div class="results-info">
-                  <h2 class="text-responsive-xl font-semibold text-primary mb-2">
+                  <h2 class="title-main text-primary mb-2">
                     {{
                     isSearching
                     ? "Resultados de búsqueda"
@@ -57,18 +53,18 @@
                 </div>
 
                 <!-- View Toggle -->
-              <div class="view-toggle-container flex justify-center md:justify-end">
-                <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
-                  <mat-button-toggle value="lista">
-                    <mat-icon class="mr-1">view_list</mat-icon>
-                    Lista
-                  </mat-button-toggle>
-                  <mat-button-toggle value="mapa">
-                    <mat-icon class="mr-1">map</mat-icon>
-                    Mapa
-                  </mat-button-toggle>
-                </mat-button-toggle-group>
-              </div>
+                <div class="view-toggle-container flex justify-center md:justify-end">
+                  <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
+                    <mat-button-toggle value="lista">
+                      <mat-icon class="mr-1">view_list</mat-icon>
+                      Lista
+                    </mat-button-toggle>
+                    <mat-button-toggle value="mapa">
+                      <mat-icon class="mr-1">map</mat-icon>
+                      Mapa
+                    </mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
               </div>
 
                 
@@ -90,7 +86,6 @@
                               [field]="cancha"
                               (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
                               [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
-                              class="enhanced-card-hover"
                               >
                             </app-card-cancha>
                           </div>

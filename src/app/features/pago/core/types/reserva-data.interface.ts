@@ -10,4 +10,5 @@ export interface ReservaData {
   telefono: string;
   precioHora: number;
   total: number;
+  idTipoDeporte: number;
 }

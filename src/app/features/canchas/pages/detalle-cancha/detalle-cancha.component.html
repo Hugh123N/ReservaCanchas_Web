@@ -2,15 +2,15 @@
 <app-nav-var></app-nav-var>
 
 <!-- Hero Section with Gallery -->
-<section class="hero-gradient-soft">
+<section>
   <!-- Back Button -->
   <div class="container mx-auto sm:px-6 lg:px-8">
     <div class="flex items-center gap-3 sm:gap-4">
       <button mat-icon-button (click)="goBack()">
-        <mat-icon class="icon-responsive">arrow_back</mat-icon>
+        <mat-icon class="icon-lg">arrow_back</mat-icon>
       </button>
       <div>
-        <p class="text-responsive-base text-neutral-600">Volver</p>
+        <p class="text-base text-neutral-600">Volver</p>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@
 
       <!-- Info Card -->
       <div class="lg:col-span-1">
-        <mat-card class="info-card cancha-info-card !p-2 h-full">
+        <div class="content-card h-full">
           <div class="space-y-2">
             <!-- Title and Rating -->
             <div>
@@ -113,10 +113,12 @@
 
             <!-- Sport Type -->
             <div class="flex items-center gap-2">
-              <mat-chip color="primary" selected class="sport-chip">
-                <mat-icon class="mr-1">{{ getSportIcon() }}</mat-icon>
-                {{ canchaData.tipoCancha?.nombre }}
-              </mat-chip>
+              @for (tipo of canchaData.tipoDeportes; track tipo) {
+                <mat-chip color="primary" selected class="sport-chip">
+                  <mat-icon class="mr-1">{{ tipo.icono }}</mat-icon>
+                  {{ tipo.nombre }}
+                </mat-chip>
+              }
             </div>
 
             <!-- Price -->
@@ -124,7 +126,7 @@
               <div class="flex items-baseline justify-between">
                 <div>
                   <span class="text-3xl font-bold text-primary"
-                    >S/ {{ canchaData.precioHora }}</span
+                    >S/ {{ canchaData.precio }}</span
                   >
                   <span class="text-neutral-600 ml-1">/hora</span>
                 </div>
@@ -161,7 +163,7 @@
               </div>
             </div>
           </div>
-        </mat-card>
+        </div>
       </div>
     </div>
   </div>
@@ -184,9 +186,9 @@
               <!-- Date Selection -->
               <div class="date-section">
                 <h3
-                  class="text-responsive-xl font-bold text-primary mb-4 flex items-center"
+                  class="title-main text-primary mb-4 flex items-center"
                 >
-                  <mat-icon class="icon-responsive mr-2">event</mat-icon>
+                  <mat-icon class="icon-lg mr-2">event</mat-icon>
                   Selecciona tu fecha
                 </h3>
                 <div class="date-picker-container">
@@ -213,32 +215,31 @@
 
               <!-- Time Selection -->
               @if (selectedDate) {
-              <div class="time-section">
-                <h3
-                  class="text-responsive-xl font-bold text-primary mb-4 flex items-center"
-                >
-                  <mat-icon class="icon-responsive mr-2">schedule</mat-icon>
-                  Horarios disponibles para {{ selectedDate.dia }}
-                  {{ selectedDate.numero }}
-                </h3>
-                <div
-                  class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2"
-                >
-                  @for (h of getAvailableHours(); track h.hora) {
-                  <button
-                    type="button"
-                    mat-raised-button
-                    class="time-btn !rounded-xl !py-2 sm:!py-3 md:!py-4 !text-xs sm:!text-sm md:!text-base !font-semibold transition-all duration-300"
-                    [ngClass]="getTimeButtonClass(h)"
-                    (click)="selectTime(h)"
-                  >
-                    <div class="flex flex-col items-center">
-                      <span>{{ h.hora }}</span>
-                    </div>
-                  </button>
-                  }
+                <div class="time-section">
+                  <h3 class="title-main text-primary mb-4 flex items-center">
+                    <mat-icon class="icon-lg mr-2">schedule</mat-icon>
+                    Horarios disponibles para {{ selectedDate.dia }}
+                    {{ selectedDate.numero }}
+                  </h3>
+                  <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                    @for (h of getAvailableHours(); track h.hora) {
+                    <button
+                      type="button"
+                      mat-raised-button
+                      class="time-btn !rounded-xl !py-2 sm:!py-3 md:!py-4 !text-xs sm:!text-sm md:!text-base !font-semibold transition-all duration-300"
+                      [ngClass]="getTimeButtonClass(h)"
+                      (click)="selectTime(h)"
+                    >
+                      <div class="flex flex-col items-center gap-1">
+                        <span>{{ h.hora }}</span>
+                        @if (h.precio) {
+                          <span class="text-xs opacity-90">S/. {{ h.precio }}</span>
+                        }
+                      </div>
+                    </button>
+                    }
+                  </div>
                 </div>
-              </div>
               }
 
               <!-- User Info -->
@@ -330,7 +331,7 @@
                       >
                     </div>
                   </div>
-                  <div class="action-buttons mt-8 space-y-3">
+                  <div class="mt-8 space-y-3">
                     <button
                       mat-raised-button
                       class="btn-primary w-full !py-4 !text-lg !font-bold shadow-lg"
@@ -387,7 +388,7 @@
               <div class="card-base bg-yellow-50 border border-yellow-200 rounded-xl p-2">
                 <ul class="space-y-2 text-sm text-neutral-700">
                   <li class="flex items-start">
-                    <mat-icon class="icon-sm !text-yellow-600 mr-2 text-lg mt-0.5"
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5"
                       >info</mat-icon
                     >
                     <span
@@ -396,13 +397,13 @@
                     >
                   </li>
                   <li class="flex items-start">
-                    <mat-icon class="icon-sm !text-yellow-600 mr-2 text-lg mt-0.5"
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5"
                       >schedule</mat-icon
                     >
                     <span>Tolerancia máxima de 15 minutos de retraso</span>
                   </li>
                   <li class="flex items-start">
-                    <mat-icon class="icon-sm !text-yellow-600 mr-2 text-lg mt-0.5"
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5"
                       >sports</mat-icon
                     >
                     <span

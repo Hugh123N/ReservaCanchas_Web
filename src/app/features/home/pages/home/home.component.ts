@@ -25,8 +25,8 @@ import { map, Observable, startWith, Subscription } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UbigeoService } from 'app/features/canchas/core/services/ubigeo.service';
 import { BaseSearchComponent } from '@base/components/base-search-component/search-base.component';
-import { CanchaTipoService } from 'app/features/cancha-tipo/core/services/cancha-tipo.service';
-import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
+import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 
 @Component({
   selector: 'app-home',
@@ -49,113 +49,163 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   selectedCity: string = '';
   selectedDate: Date | null = null;
   selectedTime: string = '';
-  idTipoCancha: string = '';
+  idTipoDeporte: string = '';
   selectedUbigeo: Ubigeo | null = null;
   mostrarFiltros: boolean = false;
 
-  canchaTipos: GetTipoCancha[] = [];
+  tipoDeportes: GetTipoDeporte[] = [];
   canchasEjemplo: SearchCancha[] = [
     {
+      codigo: 'CAN001',
       idCancha: 1,
+      idProveedor: 1,
+      idTipoSuperficie: 1,
       nombre: "Arena Vóley Pro",
-      idTipoCancha: 1,
       descripcion: "Cancha techada con arena especial para torneos de vóley.",
-      ubicacion: "Av. Javier Prado Este 1234",
+      precio: 45,
+      telefonoCancha: "999888777",
       direccion: "Av. Javier Prado Este 1234, Surco, Lima",
+      codigoUbigeo: "150141",
       latitud: -12.105,
       longitud: -76.963,
-      precioHora: 45,
-      idProveedor: "prov-001",
-      codigoUbigeo: "150141",
+      capacidadJugadores: 12,
       idEstadoCancha: 1,
+      tieneTecho: true,
+      tieneIluminacion: true,
+      pais: "Perú",
+      duracionPreReserva: 15,
+      porcentajeAdelanto: 30,
       calificacionPromedio: 4.8,
-      tipoCancha: { idTipoCancha: 1, nombre: "Vóley" },
-      imagenesCancha: [
+
+      tipoDeportes: [
         {
-          idImagenCancha: 101,
-          idCancha: 1,
-          urlImagen: "https://picsum.photos/seed/voley/400/250",
-          esPrincipal: true,
-          activo: true
+          idTipoDeporte: 1,
+          codigo: 'VOL',
+          nombre: "Vóley",
+          icono: 'sports_volleyball'
         }
       ],
-      estadoCancha: { idEstadoCancha: 1, codigo: "01", nombre: "Aprobado" },
+
+      urlImagen: "https://picsum.photos/seed/voley/400/250",
+
+      estadoCancha: {
+        idEstadoCancha: 1,
+        codigo: "01",
+        nombre: "Aprobado"
+      },
+
       faboritos: [],
+
       ubigeo: {
         codigoUbigeo: "150141",
         departamento: "Lima",
         provincia: "Lima",
         distrito: "Surco"
-      },
-      horariosDisponibles: ["08:00", "10:00", "12:00"]
+      }
     },
+
     {
+      codigo: 'CAN002',
       idCancha: 2,
+      idProveedor: 2,
+      idTipoSuperficie: 2,
       nombre: "Cancha Municipal",
-      idTipoCancha: 2,
       descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
-      ubicacion: "Av. La Fontana 567",
+      precio: 70,
+      telefonoCancha: "988777666",
       direccion: "Av. La Fontana 567, La Molina, Lima",
+      codigoUbigeo: "150135",
       latitud: -12.082,
       longitud: -76.935,
-      precioHora: 70,
-      idProveedor: "prov-002",
-      codigoUbigeo: "150135",
+      capacidadJugadores: 22,
       idEstadoCancha: 5,
+      tieneTecho: false,
+      tieneIluminacion: true,
+      pais: "Perú",
+      duracionPreReserva: 20,
+      porcentajeAdelanto: 50,
       calificacionPromedio: 4.1,
-      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 11" },
-      imagenesCancha: [
+
+      tipoDeportes: [
         {
-          idImagenCancha: 102,
-          idCancha: 2,
-          urlImagen: "https://picsum.photos/seed/futbol/400/250",
-          esPrincipal: true,
-          activo: true
+          idTipoDeporte: 2,
+          codigo: 'FUT11',
+          nombre: "Fútbol 11",
+          icono: 'sports_soccer'
+        },
+        {
+          idTipoDeporte: 1,
+          codigo: 'VOL',
+          nombre: "Vóley",
+          icono: 'sports_volleyball'
         }
       ],
-      estadoCancha: { idEstadoCancha: 5, codigo: "05", nombre: "Mantenimiento" },
+
+      urlImagen: "https://picsum.photos/seed/futbol/400/250",
+
+      estadoCancha: {
+        idEstadoCancha: 5,
+        codigo: "05",
+        nombre: "Mantenimiento"
+      },
+
       faboritos: [],
+
       ubigeo: {
         codigoUbigeo: "150135",
         departamento: "Lima",
         provincia: "Lima",
         distrito: "La Molina"
-      },
-      horariosDisponibles: ["14:00", "16:00", "18:00"]
+      }
     },
+
     {
+      codigo: 'CAN003',
       idCancha: 3,
+      idProveedor: 3,
+      idTipoSuperficie: 1,
       nombre: "Fútbol Club Junior",
-      idTipoCancha: 2,
       descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      ubicacion: "Av. San Luis 999",
+      precio: 60,
+      telefonoCancha: "977666555",
       direccion: "Av. San Luis 999, San Borja, Lima",
+      codigoUbigeo: "150120",
       latitud: -12.095,
       longitud: -76.995,
-      precioHora: 60,
-      idProveedor: "prov-003",
-      codigoUbigeo: "150120",
+      capacidadJugadores: 14,
       idEstadoCancha: 2,
+      tieneTecho: false,
+      tieneIluminacion: true,
+      pais: "Perú",
+      duracionPreReserva: 10,
+      porcentajeAdelanto: 20,
       calificacionPromedio: 3.9,
-      tipoCancha: { idTipoCancha: 2, nombre: "Fútbol 7" },
-      imagenesCancha: [
+
+      tipoDeportes: [
         {
-          idImagenCancha: 103,
-          idCancha: 3,
-          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-          esPrincipal: true,
-          activo: true
+          idTipoDeporte: 2,
+          codigo: 'FUT7',
+          nombre: "Fútbol 7",
+          icono: 'sports_soccer'
         }
       ],
-      estadoCancha: { idEstadoCancha: 2, codigo: "02", nombre: "Pendiente" },
+
+      urlImagen: "https://picsum.photos/seed/futbol7/400/250",
+
+      estadoCancha: {
+        idEstadoCancha: 2,
+        codigo: "02",
+        nombre: "Pendiente"
+      },
+
       faboritos: [],
+
       ubigeo: {
         codigoUbigeo: "150120",
         departamento: "Lima",
         provincia: "Lima",
         distrito: "San Borja"
-      },
-      horariosDisponibles: ["09:00", "11:00", "13:00"]
+      }
     }
   ];
   ubigeos: Ubigeo[] = [];
@@ -169,7 +219,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
   constructor(
     private router: Router,
     private ubigeoService: UbigeoService,
-    private canchaTipoService: CanchaTipoService,
+    private TipoDeporteService: TipoDeporteService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
@@ -197,7 +247,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       }
     });
     this.cargarUbigeos();
-    this.cargarCanchaTipo();
+    this.cargarTipoDeportes();
 
   }
 
@@ -220,7 +270,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     // Actualizar variables locales
     this.selectedDate = searchData.fecha || null;
     this.selectedTime = searchData.hora || '';
-    this.idTipoCancha = searchData.idTipoCancha || '';
+    this.idTipoDeporte = searchData.idTipoDeporte || '';
 
     if (searchData.ciudad && typeof searchData.ciudad === 'object') {
       this.selectedUbigeo = searchData.ciudad;
@@ -232,7 +282,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       queryParams: {
         fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
         hora: this.selectedTime,
-        idTipoCancha: this.idTipoCancha,
+        idTipoDeporte: this.idTipoDeporte,
         codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
       }
     });
@@ -242,7 +292,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     this.selectedCity = '';
     this.selectedDate = null;
     this.selectedTime = '';
-    this.idTipoCancha = '';
+    this.idTipoDeporte = '';
     this.selectedUbigeo = null;
     this.cityControl.setValue('');
   }
@@ -251,7 +301,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     const searchParams = {
       fecha: this.selectedDate,
       hora: this.selectedTime,
-      idTipoCancha: this.idTipoCancha,
+      idTipoDeporte: this.idTipoDeporte,
       codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
     };
 
@@ -259,7 +309,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       queryParams: {
         fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
         hora: this.selectedTime,
-        idTipoCancha: this.idTipoCancha,
+        idTipoDeporte: this.idTipoDeporte,
         codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
       }
     });
@@ -269,7 +319,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
     this.selectedCity = '';
     this.selectedDate = null;
     this.selectedTime = '';
-    this.idTipoCancha = '';
+    this.idTipoDeporte = '';
     this.selectedUbigeo = null;
     this.cityControl.setValue('');
   }
@@ -333,11 +383,11 @@ export class HomeComponent extends BaseSearchComponent implements OnInit, OnDest
       error: (err) => this.openAlert(err),
     });
   }
-  private cargarCanchaTipo(): void {
-    this.canchaTipoService.SelectCombo().subscribe({
+  private cargarTipoDeportes(): void {
+    this.TipoDeporteService.SelectCombo().subscribe({
       next: (response) => {
         if (response.isValid) {
-          this.canchaTipos = response.data;
+          this.tipoDeportes = response.data;
         }
       },
       error: (err) => this.openAlert(err),

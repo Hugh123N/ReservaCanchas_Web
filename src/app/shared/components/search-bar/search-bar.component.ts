@@ -13,11 +13,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { Observable, map, startWith } from 'rxjs';
 
 import { Ubigeo } from 'app/features/canchas/core/model/ubigeo/ubigeo.model';
-import { GetTipoCancha } from 'app/features/cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 
 export interface SearchBarData {
   ciudad?: Ubigeo | string | null;
-  idTipoCancha?: string;
+  idTipoDeporte?: string;
   fecha?: Date | null;
   hora?: string;
 }
@@ -43,7 +43,7 @@ export interface SearchBarData {
   styleUrl: './search-bar.component.css'
 })
 export class SearchBarComponent implements OnInit {
-  @Input() canchaTipos: GetTipoCancha[] = [];
+  @Input() tipoDeportes: GetTipoDeporte[] = [];
   @Input() ubigeos: Ubigeo[] = [];
   @Input() isLoading: boolean = false;
   @Input() maxWidth: 'large' | 'medium' = 'large'; // large = 6xl, medium = 5xl
@@ -60,7 +60,7 @@ export class SearchBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
-      idTipoCancha: [''],
+      idTipoDeporte: [''],
       fecha: [null],
       hora: ['']
     });
@@ -90,7 +90,7 @@ export class SearchBarComponent implements OnInit {
   onSearch(): void {
     const searchData: SearchBarData = {
       ciudad: this.cityControl.value,
-      idTipoCancha: this.searchForm.value.idTipoCancha,
+      idTipoDeporte: this.searchForm.value.idTipoDeporte,
       fecha: this.searchForm.value.fecha,
       hora: this.searchForm.value.hora
     };
@@ -99,7 +99,7 @@ export class SearchBarComponent implements OnInit {
 
   onClear(): void {
     this.searchForm.reset({
-      idTipoCancha: '',
+      idTipoDeporte: '',
       fecha: null,
       hora: ''
     });

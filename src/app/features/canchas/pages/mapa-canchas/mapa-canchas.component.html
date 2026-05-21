@@ -10,12 +10,12 @@
         (click)="cerrarMapa()"
         matTooltip="Cerrar mapa"
       >
-        <mat-icon class="icon-responsive">close</mat-icon>
+        <mat-icon class="icon-lg">close</mat-icon>
       </button>
 
       <!-- Barra de Búsqueda -->
       <div class="search-container">
-        <mat-form-field appearance="outline" class="search-field">
+        <mat-form-field appearance="outline">
           <mat-icon matPrefix>search</mat-icon>
           <input
             matInput
@@ -37,22 +37,22 @@
 
         <!-- Filtros Desktop -->
         @if (!(isMobile$ | async)) {
-        <mat-form-field appearance="outline" class="search-field">
+        <mat-form-field appearance="outline">
           <mat-label>Tipo de Deporte</mat-label>
           <mat-select
             [value]="filtroActual().idTipoDeporte"
             (selectionChange)="onCambiarFiltroTipo($event.value)"
           >
             <mat-option [value]="undefined">Todos</mat-option>
-            @for (tipo of tiposDeporte(); track tipo.idTipoCancha) {
-            <mat-option [value]="tipo.idTipoCancha">{{
+            @for (tipo of tiposDeporte(); track tipo.idTipoDeporte) {
+            <mat-option [value]="tipo.idTipoDeporte">{{
               tipo.nombre
             }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="search-field">
+        <mat-form-field appearance="outline">
           <mat-label>Ubicación</mat-label>
           <mat-select
             [value]="filtroActual().codigoUbigeo"

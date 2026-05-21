@@ -6,13 +6,13 @@
     <div class="section-spacing">
       <div class="flex items-center gap-3 sm:gap-4 mb-6">
         <button mat-icon-button routerLink="/" class="text-neutral-600 hover:text-primary-600 transition-colors">
-          <mat-icon class="icon-responsive">arrow_back</mat-icon>
+          <mat-icon class="icon-lg">arrow_back</mat-icon>
         </button>
         <div class="flex-1">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 class="text-responsive-2xl font-bold text-primary-600">Mis Reservas</h1>
-              <p class="text-responsive-base text-neutral-600">Historial completo de tus reservas</p>
+              <h1 class="title-main text-primary-600">Mis Reservas</h1>
+              <p class="text-base text-neutral-600">Historial completo de tus reservas</p>
             </div>
             <button
               mat-raised-button
@@ -75,7 +75,7 @@
     @if (!isLoading && reservas.length > 0) {
       <div class="space-y-4">
         @for (reserva of reservas; track reserva.idReserva) {
-          <mat-card class="enhanced-card-hover cursor-pointer" (click)="verDetalle(reserva)">
+          <div class="content-card cursor-pointer" (click)="verDetalle(reserva)">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
               <!-- Columna Izquierda: Info Principal -->
@@ -84,7 +84,7 @@
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                      <h5 class="text-responsive-lg font-bold text-primary-600 leading-none m-0">
+                      <h5 class="text-lg font-bold text-primary-600 leading-none m-0">
                         {{ reserva.nombreCancha }}
                       </h5>
                       @if (reserva.estaPendiente && isProximaExpirar(reserva)) {
@@ -206,7 +206,7 @@
             <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
               <mat-icon class="text-primary-600">visibility</mat-icon>
             </div>
-          </mat-card>
+          </div>
         }
 
         <!-- Paginación -->

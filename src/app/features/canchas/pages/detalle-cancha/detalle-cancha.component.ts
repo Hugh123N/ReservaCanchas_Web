@@ -25,15 +25,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { GetCancha } from '../../core/model/getCancha.model';
 import { CanchaService } from '../../core/services/cancha.service';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { DisponibilidadService } from '../../core/services/disponibilidad.service';
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
 import { AuthService } from '@core/auth/services/auth.service';
 import { generateFutureDates, getNombreDia, getNombreMes, formatParaInput } from '@shared/utils/date.utils';
+import { agruparHorariosPorHora } from '@shared/utils/horario.utils';
 import { DateOption } from '../../core/types/date-option';
 import { TimeOption } from '../../core/types/time-option.interface';
 import { ServiceItem } from '../../core/types/service-item.interface';
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
-import Swal from 'sweetalert2';
+import { HorarioCanchaService } from '../../core/services/horarioCancha.service';
 
 @Component({
   selector: 'app-detalle-cancha',
@@ -93,7 +93,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
     private canchasService: CanchaService,
-    private disponibilidadService: DisponibilidadService,
+    private horarioCanchaService: HorarioCanchaService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private canchaFavoritaService: CanchaFavoritaService,
@@ -159,9 +159,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       return [];
     }
 
-    return this.canchaData.horariosDisponibles.map(hora => ({
-      hora
-    }));
+    return agruparHorariosPorHora(this.canchaData.horariosDisponibles);
   }
 
   getMainImage(): string {
@@ -174,18 +172,9 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
 
   getFullAddress(): string {
     if (this.canchaData.ubigeo) {
-      return `${this.canchaData.direccion || this.canchaData.ubicacion}`;
+      return `${this.canchaData.direccion}`;
     }
-    return this.canchaData.direccion || this.canchaData.ubicacion || 'Dirección no disponible';
-  }
-
-  getSportIcon(): string {
-    const sport = this.canchaData.tipoCancha?.nombre?.toLowerCase() || '';
-    if (sport.includes('futbol')) return 'sports_soccer';
-    if (sport.includes('basquet')) return 'sports_basketball';
-    if (sport.includes('tenis')) return 'sports_tennis';
-    if (sport.includes('voley')) return 'sports_volleyball';
-    return 'sports';
+    return this.canchaData.direccion || 'Dirección no disponible';
   }
 
   getStatusClass(): string {
@@ -222,7 +211,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
 
     //this.loadingHorarios = true;
 
-    this.disponibilidadService.horarioDisponible(body).subscribe({
+    this.horarioCanchaService.horarioDisponible(body).subscribe({
       next: (res) => {
         //this.loadingHorarios = false;
         if (res.isValid && res.data) {
@@ -265,7 +254,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   calculateTotal(): number {
     if (!this.selectedTime) return 0;
     const duration = this.selectedTime.length || 1;
-    const precio = this.canchaData.precioHora;
+    const precio = this.canchaData.precio;
     return (precio ?? 0) * duration;
   }
 
@@ -317,7 +306,8 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         selectedTime: this.selectedTime,
         duracion: this.reservaForm.value.duracion,
         telefono: this.reservaForm.value.telefono,
-        precioHora: this.canchaData.precioHora,
+        precioHora: this.canchaData.precio,
+        idTipoDeporte: 1, // TODO: Reemplazar con el ID real del tipo de deporte
         total: this.calculateTotal()
       };
       localStorage.setItem(`reserva_draft_${this.canchaData.idCancha}`, JSON.stringify(reservaData));

@@ -37,10 +37,6 @@
   color: rgb(63 63 70);
 }
 
-.full-width {
-  width: 100%;
-}
-
 .modal-footer {
   @apply flex gap-3;
   padding: 16px 20px;
@@ -63,10 +59,6 @@
 }
 
 /* ========== TOGGLE FAVORITOS ========== */
-
-.full-width-toggle {
-  width: 100%;
-}
 
 .toggle-label {
   @apply flex items-center gap-2;

@@ -35,9 +35,8 @@ export class CardCanchaComponent extends BaseComponent{
   defaultImage = 'assets/images/default-field.png';
 
   get mainImage(): string {
-    if (this.field?.imagenesCancha && this.field.imagenesCancha.length > 0) {
-      const principal = this.field.imagenesCancha.find(img => img.esPrincipal && img.activo);
-      return principal?.urlImagen || this.field.imagenesCancha[0].urlImagen || this.defaultImage;
+    if (this.field?.urlImagen?.length) {
+      return this.field.urlImagen;
     }
     return this.defaultImage;
   }
@@ -46,14 +45,6 @@ export class CardCanchaComponent extends BaseComponent{
     return this.field?.ubigeo
       ? `${this.field.ubigeo.distrito}, ${this.field.ubigeo.provincia}`
       : '';
-  }
-
-  get deporte(): string {
-    return this.field?.tipoCancha?.nombre || '';
-  }
-
-  get horarios(): string[] {
-    return this.field?.horariosDisponibles || [];
   }
 
   get disponible(): boolean {

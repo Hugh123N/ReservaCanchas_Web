@@ -1,7 +1,8 @@
 export interface Reserva {
-  idUsuario: string;
+  idCliente: string;
   idCancha: number;
-  fecha: string;
-  monto?: number | null;
-  idEstadoReserva: number;
+  idTipoDeporte: number;
+  fechaReserva: string;
+  montoTotal?: number | null;
+  
 }

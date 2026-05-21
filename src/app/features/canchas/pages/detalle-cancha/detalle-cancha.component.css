@@ -3,14 +3,6 @@
 /* ===== DETALLE CANCHA COMPONENT SPECIFIC STYLES ===== */
 /* Solo estilos específicos del detalle de cancha */
 
-/* Info Card específica */
-.cancha-info-card {
-  @apply border-2 border-transparent;
-}
-
-.cancha-info-card:hover {
-  @apply border-primary-200;
-}
 
 /* Sport Chip */
 .sport-chip {
@@ -19,15 +11,15 @@
 
 /* Enhanced Tabs - Específico de este componente */
 .enhanced-tabs {
-  @apply bg-white rounded-2xl shadow-sm overflow-hidden;
+  @apply !bg-white !rounded-2xl !shadow-sm !overflow-hidden;
 }
 
-.enhanced-tabs .mat-mdc-tab-header {
-  @apply border-b border-neutral-200;
+.enhanced-tabs {
+  @apply !border-b !border-neutral-200;
 }
 
 .enhanced-tabs .mat-mdc-tab {
-  @apply font-semibold;
+  @apply !font-semibold;
 }
 
 /* Tab Content */
@@ -104,11 +96,6 @@
 
 .review-card:hover {
   @apply border-primary-200;
-}
-
-/* Action Buttons específicos */
-.action-buttons .mat-mdc-raised-button {
-  @apply transition-all duration-300 transform hover:scale-105;
 }
 
 /* Map Container */

@@ -3,11 +3,6 @@
 /* ===== CANCHAS COMPONENT SPECIFIC STYLES ===== */
 /* Solo estilos específicos del listado de canchas */
 
-/* Sort Options */
-.sort-options .mat-mdc-form-field {
-  @apply text-sm;
-}
-
 /* Grid Medium - Incluye XL */
 .grid-medium {
   @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
@@ -57,14 +52,3 @@
   }
 }
 
-/* Animación fadeInUp */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

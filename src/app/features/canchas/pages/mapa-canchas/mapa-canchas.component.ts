@@ -22,17 +22,17 @@ import { UbicacionCancha } from '../../../../shared/interfaces/location.interfac
 import { VenueMapCardComponent } from '../../components/venue-map-card/venue-map-card.component';
 import { CanchaService } from '../../core/services/cancha.service';
 import { UbigeoService } from '../../core/services/ubigeo.service';
-import { CanchaTipoService } from '../../../cancha-tipo/core/services/cancha-tipo.service';
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
 import { AuthService } from '@core/auth/services/auth.service';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { SearchCanchaFilter } from '../../core/model/searchCanchaFilter.model';
 import { AreaGeografica } from '../../core/model/areaGeografica.model';
 import { SearchCancha } from '../../core/model/searchCancha.model';
-import { GetTipoCancha } from '../../../cancha-tipo/core/model/getTipoCancha.model';
+import { GetTipoDeporte } from '../../../cancha-tipo/core/model/getTipoDeporte.model';
 import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
 import { canchasSort } from '../../helper/canchas-sort';
 import { MapaFiltrosModalComponent } from '../../components/mapa-filtros-modal/mapa-filtros-modal.component';
+import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 
 /**
  * Componente de página del contenedor de mapa
@@ -79,7 +79,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   paginaActual = signal(1);
   totalCanchas = signal(0);
   tamanioPagina = 20;
-  tiposDeporte = signal<GetTipoCancha[]>([]);
+  tiposDeporte = signal<GetTipoDeporte[]>([]);
   ubigeos = signal<Ubigeo[]>([]);
 
   // Ubicación del usuario
@@ -105,7 +105,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     private geolocationService: GeolocationService,
     private canchaService: CanchaService,
     private ubigeoService: UbigeoService,
-    private canchaTipoService: CanchaTipoService,
+    private TipoDeporteService: TipoDeporteService,
     public canchaFavoritaService: CanchaFavoritaService,
     private authService: AuthService,
     private router: Router,
@@ -481,16 +481,16 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       provincia: c.ubigeo?.provincia || '',
       lat: c.latitud!,
       lng: c.longitud!,
-      precioDesde: c.precioHora || 0,
-      deportes: [c.tipoCancha?.nombre || ''],
-      imagenUrl: c.imagenesCancha?.[0]?.urlImagen || 'assets/images/default-field.png',
+      precioDesde: c.precio || 0,
+      deportes: c.tipoDeportes?.map(td => td.nombre) || [''],
+      imagenUrl: c.urlImagen || 'assets/images/default-field.png',
       calificacion: c.calificacionPromedio || 0,
       totalResenas: 0
     }));
   }
 
   private cargarTiposDeporte(): void {
-    this.canchaTipoService.SelectCombo().subscribe({
+    this.TipoDeporteService.SelectCombo().subscribe({
       next: (response) => {
         if (response.isValid && response.data) {
           this.tiposDeporte.set(response.data);

@@ -1,7 +1,7 @@
 <div class="filtros-modal-container">
   <!-- Header -->
   <div class="modal-header">
-    <h2 class="text-responsive-lg font-semibold">Filtros</h2>
+    <h2 class="text-lg font-semibold">Filtros</h2>
     <button mat-icon-button (click)="cerrar()">
       <mat-icon>close</mat-icon>
     </button>
@@ -11,25 +11,22 @@
   <div class="modal-content">
     <form [formGroup]="filtrosForm">
       <!-- Tipo de Deporte -->
-      <section class="filter-section">
+      <section class="content-card">
         <h3 class="section-title">Tipo de Deporte</h3>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Selecciona un deporte</mat-label>
           <mat-select formControlName="idTipoCancha">
             <mat-option [value]="undefined">Todos los deportes</mat-option>
-            @for (tipo of data.tiposDeporte; track tipo.idTipoCancha) {
-              <mat-option [value]="tipo.idTipoCancha">
+            @for (tipo of data.tipoDeportes; track tipo.idTipoDeporte) {
+              <mat-option [value]="tipo.idTipoDeporte">
                 {{ tipo.nombre }}
               </mat-option>
             }
           </mat-select>
         </mat-form-field>
-      </section>
 
-      <!-- Ubicación -->
-      <section class="filter-section">
         <h3 class="section-title">Ubicación</h3>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Selecciona un distrito</mat-label>
           <mat-select formControlName="codigoUbigeo">
             <mat-option [value]="undefined">Todas las ubicaciones</mat-option>
@@ -40,15 +37,12 @@
             }
           </mat-select>
         </mat-form-field>
-      </section>
-
-      <!-- Solo Favoritos -->
-      <section class="filter-section">
+     
         <h3 class="section-title">Favoritos</h3>
         <mat-slide-toggle
           formControlName="soloFavoritos"
           color="primary"
-          class="full-width-toggle"
+          class="w-full!"
         >
           <div class="toggle-label">
             <mat-icon class="icon-favorito">favorite</mat-icon>
@@ -62,9 +56,9 @@
 
       <!-- Fecha (Opcional para futuro) -->
       <!--
-      <section class="filter-section">
+      <section class="content-card">
         <h3 class="section-title">Fecha</h3>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Selecciona una fecha</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="fecha">
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>

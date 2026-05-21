@@ -1,18 +1,22 @@
 export interface Cancha {
+  idProveedor: number;
+  idTipoSuperficie: number;
   nombre: string;
-  idTipoCancha: number;
   descripcion?: string;
-  ubicacion?: string;
+  precio: number;
+  telefonoCancha?: string;
+  direccion?: string;
+  codigoUbigeo?: string;
   latitud?: number;
   longitud?: number;
-  direccion?: string;
-  precioHora?: number;
-  idProveedor?: string;
-  codigoUbigeo?: string;
+  capacidadJugadores?: number;
   idEstadoCancha: number;
+  tieneTecho: boolean;
+  tieneIluminacion: boolean;
+  pais?: string;
+
   duracionPreReserva?: number;
   porcentajeAdelanto?: number;
-  telefonoCancha?: string;
 
   calificacionPromedio?: number;
 }
