@@ -66,7 +66,7 @@
 </section>
 
 <!-- Canchas Destacadas -->
-<section class="featured-section section-spacing bg-neutral-50">
+<section class="bg-neutral-50">
   <div class="section-container">
     <div class="section-header text-center mb-12">
       <h2 class="title-main text-primary mb-4">Canchas Destacadas</h2>
@@ -81,7 +81,7 @@
       }
     </div>
 
-    <div class="text-center mt-12">
+    <div class="flex justify-center mt-12">
       <button class="btn-outline-primary" (click)= "onExplorarCanchas()">
         Ver Todas las Canchas
       </button>
@@ -89,109 +89,109 @@
   </div>
 </section>
 
-    <!-- Role Cards -->
-    <section class="role-section section-spacing bg-white">
-      <div class="section-container">
-        <div class="section-header text-center mb-12">
-          <h2 class="title-main text-neutral-900 mb-4">¿Cómo quieres usar {{TITULO_LOGO}}?</h2>
-          <p class="text-base text-neutral-600 max-w-2xl mx-auto">Elige tu perfil y comienza a disfrutar de nuestros servicios</p>
+<!-- Role Cards -->
+<section class="bg-white">
+  <div class="section-container">
+    <div class="section-header text-center mb-12">
+      <h2 class="title-main text-neutral-900 mb-4">¿Cómo quieres usar {{TITULO_LOGO}}?</h2>
+      <p class="text-base text-neutral-600 max-w-2xl mx-auto">Elige tu perfil y comienza a disfrutar de nuestros servicios</p>
+    </div>
+
+    <div class="role-cards grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <!-- Cliente -->
+      <div class="content-card text-center enhanced-card">
+        <div>
+          <div class="role-avatar bg-primary-100">
+            <mat-icon class="icon-primary icon-lgicon-xl">person</mat-icon>
+          </div>
+          <h2 class="text-lg font-medium">Soy Cliente</h2>
+          <p class="text-responsive-sm">Quiero reservar una cancha deportiva para jugar</p>
         </div>
-
-        <div class="role-cards grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <!-- Cliente -->
-          <div class="content-card text-center enhanced-card">
-            <div>
-              <div mat-card-avatar class="role-avatar bg-primary-100">
-                <mat-icon class="icon-primary icon-lgicon-xl">person</mat-icon>
-              </div>
-              <h2 class="text-lg font-medium">Soy Cliente</h2>
-              <p class="text-responsive-sm">Quiero reservar una cancha deportiva para jugar</p>
-            </div>
-            <div class="mat-card-actions">
-              <button  class="btn-primary full-width-btn">
-                Ver Canchas Disponibles
-              </button>
-            </div>
-          </div>
-
-          <!-- Proveedor -->
-          <div class="content-card text-center enhanced-card">
-            <div>
-              <div mat-card-avatar class="role-avatar bg-secondary-100">
-                <mat-icon class="icon-secondary icon-lg">business</mat-icon>
-              </div>
-              <h2 class="text-lg font-medium">Soy Proveedor</h2>
-              <p class="text-responsive-sm">Tengo canchas y quiero generar ingresos extras</p>
-            </div>
-            <div class="mat-card-actions">
-              <button class="btn-secondary full-width-btn" (click)="onRegistrarCancha()">
-                Registrar Mi Cancha
-              </button>
-            </div>
-          </div>
-
-          <!-- Operador -->
-          <div class="content-card text-center enhanced-card">
-            <div>
-              <div mat-card-avatar class="role-avatar bg-accent-100">
-                <mat-icon class="icon-accent icon-lg">admin_panel_settings</mat-icon>
-              </div>
-              <h2 class="text-lg font-medium">Soy Operador</h2>
-              <p class="text-responsive-sm">Administro y gestiono complejos deportivos</p>
-            </div>
-            <div class="mat-card-actions">
-              <button class="btn-accent full-width-btn" (click)="onAccesoOperador()">
-                Panel de Operador
-              </button>
-            </div>
-          </div>
+        <div class="mat-card-actions">
+          <button  class="btn-primary w-full">
+            Ver Canchas Disponibles
+          </button>
         </div>
       </div>
-    </section>
 
-    <!-- Features Section -->
-    <section class="features-section section-spacing bg-white">
-      <div class="section-container">
-        <div class="section-header text-center mb-12">
-          <h2 class="title-main text-primary mb-4">¿Por qué elegir {{TITULO_LOGO}}?</h2>
-          <p class="text-base text-neutral-600 max-w-2xl mx-auto">Ofrecemos la mejor experiencia para reservar canchas deportivas</p>
+      <!-- Proveedor -->
+      <div class="content-card text-center enhanced-card">
+        <div>
+          <div class="role-avatar bg-secondary-100">
+            <mat-icon class="icon-secondary icon-lg">business</mat-icon>
+          </div>
+          <h2 class="text-lg font-medium">Soy Proveedor</h2>
+          <p class="text-responsive-sm">Tengo canchas y quiero generar ingresos extras</p>
         </div>
-
-        <div class="grid-responsive-4 gap-8">
-          <div class="feature-item text-center feature-hover">
-            <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <mat-icon class="icon-secondary icon-lg">schedule</mat-icon>
-            </div>
-            <h3 class="text-lg font-medium text-secondary mb-3">Reservas 24/7</h3>
-            <p class="text-responsive-sm text-neutral-600 leading-relaxed">Reserva tu cancha favorita en cualquier momento del día, los 365 días del año</p>
-          </div>
-
-          <div class="feature-item text-center feature-hover">
-            <div class="feature-icon-container w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <mat-icon class="icon-primary icon-lg">verified</mat-icon>
-            </div>
-            <h3 class="text-lg font-medium text-primary mb-3">Canchas Verificadas</h3>
-            <p class="text-responsive-sm text-neutral-600 leading-relaxed">Todas nuestras canchas están verificadas y cumplen altos estándares de calidad</p>
-          </div>
-
-          <div class="feature-item text-center feature-hover">
-            <div class="feature-icon-container w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <mat-icon class="icon-accent icon-lg">payment</mat-icon>
-            </div>
-            <h3 class="text-lg font-medium text-accent mb-3">Pago Seguro</h3>
-            <p class="text-responsive-sm text-neutral-600 leading-relaxed">Múltiples métodos de pago seguros: tarjetas, Yape, Plin y pago en local</p>
-          </div>
-
-          <div class="feature-item text-center feature-hover">
-            <div class="feature-icon-container w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <mat-icon class="icon-secondary icon-lg">support_agent</mat-icon>
-            </div>
-            <h3 class="text-lg font-medium text-secondary mb-3">Soporte 24/7</h3>
-            <p class="text-responsive-sm text-neutral-600 leading-relaxed">Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
-          </div>
+        <div class="mat-card-actions">
+          <button class="btn-secondary w-full" (click)="onRegistrarCancha()">
+            Registrar Mi Cancha
+          </button>
         </div>
       </div>
-    </section>
 
-    <!-- Footer -->
-    <app-footer></app-footer>
+      <!-- Operador -->
+      <div class="content-card text-center enhanced-card">
+        <div>
+          <div class="role-avatar bg-accent-100">
+            <mat-icon class="icon-accent icon-lg">admin_panel_settings</mat-icon>
+          </div>
+          <h2 class="text-lg font-medium">Soy Operador</h2>
+          <p class="text-responsive-sm">Administro y gestiono complejos deportivos</p>
+        </div>
+        <div class="mat-card-actions">
+          <button class="btn-accent w-full" (click)="onAccesoOperador()">
+            Panel de Operador
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-white">
+  <div class="section-container">
+    <div class="section-header text-center mb-12">
+      <h2 class="title-main text-primary mb-4">¿Por qué elegir {{TITULO_LOGO}}?</h2>
+      <p class="text-base text-neutral-600 max-w-2xl mx-auto">Ofrecemos la mejor experiencia para reservar canchas deportivas</p>
+    </div>
+
+    <div class="grid-responsive-4 gap-8">
+      <div class="feature-item text-center feature-hover">
+        <div class="feature-icon-container role-avatar bg-secondary-100">
+          <mat-icon class="icon-secondary icon-lg">schedule</mat-icon>
+        </div>
+        <h3 class="text-lg font-medium text-secondary mb-3">Reservas 24/7</h3>
+        <p class="text-responsive-sm text-neutral-600 leading-relaxed">Reserva tu cancha favorita en cualquier momento del día, los 365 días del año</p>
+      </div>
+
+      <div class="feature-item text-center feature-hover">
+        <div class="feature-icon-container role-avatar bg-primary-100">
+          <mat-icon class="icon-primary icon-lg">verified</mat-icon>
+        </div>
+        <h3 class="text-lg font-medium text-primary mb-3">Canchas Verificadas</h3>
+        <p class="text-responsive-sm text-neutral-600 leading-relaxed">Todas nuestras canchas están verificadas y cumplen altos estándares de calidad</p>
+      </div>
+
+      <div class="feature-item text-center feature-hover">
+        <div class="feature-icon-container role-avatar bg-accent-100">
+          <mat-icon class="icon-accent icon-lg">payment</mat-icon>
+        </div>
+        <h3 class="text-lg font-medium text-accent mb-3">Pago Seguro</h3>
+        <p class="text-responsive-sm text-neutral-600 leading-relaxed">Múltiples métodos de pago seguros: tarjetas, Yape, Plin y pago en local</p>
+      </div>
+
+      <div class="feature-item text-center feature-hover">
+        <div class="feature-icon-container role-avatar bg-secondary-100">
+          <mat-icon class="icon-secondary icon-lg">support_agent</mat-icon>
+        </div>
+        <h3 class="text-lg font-medium text-secondary mb-3">Soporte 24/7</h3>
+        <p class="text-responsive-sm text-neutral-600 leading-relaxed">Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<app-footer></app-footer>

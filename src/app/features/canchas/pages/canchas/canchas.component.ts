@@ -70,147 +70,6 @@ export class CanchasComponent extends BaseSearchComponent {
 
   filteredUbigeos: Observable<Ubigeo[]>;
 
-<<<<<<< HEAD
-=======
-  // Mock data
-  mockCanchas: GetCancha[] = [
-    {
-      idCancha: 1,
-      nombre: "Arena Vóley Pro",
-      descripcion: "Cancha techada con arena especial para torneos de vóley.",
-      ubicacion: "Av. Javier Prado Este 1234",
-      direccion: "Av. Javier Prado Este 1234, Surco, Lima",
-      latitud: -12.105,
-      longitud: -76.963,
-      precioHora: 45,
-      idProveedor: "prov-001",
-      codigoUbigeo: "150141",
-      idEstadoCancha: 1,
-      calificacionPromedio: 4.8,
-      tipoDeportes: [
-        {idTipoDeporte: 1, codigo: "VOL", nombre: "Vóley",descripcion: "Vóley", icono: 'sports_volleyball'}
-      ],
-      imagenesCancha: [
-        {
-          idCancha: 1,
-          urlImagen: "https://picsum.photos/seed/voley/400/250",
-          esPrincipal: true,
-          idImagenCancha: 101,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150141",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "Surco"
-      },
-      horariosDisponibles: ["08:00", "10:00", "12:00"]
-    },
-    {
-      idCancha: 2,
-      nombre: "Cancha Municipal",
-      descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
-      ubicacion: "Av. La Fontana 567",
-      direccion: "Av. La Fontana 567, La Molina, Lima",
-      latitud: -12.082,
-      longitud: -76.935,
-      precioHora: 70,
-      idProveedor: "prov-002",
-      codigoUbigeo: "150135",
-      idEstadoCancha: 1,
-      calificacionPromedio: 4.1,
-      tipoDeportes: [{ nombre: "Fútbol 11", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 11", icono: "sports_soccer" }],
-      imagenesCancha: [
-        {
-          idCancha: 2,
-          urlImagen: "https://picsum.photos/seed/futbol/400/250",
-          esPrincipal: true,
-          idImagenCancha: 102,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150135",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "La Molina"
-      },
-      horariosDisponibles: ["14:00", "16:00", "18:00"]
-    },
-    {
-      idCancha: 3,
-      nombre: "Fútbol Club Junior",
-      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      ubicacion: "Av. San Luis 999",
-      direccion: "Av. San Luis 999, San Borja, Lima",
-      latitud: -12.095,
-      longitud: -76.995,
-      precioHora: 60,
-      idProveedor: "prov-003",
-      codigoUbigeo: "150120",
-      idEstadoCancha: 1,
-      calificacionPromedio: 3.9,
-      tipoDeportes: [{ nombre: "Fútbol 7", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 7", icono: "sports_soccer" }],
-      imagenesCancha: [
-        {
-          idCancha: 3,
-          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-          esPrincipal: true,
-          idImagenCancha: 103,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150120",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "San Borja"
-      },
-      horariosDisponibles: ["09:00", "11:00", "13:00"]
-    },
-    {
-      idCancha: 4,
-      nombre: "Fútbol Club Junior",
-      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      ubicacion: "Av. San Luis 999",
-      direccion: "Av. San Luis 999, San Borja, Lima",
-      latitud: -12.095,
-      longitud: -76.995,
-      precioHora: 60,
-      idProveedor: "prov-003",
-      codigoUbigeo: "150120",
-      idEstadoCancha: 1,
-      calificacionPromedio: 3.9,
-      tipoDeportes: [{ nombre: "Fútbol 7", idTipoDeporte: 2, codigo: "FUT", descripcion: "Fútbol 7", icono: "sports_soccer" }],
-      imagenesCancha: [
-        {
-          idCancha: 3,
-          urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-          esPrincipal: true,
-          idImagenCancha: 103,
-          activo: true
-        }
-      ],
-      estadoCancha: { codigo: "01", nombre: "Aprobado", idEstadoCancha: 1 },
-      faboritos: [],
-      ubigeo: {
-        codigoUbigeo: "150120",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "San Borja"
-      },
-      horariosDisponibles: ["09:00", "11:00", "13:00"]
-    }
-  ];
-
->>>>>>> a754c78fb57c510ccda1af0f80722ec464c6bb5e
   constructor(
     private canchaService: CanchaService,
     private canchaEstadoService: CanchaEstadoService,
@@ -446,15 +305,9 @@ export class CanchasComponent extends BaseSearchComponent {
       provincia: c.ubigeo?.provincia || '',
       lat: c.latitud!,
       lng: c.longitud!,
-<<<<<<< HEAD
       precioDesde: c.precio || 0,
       deportes: c.tipoDeportes?.map((t: any) => t.nombre) || [''],
       imagenUrl: c.urlImagen || 'assets/images/default-field.png',
-=======
-      precioDesde: c.precioHora || 0,
-      deportes: c.tipoDeportes?.map((t: any) => t.nombre) || [''],
-      imagenUrl: c.imagenesCancha?.[0]?.urlImagen || 'assets/images/default-field.png',
->>>>>>> a754c78fb57c510ccda1af0f80722ec464c6bb5e
       calificacion: c.calificacionPromedio || 0,
       totalResenas: 0
     }));

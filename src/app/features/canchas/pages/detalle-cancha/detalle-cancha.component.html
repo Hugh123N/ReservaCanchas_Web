@@ -19,12 +19,8 @@
       <!-- Main Image -->
       <div class="lg:col-span-2">
         <div class="relative rounded-2xl overflow-hidden shadow-xl group">
-          <img
-            [src]="
-              canchaData.imagenesCancha && canchaData.imagenesCancha.length > 0
-                ? getMainImage()
-                : 'https://img.freepik.com/fotos-premium/cancha-futbol-atardecer-fondo_670382-6866.jpg?w=1060'
-            "
+          <img [src]="canchaData.imagenesCancha && canchaData.imagenesCancha.length > 0 ? getMainImage()
+                : 'https://img.freepik.com/fotos-premium/cancha-futbol-atardecer-fondo_670382-6866.jpg?w=1060'"
             [alt]="canchaData.nombre"
             class="w-full h-64 md:h-80 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -90,24 +86,21 @@
               >
                 <mat-icon class="icon-primary">location_on</mat-icon>
                 <span>{{ getFullAddress() }}</span>
-                <a
-                  class="text-secondary-600 underline cursor-pointer hover:text-secondary-700 ml-2"
-                  (click)="scrollToReserva('.location-section', 1)"
-                >
-                  Ver mapa
-                </a>
+                
               </div>
 
-              <div class="flex items-center gap-2 mb-4">
+              <div class="flex items-center gap-2 mb-4 justify-between">
                 <div class="flex items-center">
                   <mat-icon class="!text-yellow-500 mr-1">star</mat-icon>
                   <span class="font-semibold">{{
                     canchaData.calificacionPromedio || 4.5
                   }}</span>
-                  <span class="text-neutral-500 text-sm ml-1"
-                    >(125 reseñas)</span
-                  >
+                  <span class="text-neutral-500 text-sm ml-1">(125 reseñas)</span>
                 </div>
+                <a class="text-secondary-600 underline cursor-pointer hover:text-secondary-700 ml-2"
+                  (click)="scrollToReserva('.location-section', 1)">
+                  Ver mapa
+                </a>
               </div>
             </div>
 
@@ -192,7 +185,7 @@
                   Selecciona tu fecha
                 </h3>
                 <div class="date-picker-container">
-                  <div class="flex overflow-x-auto gap-3 pb-4 scrollbar-hide">
+                  <div class="flex overflow-x-auto gap-3 pb-4">
                     @for (f of fechasDisponibles; track f) {
                     <div
                       class="date-card min-w-[85px] sm:min-w-[90px] flex flex-col items-center justify-center rounded-xl p-3 sm:p-4 cursor-pointer transition-all duration-300 border-2"
@@ -221,22 +214,20 @@
                     Horarios disponibles para {{ selectedDate.dia }}
                     {{ selectedDate.numero }}
                   </h3>
-                  <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                  <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1 sm:gap-2">
                     @for (h of getAvailableHours(); track h.hora) {
                     <button
-                      type="button"
-                      mat-raised-button
-                      class="time-btn !rounded-xl !py-2 sm:!py-3 md:!py-4 !text-xs sm:!text-sm md:!text-base !font-semibold transition-all duration-300"
+                      class="time-btn rounded-lg sm:rounded-xl py-1 sm:py-2 transition-all duration-300"
                       [ngClass]="getTimeButtonClass(h)"
                       (click)="selectTime(h)"
                     >
-                      <div class="flex flex-col items-center gap-1">
-                        <span>{{ h.hora }}</span>
+                      <div class="flex flex-col items-center gap-0 sm:gap-1">
+                        <span class="text-xs sm:text-sm md:text-base font-semibold">{{ h.hora }}</span>
                         @if (h.precio) {
-                          <span class="text-xs opacity-90">S/. {{ h.precio }}</span>
+                          <span class="text-xs opacity-75">S/. {{ h.precio }}</span>
                         }
                       </div>
-                    </button>
+                    </button>   
                     }
                   </div>
                 </div>

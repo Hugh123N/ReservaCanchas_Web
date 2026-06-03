@@ -51,7 +51,7 @@
 
 /* Time Selection - Específico de reservas */
 .time-btn {
-  @apply h-12 sm:h-14 md:h-16 min-w-0;
+  @apply h-10 sm:h-14 md:h-16 min-w-10;
 }
 
 .time-btn.available {
@@ -77,7 +77,7 @@
 }
 
 .service-item:hover {
-  @apply border-primary-200 transform -translate-y-1;
+  @apply border-primary-200  -translate-y-1;
 }
 
 /* WhatsApp Checkbox */
