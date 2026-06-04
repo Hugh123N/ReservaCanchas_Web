@@ -42,4 +42,4 @@ EXPOSE 4000
 USER node
 
 # Comando para ejecutar el servidor SSR
-CMD ["node", "dist/court-reservation-public/server/server.mjs"]
+CMD ["node", "server/server.mjs"]
