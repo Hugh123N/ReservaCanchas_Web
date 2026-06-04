@@ -1,116 +1,172 @@
-<!-- Search Card -->
 <div
-  class="content-cardd  p-6 mx-auto"
+  class="search-card mx-auto"
   [ngClass]="maxWidthClass"
 >
   <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-stretch">
-      <!-- Ciudad -->
-      <mat-form-field appearance="outline">
-        <mat-label>
-          <mat-icon class="icon-primary inline mr-1">location_city</mat-icon>
-          Ciudad
-        </mat-label>
-        <input
-          matInput
-          type="text"
-          [formControl]="cityControl"
-          [matAutocomplete]="auto"
-          placeholder="Escribe tu ciudad..."
-        />
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          [displayWith]="displayUbigeo"
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+
+      <!-- ========== CIUDAD ========== -->
+      <div class="search-field">
+        <label class="search-label">Ciudad</label>
+        <div class="input-group" [class.active]="showCityDropdown">
+          <mat-icon class="input-icon">location_city</mat-icon>
+          <input
+            type="text"
+            [formControl]="cityControl"
+            placeholder="¿Dónde quieres jugar?"
+            autocomplete="off"
+            (focus)="showCityDropdown = filteredUbigeos.length > 0"
+          />
+        </div>
+        @if (showCityDropdown && filteredUbigeos.length > 0) {
+          <div class="custom-dropdown animate-fade-in">
+            @for (ubigeo of filteredUbigeos; track ubigeo) {
+              <div
+                class="dropdown-item"
+                (mousedown)="selectUbigeo(ubigeo)"
+              >
+                <mat-icon class="dropdown-item-icon">location_on</mat-icon>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-medium truncate">{{ ubigeo.distrito }}</span>
+                  @if (ubigeo.provincia && ubigeo.departamento) {
+                    <span class="text-xs text-neutral-400 truncate">
+                      {{ ubigeo.departamento }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ========== DEPORTE ========== -->
+      <div class="search-field">
+        <label class="search-label">Deporte</label>
+        <div
+          class="input-group"
+          [class.active]="isDeporteOpen"
+          (click)="toggleDeporte()"
         >
-          @for (ubigeo of filteredUbigeos | async; track ubigeo) {
-            <mat-option [value]="ubigeo">
-              <mat-icon class="mr-2 icon-primary text-sm">location_on</mat-icon>
-              <strong>{{ ubigeo.distrito }}</strong>
-              @if (ubigeo.provincia && ubigeo.departamento) {
-                <small>
-                  {{ ubigeo.departamento }}
-                </small>
+          <mat-icon class="input-icon">sports</mat-icon>
+          <span
+            class="input-value"
+            [class.placeholder]="!selectedDeporte"
+          >
+            {{ deporteLabel }}
+          </span>
+          <mat-icon class="arrow-icon" [class.open]="isDeporteOpen">expand_more</mat-icon>
+        </div>
+        @if (isDeporteOpen) {
+          <div class="custom-dropdown animate-fade-in">
+            <div
+              class="dropdown-item"
+              [class.selected]="!selectedDeporte"
+              (mousedown)="selectDeporte(null)"
+            >
+              <mat-icon class="dropdown-item-icon">sports</mat-icon>
+              <span>Todos los deportes</span>
+            </div>
+            @for (tipo of tipoDeportes; track tipo.idTipoDeporte) {
+              <div
+                class="dropdown-item"
+                [class.selected]="selectedDeporte?.idTipoDeporte === tipo.idTipoDeporte"
+                (mousedown)="selectDeporte(tipo)"
+              >
+                <mat-icon class="dropdown-item-icon">{{ tipo.icono }}</mat-icon>
+                <span>{{ tipo.nombre }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ========== FECHA ========== -->
+      <div class="search-field">
+        <label class="search-label">Fecha</label>
+        <div
+          class="input-group"
+          [class.active]="isDatepickerOpen"
+          (click)="toggleDatepicker()"
+        >
+          <mat-icon class="input-icon">event</mat-icon>
+          <span
+            class="input-value"
+            [class.placeholder]="!selectedFecha"
+          >
+            {{ fechaLabel }}
+          </span>
+          <mat-icon class="arrow-icon" [class.open]="isDatepickerOpen">expand_more</mat-icon>
+        </div>
+        @if (isDatepickerOpen) {
+          <div class="datepicker-popup animate-scale-in">
+            <!-- Header -->
+            <div class="datepicker-header">
+              <div class="datepicker-nav-btn" (click)="prevMonth()">
+                <mat-icon class="!w-4 !h-6 !text-lg">chevron_left</mat-icon>
+              </div>
+              <span class="datepicker-title">
+                {{ calendarMonthName }} {{ calendarYear }}
+              </span>
+              <div class="datepicker-nav-btn" (click)="nextMonth()">
+                <mat-icon class="!w-4 !h-6 !text-lg">chevron_right</mat-icon>
+              </div>
+            </div>
+            <!-- Weekdays -->
+            <div class="datepicker-weekdays">
+              @for (day of weekDays; track day) {
+                <div class="datepicker-weekday">{{ day }}</div>
               }
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
+            </div>
+            <!-- Days -->
+            <div class="datepicker-days">
+              @for (week of calendarDays; track week) {
+                @for (day of week; track day) {
+                  <div
+                    class="datepicker-day"
+                    [class.empty]="!day"
+                    [class.disabled]="day && isPastDay(day)"
+                    [class.today]="isToday(day)"
+                    [class.selected]="isSelected(day)"
+                    (click)="!isPastDay(day) && selectDate(day)"
+                  >
+                    {{ day || '' }}
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
 
-      <!-- Deporte -->
-      <mat-form-field appearance="outline">
-        <mat-label>
-          <mat-icon class="icon-primary inline mr-1">sports</mat-icon>
-          Deporte
-        </mat-label>
-        <mat-select formControlName="idTipoDeporte">
-          <mat-option value="">Todos los deportes</mat-option>
-          @for (tipo of tipoDeportes; track tipo.idTipoDeporte) {
-            <mat-option [value]="tipo.idTipoDeporte">
-              {{ tipo.nombre }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <!-- Fecha -->
-      <mat-form-field appearance="outline">
-        <mat-label>
-          <mat-icon class="icon-primary inline mr-1">event</mat-icon>
-          Fecha
-        </mat-label>
-        <input
-          matInput
-          [matDatepicker]="picker"
-          formControlName="fecha"
-          [min]="minDate"
-          readonly
-        />
-        <mat-datepicker-toggle
-          matIconSuffix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <!-- Hora 
-      <mat-form-field appearance="outline">
-        <mat-label>
-          <mat-icon class="icon-primary inline mr-1">schedule</mat-icon>
-          Hora
-        </mat-label>
-        <mat-select formControlName="hora">
-          <mat-option value="">Cualquier hora</mat-option>
-          <mat-option value="08:00">08:00 AM</mat-option>
-          <mat-option value="10:00">10:00 AM</mat-option>
-          <mat-option value="12:00">12:00 PM</mat-option>
-          <mat-option value="14:00">02:00 PM</mat-option>
-          <mat-option value="16:00">04:00 PM</mat-option>
-          <mat-option value="18:00">06:00 PM</mat-option>
-          <mat-option value="20:00">08:00 PM</mat-option>
-        </mat-select>
-      </mat-form-field>-->
-
-      <!-- Botones -->
-      <div class="flex gap-2 items-center">
+      <!-- ========== BOTÓN BUSCAR ========== -->
+      <div class="flex items-end gap-2">
         <button
-          mat-raised-button
-          class="btn-primary flex-1! h-full!"
+          class="btn-search flex-1"
           type="submit"
           [disabled]="isLoading"
         >
-          <mat-icon class="mr-2">search</mat-icon>
+          @if (isLoading) {
+            <svg class="animate-spin !w-4 !h-4" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+          } @else {
+            <mat-icon class="icon-md">search</mat-icon>
+          }
           Buscar
         </button>
         <button
-          mat-stroked-button
-          class="btn-outline-primary h-full! px-1!"
+          class="btn-clear"
           type="button"
           (click)="onClear()"
           [disabled]="isLoading"
+          title="Limpiar filtros"
         >
-          <mat-icon>clear</mat-icon>
+          <mat-icon class="icon-md">close</mat-icon>
         </button>
       </div>
+
     </div>
   </form>
 </div>

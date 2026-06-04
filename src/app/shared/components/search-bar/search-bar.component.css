@@ -1,4 +1,373 @@
-@reference "../../../../styles.css";
+/* ====================== SEARCH CARD ====================== */
+.search-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--color-neutral-100, #f1f5f9);
+  padding: 1.5rem;
+}
 
-/* Search Bar Component - Sin estilos adicionales necesarios */
-/* Usa clases globales de styles.css */
+/* ====================== SEARCH FIELD ====================== */
+.search-field {
+  position: relative;
+  min-width: 0;
+}
+
+.search-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-500, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+/* ====================== INPUT GROUP ====================== */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.75rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--color-neutral-200, #e2e8f0);
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.input-group:hover {
+  border-color: var(--color-neutral-300, #cbd5e1);
+}
+.input-group:focus-within,
+.input-group.active {
+  border-color: var(--color-primary-500, #14b8a6);
+  box-shadow: 0 0 0 2px var(--color-primary-100, #ccfbf1);
+}
+
+.input-icon {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 1.125rem !important;
+  color: var(--color-neutral-400, #94a3b8);
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.input-group input {
+  flex: 1;
+  height: 100%;
+  font-size: 0.875rem;
+  color: var(--color-neutral-800, #1e293b);
+  background: transparent;
+  border: none;
+  outline: none;
+  min-width: 0;
+}
+.input-group input::placeholder {
+  color: var(--color-neutral-400, #94a3b8);
+}
+
+.input-value {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--color-neutral-800, #1e293b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.input-value.placeholder {
+  color: var(--color-neutral-400, #94a3b8);
+}
+
+.arrow-icon {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  font-size: 1.25rem !important;
+  color: var(--color-neutral-400, #94a3b8);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+/* ====================== DROPDOWN ====================== */
+.custom-dropdown {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--color-neutral-100, #f1f5f9);
+  left: 0;
+  right: 0;
+  min-width: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.custom-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300, #cbd5e1);
+  border-radius: 9999px;
+}
+.custom-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-neutral-700, #334155);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-bottom: 1px solid var(--color-neutral-50, #f8fafc);
+}
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-item:hover {
+  background: var(--color-primary-50, #f0fdfa);
+  color: var(--color-primary-700, #0f766e);
+}
+.dropdown-item.selected {
+  background: var(--color-primary-50, #f0fdfa);
+  color: var(--color-primary-700, #0f766e);
+  font-weight: 500;
+}
+
+.dropdown-item-icon {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 1.125rem !important;
+  color: var(--color-primary-500, #14b8a6);
+  flex-shrink: 0 !important;
+}
+
+/* ====================== DATEPICKER ====================== */
+.datepicker-popup {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--color-neutral-100, #f1f5f9);
+  padding: 1rem;
+  left: 0;
+  min-width: 280px;
+}
+@media (max-width: 360px) {
+  .datepicker-popup {
+    left: -8px;
+    right: -8px;
+    min-width: unset;
+  }
+}
+
+.datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.datepicker-nav-btn {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--color-neutral-500, #64748b);
+  transition: background 0.15s;
+}
+.datepicker-nav-btn:hover {
+  background: var(--color-neutral-100, #f1f5f9);
+}
+
+.datepicker-nav-btn mat-icon {
+  width: 1rem !important;
+  height: 1rem !important;
+  font-size: 1.125rem !important;
+}
+
+.datepicker-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-neutral-700, #334155);
+}
+
+.datepicker-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.25rem;
+}
+
+.datepicker-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-400, #94a3b8);
+  padding: 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.datepicker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.datepicker-day {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 0 auto;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.datepicker-day:hover:not(.disabled):not(.empty) {
+  background: var(--color-primary-50, #f0fdfa);
+  color: var(--color-primary-700, #0f766e);
+}
+.datepicker-day.selected {
+  background: var(--color-primary-500, #14b8a6) !important;
+  color: #fff !important;
+  font-weight: 500;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+.datepicker-day.selected:hover {
+  background: var(--color-primary-600, #0d9488) !important;
+}
+.datepicker-day.today {
+  border: 1px solid var(--color-primary-200, #99f6e4);
+  font-weight: 500;
+  color: var(--color-primary-600, #0d9488);
+}
+.datepicker-day.today.selected {
+  border-color: var(--color-primary-500, #14b8a6);
+}
+.datepicker-day.disabled {
+  color: var(--color-neutral-200, #e2e8f0);
+  cursor: not-allowed;
+}
+.datepicker-day.empty {
+  cursor: default;
+}
+
+/* ====================== SEARCH BUTTON ====================== */
+.btn-search {
+  width: 100%;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--color-primary-500, #14b8a6);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-search:hover {
+  background: var(--color-primary-600, #0d9488);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+.btn-search:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-search mat-icon {
+  width: 1rem !important;
+  height: 1rem !important;
+  font-size: 1.125rem !important;
+}
+
+.btn-clear {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 2px solid var(--color-neutral-200, #e2e8f0);
+  color: var(--color-neutral-400, #94a3b8);
+  transition: all 0.2s;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-clear:hover {
+  border-color: var(--color-neutral-300, #cbd5e1);
+  color: var(--color-neutral-600, #475569);
+}
+
+.btn-clear mat-icon {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  font-size: 1.25rem !important;
+}
+
+/* ====================== RESPONSIVE ====================== */
+@media (max-width: 639px) {
+  .search-card {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+  }
+  .input-group {
+    height: 2.75rem;
+    padding: 0 0.625rem;
+  }
+  .input-icon {
+    margin-right: 0.375rem !important;
+  }
+  .btn-search,
+  .btn-clear {
+    height: 2.75rem;
+  }
+  .btn-clear {
+    width: 2.75rem;
+  }
+}
+
+/* ====================== ANIMATIONS ====================== */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.15s ease-out;
+}
