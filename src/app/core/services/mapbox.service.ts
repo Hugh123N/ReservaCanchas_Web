@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 //import * as mapboxgl from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
-import { environment } from '../../../environments/environment';
+import { environment } from '@environments/environment';
 import { UbicacionCancha, LimitesMapa, ViewportMapa } from '../../shared/interfaces/location.interface';
 
 /**

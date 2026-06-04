@@ -9,7 +9,6 @@ import { SearchUserModel } from '../models/search-user.model';
 import { AccessTokenModel } from '../models/access-token.model';
 import { LoginResultModel } from '../models/login-result.model';
 import { BaseService } from '@base/services/base.service';
-import { environment } from '@environments/environment';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { ResetPasswordModel } from '../models/reset-password.model';
 import { ApplicationUserModel } from '../models/application-user.model';
@@ -23,7 +22,7 @@ import { UpdateTelefonoUser } from '../models/updateTelefonoUser.model';
 })
 export class UsersService extends BaseService {
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Usuario`);
+    super(http, '/Usuario');
   }
 
   createUser(body: CreateUserModel): Observable<ResponseDto<ApplicationUserModel>> {

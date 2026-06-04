@@ -15,16 +15,15 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Endpoint de configuración — lee las env vars del contenedor
+ * y las expone al cliente Angular antes de iniciar la app.
  */
+app.get('/api/config', (req, res) => {
+  res.json({
+    apiUrl: process.env['API_URL'] ?? 'https://api.reservafast.com/api',
+    mapboxToken: process.env['MAPBOX_TOKEN'] ?? '',
+  });
+});
 
 /**
  * Serve static files from /browser

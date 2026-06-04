@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideAppInitializer, inject, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from '@core/auth/interceptor/token.interceptor.functional';
 import { loadingInterceptor } from '@core/interceptors/loading.interceptor';
+import { ConfigService } from '@core/services/config.service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -20,6 +21,10 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(CommonModule, FormsModule),
     provideHttpClient(
       withInterceptors([loadingInterceptor, tokenInterceptor])
-    )
+    ),
+    provideAppInitializer(() => {
+      const configService = inject(ConfigService);
+      return configService.load();
+    }),
   ]
 };

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { BaseService } from '@base/services/base.service';
-import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
 import { GetReserva } from '../model/getReserva.model';
 import { CreateReserva } from '../model/createReserva.model';
@@ -25,7 +24,7 @@ import { QueryResultsModel } from '@base/models/query/query-results.model';
 export class ReservaService extends BaseService {
 
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Reserva`);
+    super(http, `/Reserva`);
   }
 
   create(body: CreateReserva): Observable<ResponseDto<ReservaConPagoDto>> {

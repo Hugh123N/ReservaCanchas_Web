@@ -7,7 +7,6 @@ import { ResponseDto } from '@base/models/api/response.dto';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { CreateCanchaFavorita } from '../model/canchaFaborita/createCanchaFaborita.model';
 import { GetCanchaFavorita } from '../model/canchaFaborita/getCanchaFaborita.model';
-import { environment } from '@environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CanchaFavoritaService extends BaseService {
@@ -30,7 +29,7 @@ export class CanchaFavoritaService extends BaseService {
     http: HttpClient,
     private authService: AuthService
   ) {
-    super(http, `${environment.backend.baseApiUrl}/CanchaFavorita`);
+    super(http, `/CanchaFavorita`);
   }
 
   isFavorito(idCancha: number): boolean {

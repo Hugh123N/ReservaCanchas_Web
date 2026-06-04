@@ -64,7 +64,7 @@ export class NombreComponent extends BaseComponent implements OnInit {
 @Injectable({ providedIn: 'root' })
 export class NombreService extends BaseService {
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Nombre`);
+    super(http, `/Nombre`);
   }
 
   get(id: number): Observable<ResponseDto<GetNombre>> {

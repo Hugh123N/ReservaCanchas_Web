@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { BaseService } from '@base/services/base.service';
-import { environment } from '@environments/environment';
+
 import { Observable } from 'rxjs';
 import { GetPago } from '../model/getPago.model';
 import { CreatePago } from '../model/createPago.model';
@@ -25,7 +25,7 @@ import { QueryResultsModel } from '@base/models/query/query-results.model';
 export class PagoService extends BaseService {
 
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Pago`);
+    super(http, `/Pago`);
   }
 
   create(body: CreatePago): Observable<ResponseDto<GetPago>> {

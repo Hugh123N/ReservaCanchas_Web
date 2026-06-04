@@ -3,7 +3,7 @@ import { RequestDisponibilidad } from '../model/disponibilidad/requestDisponibil
 import { BaseService } from '@base/services/base.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '@environments/environment';
+
 import { ResponseDto } from '@base/models/api/response.dto';
 import { HorarioDisponible } from '../model/horarioCancha/horarioDisponible.model';
 
@@ -13,7 +13,7 @@ import { HorarioDisponible } from '../model/horarioCancha/horarioDisponible.mode
 export class HorarioCanchaService extends BaseService {
 
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/HorarioCancha`);
+    super(http, `/HorarioCancha`);
   }
 
   horarioDisponible(body: RequestDisponibilidad): Observable<ResponseDto<HorarioDisponible[]>> {

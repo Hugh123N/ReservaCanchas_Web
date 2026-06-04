@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { BaseService } from '@base/services/base.service';
-import { environment } from '@environments/environment';
+
 import { Observable } from 'rxjs';
 import { GetCancha } from '../model/getCancha.model';
 import { CreateCancha } from '../model/createCancha.model';
@@ -18,7 +18,7 @@ import { SearchCancha } from '../model/searchCancha.model';
 export class CanchaService extends BaseService {
 
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Cancha`);
+    super(http, `/Cancha`);
   }
 
   get(id: number): Observable<ResponseDto<GetCancha>> {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, throwError } from 'rxjs';
-import { environment } from '@environments/environment';
+
 
 // Declaración de tipos globales de Google Sign-In y Facebook SDK
 declare global {

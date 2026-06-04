@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { BaseService } from '@base/services/base.service';
-import { environment } from '@environments/environment';
+
 import { Observable } from 'rxjs';
 import { CreateCancha } from '../model/createCancha.model';
 import { UpdateCancha } from '../model/updateCancha.model';
@@ -18,7 +18,7 @@ import { CreateDisponibilidad } from '../model/disponibilidad/createDisponibilid
 export class DisponibilidadService extends BaseService {
 
   constructor(http: HttpClient) {
-    super(http, `${environment.backend.baseApiUrl}/Disponibilidad`);
+    super(http, `/Disponibilidad`);
   }
 
   get(id: number): Observable<ResponseDto<GetDisponibilidad>> {

@@ -1,13 +1,19 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { ConfigService } from '@core/services/config.service';
 import { Observable } from 'rxjs';
 
 export class BaseService {
   http: HttpClient;
-  baseUrl: string;
+  private configService: ConfigService;
 
-  constructor(http: HttpClient, baseUrl: string) {
+  constructor(http: HttpClient, private readonly path: string) {
     this.http = http;
-    this.baseUrl = baseUrl;
+    this.configService = inject(ConfigService);
+  }
+
+  protected get baseUrl(): string {
+    return `${this.configService.apiUrl}${this.path}`;
   }
 
   getRequest<TResponse>(resource: string): Observable<TResponse> {
