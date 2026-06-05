@@ -3,7 +3,7 @@
 
 <!-- Search Section -->
 <section class="relative py-8 bg-gradient-to-br from-primary-50 to-secondary-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="hero-container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title with Filter Button (Mobile/Tablet) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
       
@@ -33,116 +33,116 @@
   </div>
 </section>
 
-        <!-- Filters and Results Section -->
-        <section class="results-section py-8 bg-neutral-50">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto">
+<!-- Filters and Results Section -->
+<section class="results-section py-8 bg-neutral-50">
+<div class="hero-container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto">
 
-              <!-- Results Header -->
+  <!-- Results Header -->
+  <div
+    class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+    >
+    <div class="results-info">
+      <h2 class="title-main text-primary mb-2">
+        {{
+        isSearching
+        ? "Resultados de búsqueda"
+        : "Todas las canchas disponibles"
+        }}
+      </h2>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="view-toggle-container flex justify-center md:justify-end">
+      <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
+        <mat-button-toggle value="lista">
+          <mat-icon class="mr-1">view_list</mat-icon>
+          Lista
+        </mat-button-toggle>
+        <mat-button-toggle value="mapa">
+          <mat-icon class="mr-1">map</mat-icon>
+          Mapa
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+    
+
+    <!-- Results Grid -->
+    <div class="lg:col-span-3">
+      <!-- Results Grid -->
+      @if (!isLoading && canchas.length > 0) {
+        <div class="results-grid">
+          <div class="grid grid-medium">
+            @for (
+              cancha of canchas; track trackByCancha(i,
+              cancha); let i = $index) {
               <div
-                class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+                class="cancha-item fade-in-up"
+                [style.animation-delay.ms]="i * 100"
                 >
-                <div class="results-info">
-                  <h2 class="title-main text-primary mb-2">
-                    {{
-                    isSearching
-                    ? "Resultados de búsqueda"
-                    : "Todas las canchas disponibles"
-                    }}
-                  </h2>
-                </div>
-
-                <!-- View Toggle -->
-                <div class="view-toggle-container flex justify-center md:justify-end">
-                  <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
-                    <mat-button-toggle value="lista">
-                      <mat-icon class="mr-1">view_list</mat-icon>
-                      Lista
-                    </mat-button-toggle>
-                    <mat-button-toggle value="mapa">
-                      <mat-icon class="mr-1">map</mat-icon>
-                      Mapa
-                    </mat-button-toggle>
-                  </mat-button-toggle-group>
-                </div>
+                <app-card-cancha
+                  [field]="cancha"
+                  (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
+                  [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
+                  >
+                </app-card-cancha>
               </div>
+            }
+          </div>
+        </div>
+      }
 
-                
+      <!-- Empty State -->
+      @if (!isLoading && canchas.length === 0) {
+        <div
+          class="empty-state text-center py-16"
+          >
+          <div class="max-w-md mx-auto">
+            <mat-icon class="text-6xl text-neutral-400 mb-4"
+              >search_off</mat-icon
+              >
+              <h3 class="h3 text-neutral-600 mb-4">No se encontraron canchas</h3>
+              <p class="text-neutral-500 mb-6">
+                {{
+                isSearching
+                ? "Intenta ajustar tus filtros de búsqueda"
+                : "No hay canchas disponibles en este momento"
+                }}
+              </p>
+              <button
+                mat-raised-button
+                class="btn-outline-primary"
+                (click)="onClear()"
+                >
+                {{ isSearching ? "Limpiar filtros" : "Recargar" }}
+              </button>
+            </div>
+          </div>
+        }
 
-                <!-- Results Grid -->
-                <div class="lg:col-span-3">
-                  <!-- Results Grid -->
-                  @if (!isLoading && canchas.length > 0) {
-                    <div class="results-grid">
-                      <div class="grid grid-medium">
-                        @for (
-                          cancha of canchas; track trackByCancha(i,
-                          cancha); let i = $index) {
-                          <div
-                            class="cancha-item fade-in-up"
-                            [style.animation-delay.ms]="i * 100"
-                            >
-                            <app-card-cancha
-                              [field]="cancha"
-                              (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
-                              [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
-                              >
-                            </app-card-cancha>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  }
+        <!-- Pagination -->
+        @if (!isLoading && this.total > this.page.pageSize) {
+          <div
+            class="pagination-section mt-12"
+            >
+            <mat-paginator
+              [length]="this.total"
+              [pageSize]="this.page.pageSize"
+              [pageSizeOptions]="[12, 24, 48]"
+              [pageIndex]="this.page.page"
+              (page)="onPageChange($event)"
+              showFirstLastButtons
+              class="custom-paginator"
+              >
+            </mat-paginator>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
 
-                  <!-- Empty State -->
-                  @if (!isLoading && canchas.length === 0) {
-                    <div
-                      class="empty-state text-center py-16"
-                      >
-                      <div class="max-w-md mx-auto">
-                        <mat-icon class="text-6xl text-neutral-400 mb-4"
-                          >search_off</mat-icon
-                          >
-                          <h3 class="h3 text-neutral-600 mb-4">No se encontraron canchas</h3>
-                          <p class="text-neutral-500 mb-6">
-                            {{
-                            isSearching
-                            ? "Intenta ajustar tus filtros de búsqueda"
-                            : "No hay canchas disponibles en este momento"
-                            }}
-                          </p>
-                          <button
-                            mat-raised-button
-                            class="btn-outline-primary"
-                            (click)="onClear()"
-                            >
-                            {{ isSearching ? "Limpiar filtros" : "Recargar" }}
-                          </button>
-                        </div>
-                      </div>
-                    }
-
-                    <!-- Pagination -->
-                    @if (!isLoading && this.total > this.page.pageSize) {
-                      <div
-                        class="pagination-section mt-12"
-                        >
-                        <mat-paginator
-                          [length]="this.total"
-                          [pageSize]="this.page.pageSize"
-                          [pageSizeOptions]="[12, 24, 48]"
-                          [pageIndex]="this.page.page"
-                          (page)="onPageChange($event)"
-                          showFirstLastButtons
-                          class="custom-paginator"
-                          >
-                        </mat-paginator>
-                      </div>
-                    }
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Footer -->
-            <app-footer></app-footer>
+<!-- Footer -->
+<app-footer></app-footer>
