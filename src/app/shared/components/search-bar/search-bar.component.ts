@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,7 @@ export interface SearchBarData {
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.css'
 })
-export class SearchBarComponent implements OnInit {
+export class SearchBarComponent implements OnInit, OnChanges {
   @Input() tipoDeportes: GetTipoDeporte[] = [];
   @Input() ubigeos: Ubigeo[] = [];
   @Input() isLoading: boolean = false;
@@ -34,6 +34,9 @@ export class SearchBarComponent implements OnInit {
   @Output() search = new EventEmitter<SearchBarData>();
   @Output() clear = new EventEmitter<void>();
 
+  // Initial data for pre-populating from parent
+  @Input() initialSearchData: SearchBarData | null = null;
+
   // Form
   searchForm!: FormGroup;
   cityControl = new FormControl<Ubigeo | string | null>(null);
@@ -41,6 +44,7 @@ export class SearchBarComponent implements OnInit {
   // Ciudad autocomplete
   filteredUbigeos: Ubigeo[] = [];
   showCityDropdown = false;
+  selectedUbigeo: Ubigeo | null = null;
 
   // Deporte custom select
   isDeporteOpen = false;
@@ -88,9 +92,45 @@ export class SearchBarComponent implements OnInit {
     });
 
     this.cityControl.valueChanges.subscribe(value => {
+      if (typeof value === 'string') {
+        this.selectedUbigeo = null;
+      }
       this.filteredUbigeos = this._filterUbigeos(value);
       this.showCityDropdown = this.filteredUbigeos.length > 0;
     });
+
+    this._applyInitialValues();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.searchForm) return;
+    if (changes['ubigeos'] || changes['tipoDeportes'] || changes['initialSearchData']) {
+      this._applyInitialValues();
+    }
+  }
+
+  private _applyInitialValues(): void {
+    const data = this.initialSearchData;
+    if (!data) return;
+    if (data.ciudad && typeof data.ciudad === 'object') {
+      this.selectedUbigeo = data.ciudad;
+      this.cityControl.setValue(data.ciudad.distrito, { emitEvent: false });
+    }
+    if (data.idTipoDeporte && this.tipoDeportes.length > 0) {
+      const id = Number(data.idTipoDeporte);
+      const found = this.tipoDeportes.find(t => t.idTipoDeporte === id);
+      if (found) {
+        this.selectedDeporte = found;
+        this.searchForm.patchValue({ idTipoDeporte: found.idTipoDeporte });
+      }
+    }
+    if (data.fecha) {
+      this.selectedFecha = data.fecha;
+      this.searchForm.patchValue({ fecha: data.fecha });
+    }
+    if (data.hora) {
+      this.searchForm.patchValue({ hora: data.hora });
+    }
   }
 
   private _filterUbigeos(value: string | Ubigeo | null): Ubigeo[] {
@@ -106,7 +146,8 @@ export class SearchBarComponent implements OnInit {
   }
 
   selectUbigeo(ubigeo: Ubigeo): void {
-    this.cityControl.setValue(ubigeo);
+    this.selectedUbigeo = ubigeo;
+    this.cityControl.setValue(ubigeo.distrito, { emitEvent: false });
     this.showCityDropdown = false;
   }
 
@@ -229,7 +270,7 @@ export class SearchBarComponent implements OnInit {
 
   onSearch(): void {
     const searchData: SearchBarData = {
-      ciudad: this.cityControl.value,
+      ciudad: this.selectedUbigeo ?? this.cityControl.value,
       idTipoDeporte: this.searchForm.value.idTipoDeporte,
       fecha: this.selectedFecha,
       hora: this.searchForm.value.hora
@@ -244,6 +285,7 @@ export class SearchBarComponent implements OnInit {
       hora: ''
     });
     this.cityControl.reset();
+    this.selectedUbigeo = null;
     this.selectedDeporte = null;
     this.selectedFecha = null;
     this.isDeporteOpen = false;

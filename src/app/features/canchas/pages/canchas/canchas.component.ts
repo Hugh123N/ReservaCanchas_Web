@@ -70,6 +70,9 @@ export class CanchasComponent extends BaseSearchComponent {
 
   filteredUbigeos: Observable<Ubigeo[]>;
 
+  // Initial values to pass to search-bar (populated from query params + loaded data)
+  initialSearchData: SearchBarData | null = null;
+
   constructor(
     private canchaService: CanchaService,
     private canchaEstadoService: CanchaEstadoService,
@@ -134,6 +137,14 @@ export class CanchasComponent extends BaseSearchComponent {
         this.isSearching = false;
         this.onSearch();
       }
+
+      // Pre-populate search-bar initial data
+      this._buildInitialSearchData({
+        codigoUbigeo,
+        idTipoDeporte: idTipoDeporteParam,
+        fecha,
+        hora
+      });
     });
   }
 
@@ -271,13 +282,26 @@ export class CanchasComponent extends BaseSearchComponent {
             const ubigeoObj = this.ubigeos.find(u => u.codigoUbigeo === codigoUbigeo);
             if (ubigeoObj) {
               this.cityControl.setValue(ubigeoObj, { emitEvent: false });
-              this.filterForm.patchValue({ codigoUbigeo }); // mantener coherencia
+              this.filterForm.patchValue({ codigoUbigeo });
+              this.initialSearchData = {
+                ...this.initialSearchData,
+                ciudad: ubigeoObj
+              };
             }
           }
         }
       },
       error: (err) => this.openAlert(err),
     });
+  }
+
+  private _buildInitialSearchData(raw: { codigoUbigeo: string | null; idTipoDeporte: string | null; fecha: string | null; hora: string | null }): void {
+    this.initialSearchData = {
+      ciudad: null,
+      idTipoDeporte: raw.idTipoDeporte ?? undefined,
+      fecha: raw.fecha ? new Date(raw.fecha + 'T00:00:00') : null,
+      hora: raw.hora ?? undefined
+    };
   }
 
   get fechaDate(): Date | null {

@@ -228,7 +228,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     this.selectedDate = searchData.fecha || null;
     this.selectedTime = searchData.hora || '';
     this.idTipoDeporte = searchData.idTipoDeporte || '';
-
     if (searchData.ciudad && typeof searchData.ciudad === 'object') {
       this.selectedUbigeo = searchData.ciudad;
     } else {
