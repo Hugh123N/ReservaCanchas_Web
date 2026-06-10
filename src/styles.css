@@ -74,7 +74,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .btn-outline-primary {
-  @apply flex! items-center! !justify-center border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! 
+  @apply flex! items-center! !justify-center border! border-primary-500! text-primary-500! px-4! py-2! rounded-lg! bg-white!
   hover:bg-primary-50! transition! cursor-pointer! gap-1! font-semibold !text-sm;
 }
 

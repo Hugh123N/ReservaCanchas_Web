@@ -3,12 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSliderModule } from '@angular/material/slider';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
 import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
@@ -33,12 +28,7 @@ export interface FiltrosModalData {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
     MatIconModule,
-    MatSliderModule,
-    MatDatepickerModule,
     MatSlideToggleModule
   ],
   templateUrl: './mapa-filtros-modal.component.html',
@@ -55,9 +45,9 @@ export class MapaFiltrosModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.filtrosForm = this.fb.group({
-      idTipoCancha: [this.data.filtrosActuales?.idTipoCancha],
-      codigoUbigeo: [this.data.filtrosActuales?.codigoUbigeo],
-      fecha: [this.data.filtrosActuales?.fecha],
+      idTipoCancha: [this.data.filtrosActuales?.idTipoCancha ?? null],
+      codigoUbigeo: [this.data.filtrosActuales?.codigoUbigeo ?? null],
+      fecha: [this.data.filtrosActuales?.fecha ?? null],
       soloFavoritos: [this.data.filtrosActuales?.soloFavoritos || false]
     });
  
@@ -69,9 +59,9 @@ export class MapaFiltrosModalComponent implements OnInit {
 
   limpiarFiltros(): void {
     this.filtrosForm.reset({
-      idTipoCancha: undefined,
-      codigoUbigeo: undefined,
-      fecha: undefined,
+      idTipoCancha: null,
+      codigoUbigeo: null,
+      fecha: null,
       soloFavoritos: false
     });
   }

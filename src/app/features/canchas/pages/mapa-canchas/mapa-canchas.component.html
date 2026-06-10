@@ -6,66 +6,64 @@
       <!-- Botón Cerrar -->
       <button
         mat-icon-button
-        class="text-neutral-600 hover:text-primary-600 transition-colors"
         (click)="cerrarMapa()"
         matTooltip="Cerrar mapa"
       >
-        <mat-icon class="icon-lg">close</mat-icon>
+        <mat-icon>close</mat-icon>
       </button>
 
       <!-- Barra de Búsqueda -->
       <div class="search-container">
-        <mat-form-field appearance="outline">
-          <mat-icon matPrefix>search</mat-icon>
-          <input
-            matInput
-            placeholder="Buscar canchas por nombre, ubicación o deporte..."
-            [(ngModel)]="consultaBusqueda"
-            (ngModelChange)="alCambiarBusqueda()"
-          />
-          @if (consultaBusqueda()) {
-          <button
-            mat-icon-button
-            matSuffix
-            (click)="limpiarBusqueda()"
-            matTooltip="Limpiar búsqueda"
-          >
-            <mat-icon>clear</mat-icon>
-          </button>
-          }
-        </mat-form-field>
+        <div class="relative flex-1 min-w-0">
+          <div class="relative w-full! min-w-0">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 icon-md">search</mat-icon>
+            <input
+              type="text"
+              class="input-base box-border! pl-8! pr-6!"
+              placeholder="Buscar canchas por nombre, ubicación o deporte..."
+              [(ngModel)]="consultaBusqueda"
+              (ngModelChange)="alCambiarBusqueda()"
+            />
+            @if (consultaBusqueda()) {
+              <button
+                class="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-7 rounded-md p-0 text-neutral-400 border-none bg-transparent hover:bg-neutral-200 hover:text-neutral-600 transition-colors"
+                (click)="limpiarBusqueda()"
+              >
+                <mat-icon class="icon-md">close</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
 
         <!-- Filtros Desktop -->
         @if (!(isMobile$ | async)) {
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo de Deporte</mat-label>
-          <mat-select
-            [value]="filtroActual().idTipoDeporte"
-            (selectionChange)="onCambiarFiltroTipo($event.value)"
+        <div class="relative min-w-[150px]">
+          <select
+            class="select-base"
+            [ngModel]="filtroActual().idTipoDeporte"
+            (ngModelChange)="onCambiarFiltroTipo($event)"
           >
-            <mat-option [value]="undefined">Todos</mat-option>
+            <option [ngValue]="undefined">Todos los deportes</option>
             @for (tipo of tiposDeporte(); track tipo.idTipoDeporte) {
-            <mat-option [value]="tipo.idTipoDeporte">{{
-              tipo.nombre
-            }}</mat-option>
+            <option [ngValue]="tipo.idTipoDeporte">{{ tipo.nombre }}</option>
             }
-          </mat-select>
-        </mat-form-field>
+          </select>
+          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
+        </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Ubicación</mat-label>
-          <mat-select
-            [value]="filtroActual().codigoUbigeo"
-            (selectionChange)="onCambiarFiltroUbigeo($event.value)"
+        <div class="relative min-w-[150px]">
+          <select
+            class="select-base"
+            [ngModel]="filtroActual().codigoUbigeo"
+            (ngModelChange)="onCambiarFiltroUbigeo($event)"
           >
-            <mat-option [value]="undefined">Todas</mat-option>
+            <option [ngValue]="undefined">Todas las ubicaciones</option>
             @for (ubigeo of ubigeos(); track ubigeo.codigoUbigeo) {
-            <mat-option [value]="ubigeo.codigoUbigeo">
-              {{ ubigeo.distrito }}, {{ ubigeo.provincia }}
-            </mat-option>
+            <option [ngValue]="ubigeo.codigoUbigeo">{{ ubigeo.distrito }}, {{ ubigeo.provincia }}</option>
             }
-          </mat-select>
-        </mat-form-field>
+          </select>
+          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
+        </div>
 
         <!-- Toggle Solo Favoritos -->
         <mat-slide-toggle
@@ -74,8 +72,7 @@
           color="primary"
           class="favoritos-toggle"
         >
-          <mat-icon class="icon-favorito">favorite</mat-icon>
-          Solo Favoritos
+          Favoritos
           @if (canchaFavoritaService.cantidadFavoritos() > 0) {
             <span class="badge-favoritos">({{ canchaFavoritaService.cantidadFavoritos() }})</span>
           }
@@ -85,7 +82,6 @@
         <!-- Botón Filtros Mobile -->
         @if (isMobile$ | async) {
         <button
-          mat-stroked-button
           class="btn-outline-primary btn-filtros-mobile"
           (click)="abrirFiltrosModal()"
           [class.has-filters]="cantidadFiltrosActivos > 0"

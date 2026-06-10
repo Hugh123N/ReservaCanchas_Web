@@ -5,17 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 
+import { ResponsiveService } from '../../../../core/services/responsive.service';
 import { MapboxService } from '../../../../core/services/mapbox.service';
 import { GeolocationService, ErrorGeolocalizacion } from '../../../../core/services/geolocation.service';
 import { UbicacionCancha } from '../../../../shared/interfaces/location.interface';
@@ -47,13 +43,9 @@ import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatPaginatorModule,
     MatDialogModule,
     MatSlideToggleModule,
-    LayoutModule,
     FormsModule,
     VenueMapCardComponent
   ],
@@ -72,7 +64,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
   mostrarBuscarEnArea = signal(false);
 
   // Detección mobile
-  isMobile$!: Observable<boolean>;
+  isMobile$: Observable<boolean>;
 
   // Signals para filtros y paginación
   filtroActual = signal<SearchCanchaFilter>({});
@@ -110,16 +102,10 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private breakpointObserver: BreakpointObserver,
+    public responsiveService: ResponsiveService,
     private dialog: MatDialog
   ) {
-    // Inicializar detección mobile
-    this.isMobile$ = this.breakpointObserver
-      .observe(Breakpoints.Handset)
-      .pipe(
-        map(result => result.matches),
-        shareReplay()
-      );
+    this.isMobile$ = this.responsiveService.observe('(max-width: 980px)');
   }
 
   ngOnInit(): void {
@@ -522,7 +508,7 @@ export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
       maxHeight: '100vh',
       panelClass: 'filtros-fullscreen-dialog',
       data: {
-        tiposDeporte: this.tiposDeporte(),
+        tipoDeportes: this.tiposDeporte(),
         ubigeos: this.ubigeos(),
         cantidadFavoritos: this.canchaFavoritaService.cantidadFavoritos(),
         filtrosActuales: this.filtroActual()

@@ -104,6 +104,17 @@ export class ResponsiveService {
   }
 
   /**
+   * Crea un observable para una media query personalizada.
+   * Útil cuando necesitas un breakpoint específico que no está predefinido.
+   *
+   * @param query - Media query CSS (ej: '(max-width: 767.98px)')
+   * @returns Observable<boolean> que emite true cuando la media query coincide
+   */
+  observe(query: string): Observable<boolean> {
+    return this.createBreakpointObservable(query);
+  }
+
+  /**
    * Obtiene el valor actual del breakpoint de forma síncrona.
    * Útil cuando necesitas el valor inmediatamente sin suscribirte.
    *

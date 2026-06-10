@@ -64,11 +64,6 @@
   @apply flex items-center gap-2;
 }
 
-.icon-favorito {
-  color: var(--color-accent-500);
-  font-size: 20px;
-}
-
 .badge-count-inline {
   @apply ml-2 text-sm;
   color: var(--color-primary-500);

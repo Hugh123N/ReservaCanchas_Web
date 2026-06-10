@@ -13,30 +13,26 @@
       <!-- Tipo de Deporte -->
       <section class="content-card">
         <h3 class="section-title">Tipo de Deporte</h3>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Selecciona un deporte</mat-label>
-          <mat-select formControlName="idTipoCancha">
-            <mat-option [value]="undefined">Todos los deportes</mat-option>
+        <div class="relative">
+          <select formControlName="idTipoCancha" class="select-base">
+            <option [ngValue]="null">Todos los deportes</option>
             @for (tipo of data.tipoDeportes; track tipo.idTipoDeporte) {
-              <mat-option [value]="tipo.idTipoDeporte">
-                {{ tipo.nombre }}
-              </mat-option>
+              <option [ngValue]="tipo.idTipoDeporte">{{ tipo.nombre }}</option>
             }
-          </mat-select>
-        </mat-form-field>
+          </select>
+          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
+        </div>
 
         <h3 class="section-title">Ubicación</h3>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Selecciona un distrito</mat-label>
-          <mat-select formControlName="codigoUbigeo">
-            <mat-option [value]="undefined">Todas las ubicaciones</mat-option>
+        <div class="relative">
+          <select formControlName="codigoUbigeo" class="select-base">
+            <option [ngValue]="null">Todas las ubicaciones</option>
             @for (ubigeo of data.ubigeos; track ubigeo.codigoUbigeo) {
-              <mat-option [value]="ubigeo.codigoUbigeo">
-                {{ ubigeo.distrito }}, {{ ubigeo.provincia }}
-              </mat-option>
+              <option [ngValue]="ubigeo.codigoUbigeo">{{ ubigeo.distrito }}, {{ ubigeo.provincia }}</option>
             }
-          </mat-select>
-        </mat-form-field>
+          </select>
+          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
+        </div>
      
         <h3 class="section-title">Favoritos</h3>
         <mat-slide-toggle
@@ -45,8 +41,7 @@
           class="w-full!"
         >
           <div class="toggle-label">
-            <mat-icon class="icon-favorito">favorite</mat-icon>
-            <span>Mostrar solo mis favoritos</span>
+            <span>Favoritos</span>
             @if (data.cantidadFavoritos > 0) {
               <span class="badge-count-inline">({{ data.cantidadFavoritos }})</span>
             }
