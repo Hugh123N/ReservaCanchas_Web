@@ -22,13 +22,10 @@
           />
 
           <!-- Image overlay with info -->
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-          ></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
           <!-- Gallery indicator -->
-          @if ( canchaData.imagenesCancha && canchaData.imagenesCancha.length >
-          1 ) {
+          @if ( canchaData.imagenesCancha && canchaData.imagenesCancha.length > 1 ) {
           <div
             class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm"
           >
@@ -65,7 +62,7 @@
             <!-- Title and Rating -->
             <div>
               <div class="flex items-start justify-between gap-3">
-                <h1 class="h3 !text-primary-500 flex-1 mt-0">{{ canchaData.nombre }}</h1>
+                <h1 class="title-main text-primary-500 flex-1 mt-0">{{ canchaData.nombre }}</h1>
                 <button
                   mat-icon-button
                   class="heart-button !w-10 !h-10 flex-shrink-0 mt-1"

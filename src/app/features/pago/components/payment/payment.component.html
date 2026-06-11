@@ -6,7 +6,7 @@
     <div class="section-spacing">
       <div class="flex items-center gap-3 sm:gap-4 mb-6">
         <button mat-icon-button (click)="onBack()">
-          <mat-icon class="icon-lg">arrow_back</mat-icon>
+          <mat-icon>arrow_back</mat-icon>
         </button>
         <div>
           <h1 class="title-main text-primary-600">Confirmar Reserva</h1>
@@ -43,7 +43,7 @@
         <div class="lg:col-span-2 space-y-6">
 
           <!-- Información de la Cancha -->
-          <mat-card class="card-base">
+          <div class="content-card">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 p-2">
               <div class="flex-1">
                 <h2 class="title-main text-neutral-800 mb-0">
@@ -57,24 +57,24 @@
                 <mat-divider class="my-4"></mat-divider>
 
                 <!-- Detalles de la Reserva -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600 icon-sm">calendar_today</mat-icon>
+                      <mat-icon class="text-primary-600! icon-sm">calendar_today</mat-icon>
                     </div>
                     <div>
                       <p class="text-sm text-neutral-500">Fecha</p>
-                      <p class="font-semibold text-neutral-800">{{ formatDate(reservaData.fecha) }}</p>
+                      <p class="text-base font-semibold text-neutral-800">{{ formatDate(reservaData.fecha) }}</p>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600 icon-sm">schedule</mat-icon>
+                      <mat-icon class="text-primary-600! icon-sm">schedule</mat-icon>
                     </div>
                     <div>
                       <p class="text-sm text-neutral-500">Horarios</p>
-                      <p class="font-semibold text-neutral-800">
+                      <p class="text-base font-semibold text-neutral-800">
                         @for (time of reservaData.selectedTime; track time.hora) {
                           {{ time.hora }}@if (!$last) {<span>, </span>}
                         }
@@ -84,32 +84,32 @@
 
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600 icon-sm">timer</mat-icon>
+                      <mat-icon class="text-primary-600! icon-sm">timer</mat-icon>
                     </div>
                     <div>
                       <p class="text-sm text-neutral-500">Duración</p>
-                      <p class="font-semibold text-neutral-800">{{ reservaData.duracion }} hora(s)</p>
+                      <p class="text-base font-semibold text-neutral-800">{{ reservaData.duracion }} hora(s)</p>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-accent-50 rounded-lg">
-                      <mat-icon class="text-accent-600 icon-sm">payments</mat-icon>
+                      <mat-icon class="text-accent-600! icon-sm">payments</mat-icon>
                     </div>
                     <div>
                       <p class="text-sm text-neutral-500">Precio por Hora</p>
-                      <p class="font-semibold text-neutral-800">S/ {{ reservaData.precioHora }}</p>
+                      <p class="text-base font-semibold text-neutral-800">S/ {{ reservaData.precioHora }}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </mat-card>
+          </div>
 
           <!-- Información Importante -->
-          <mat-card class="card-base bg-yellow-100! border-l-4 border-amber-500 p-2">
+          <div class="content-card bg-yellow-100!">
               <div class="flex-1">
-                <h3 class="font-bold text-neutral-800 mb-2">Información Importante</h3>
+                <h3 class="title-section my-2">Información Importante</h3>
                 <ul class="space-y-2 text-sm text-neutral-700">
                   <li class="flex items-start gap-2">
                     <mat-icon class="icon-sm !text-yellow-600 mt-0.5">phone</mat-icon>
@@ -125,7 +125,7 @@
                   </li>
                 </ul>
               </div>
-          </mat-card>
+            </div>
         </div>
 
         <!-- Columna Derecha - Total y Acción -->
@@ -137,15 +137,15 @@
               <div class="total-card-content text-center">
                 <div class="total-header-wrapper">
                   <div class="total-header-content">
-                    <p class="total-label text-sm text-neutral-600 mb-1 font-bold">Monto Total</p>
-                    <p class="total-amount text-4xl font-bold text-primary-600 mb-2">
+                    <p class="title-section text-neutral-600 mb-1">Monto Total</p>
+                    <p class="title-main text-primary-600 mb-0">
                       S/ {{ reservaData.total }}
                     </p>
                   </div>
                 </div>
-                <p class="total-detail text-sm text-neutral-500">
+                <!-- <p class="total-detail text-sm text-neutral-500">
                   {{ reservaData.duracion }} hora(s) × S/ {{ reservaData.precioHora }}
-                </p>
+                </p> -->
 
                 <mat-divider class="my-4 p-2"></mat-divider>
 
@@ -188,7 +188,7 @@
             
 
             <!-- Información de Contacto -->
-            <mat-card class="card-base bg-blue-50 border border-blue-200">
+            <!-- <div class="content-card">
               <div class="text-center">
                 <mat-icon class="text-blue-600 mb-2">phone</mat-icon>
                 <p class="text-sm text-neutral-600 mb-1">Tu teléfono de contacto</p>
@@ -197,7 +197,7 @@
                   El operador te contactará a este número
                 </p>
               </div>
-            </mat-card>
+            </div> -->
 
             <!-- Ayuda -->
             <div class="text-center">
