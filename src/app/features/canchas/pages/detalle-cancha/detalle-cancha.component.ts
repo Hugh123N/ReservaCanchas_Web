@@ -7,14 +7,12 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 // Components
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
+import { FormErrorComponent } from '@shared/components/form-error/form-error.component';
 
 // Material Modules
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -44,12 +42,10 @@ import { HorarioCanchaService } from '../../core/services/horarioCancha.service'
     ReactiveFormsModule,
     NavVarComponent,
     FooterComponent,
+    FormErrorComponent,
     MatTabsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
@@ -93,7 +89,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     super('CANCHAS', viewContainerRef);
     this.canchaData = {} as GetCancha;
     this.reservaForm = this.fb.group({
-      telefono: ['', [Validators.required, Validators.pattern(/^(\+51|51)?[9][0-9]{8}$/)]],
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{8,15}$/)]],
       duracion: [1]
     });
   }

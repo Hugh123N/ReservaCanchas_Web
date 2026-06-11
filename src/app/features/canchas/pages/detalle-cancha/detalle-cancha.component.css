@@ -68,7 +68,7 @@
 
 /* Total Row */
 .total-row {
-  @apply bg-primary-50 rounded-xl p-4 -mx-2;
+  @apply bg-primary-50 rounded-xl p-4;
 }
 
 /* Services Grid */
@@ -78,15 +78,6 @@
 
 .service-item:hover {
   @apply border-primary-200  -translate-y-1;
-}
-
-/* WhatsApp Checkbox */
-.whatsapp-checkbox .mat-mdc-checkbox-frame {
-  @apply border-2 border-green-400;
-}
-
-.whatsapp-checkbox.mat-mdc-checkbox-checked .mat-mdc-checkbox-background {
-  @apply bg-green-500;
 }
 
 /* Review Cards */
@@ -142,10 +133,6 @@
 
   .time-btn {
     @apply text-sm px-2;
-  }
-
-  .summary-card {
-    @apply mx-2;
   }
 
   /* Fix para iconos en cards con poco padding */

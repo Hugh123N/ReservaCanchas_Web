@@ -166,7 +166,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .icon-lg {
   @apply w-8! h-8! text-2xl! 
-         md:w-10! md:h-10! md:text-3xl!
+         md:w-10! md:h-10! md:text-3xl! flex! items-center!;
 }
 
 .icon-2xl {

@@ -212,6 +212,7 @@
                   <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1 sm:gap-2">
                     @for (h of getAvailableHours(); track h.hora) {
                     <button
+                      type="button"
                       class="time-btn rounded-lg sm:rounded-xl py-1 sm:py-2 transition-all duration-300"
                       [ngClass]="getTimeButtonClass(h)"
                       (click)="selectTime(h)"
@@ -231,68 +232,72 @@
               <!-- User Info -->
               @if (selectedTime) {
               <div class="user-info-section">
-                <mat-card class="p-6 rounded-xl shadow-sm">
+                <div class="content-card">
                   <h3 class="h3 text-primary mb-4 flex items-center">
-                    <mat-icon class="icon-primary mr-2">person</mat-icon>
+                    <mat-icon class="icon-primary icon-lg">person</mat-icon>
                     Información de Contacto
                   </h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <mat-form-field appearance="outline" class="w-full">
-                      <mat-label>Teléfono / WhatsApp</mat-label>
-                      <input
-                        matInput
-                        formControlName="telefono"
-                        type="tel"
-                        placeholder="+51 999 123 456"
-                      />
-                      <mat-icon matSuffix class="icon-primary">phone</mat-icon>
-                    </mat-form-field>
+                    <div>
+                      <label class="form-label">
+                        Teléfono / WhatsApp
+                        <span class="form-label-required">*</span>
+                      </label>
+                      <div class="relative">
+                        <input class="input-base pr-10 box-border"
+                          formControlName="telefono"
+                          type="tel" maxlength="15" placeholder="+51 999 123 456"
+                        />
+                        <mat-icon class="absolute right-3 top-1/2 -translate-y-1/2 icon-primary">phone</mat-icon>
+                      </div>
+                      <app-form-error [control]="reservaForm.get('telefono')"></app-form-error>
+                    </div>
                   </div>
                   <!-- WhatsApp Reminder -->
                   <div class="mt-0">
-                    <p class="whatsapp-checkbox">
+                    <p class="text-base">
                       Recibirás recordatorio por WhatsApp 1 hora antes de tu
                       reserva
                     </p>
                   </div>
-                </mat-card>
+                </div>
               </div>
               }
 
               <!-- Reservation Summary -->
               @if (selectedTime) {
               <div class="summary-section">
-                <mat-card
-                  class="summary-card p-6 rounded-xl shadow-lg border border-primary-200"
+                <div
+                  class="content-card"
                 >
                   <h3 class="h3 text-primary mb-6 flex items-center">
-                    <mat-icon class="icon-primary mr-2">receipt</mat-icon>
+                    <mat-icon class="icon-primary icon-lg">receipt</mat-icon>
                     Resumen de tu Reserva
                   </h3>
-                  <div class="summary-details space-y-4">
+                  <div class="summary-details space-y-2 md:space-y-4">
                     <div
                       class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
                     >
-                      <span class="text-neutral-600">Cancha</span>
-                      <span class="font-semibold text-neutral-800">{{
+                      <span class="text-base text-neutral-600">Cancha</span>
+                      <span class="text-base font-semibold text-neutral-800">{{
                         canchaData.nombre || "DeporPlaza Matamula"
                       }}</span>
                     </div>
                     <div
                       class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
                     >
-                      <span class="text-neutral-600">Fecha</span>
-                      <span class="font-semibold text-neutral-800">{{
+                      <span class="text-base text-neutral-600">Fecha</span>
+                      <span class="text-base font-semibold text-neutral-800">{{
                         getFormattedSelectedDate()
                       }}</span>
                     </div>
                     <div
                       class="summary-row flex justify-between items-start py-3 border-b border-neutral-200"
                     >
-                      <span class="text-neutral-600">Hora</span>
+                      <span class="text-base text-neutral-600">Hora</span>
                       <div class="flex flex-wrap gap-1 justify-end max-w-[80%]">
                         @for (f of selectedTime; track f; let isLast = $last) {
-                        <span class="font-semibold text-neutral-800">
+                        <span class="text-base font-semibold text-neutral-800">
                           {{ f.hora || "-" }}@if (!isLast) {<span>,</span>}
                         </span>
                         }
@@ -301,8 +306,8 @@
                     <div
                       class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
                     >
-                      <span class="text-neutral-600">Duración</span>
-                      <span class="font-semibold text-neutral-800"
+                      <span class="text-base text-neutral-600">Duración</span>
+                      <span class="text-base font-semibold text-neutral-800"
                         >{{ reservaForm.value.duracion || 1 }} hora(s)</span
                       >
                     </div>
@@ -319,15 +324,14 @@
                   </div>
                   <div class="mt-8 space-y-3">
                     <button
-                      mat-raised-button
                       class="btn-primary w-full !py-4 !text-lg !font-bold shadow-lg"
                       type="submit"
                     >
-                      <mat-icon class="mr-2">payment</mat-icon>
+                      <mat-icon class="icon-lg">payment</mat-icon>
                       Continuar al Pago
                     </button>
                   </div>
-                </mat-card>
+                </div>
               </div>
               }
             </form>
@@ -415,9 +419,7 @@
             <div class="location-section">
               <h3 class="h3 text-primary mb-4">Ubicación y Contacto</h3>
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div
-                  class="contact-info space-y-4 p-4 border border-neutral-200 rounded-xl bg-white"
-                >
+                <div class="contact-info space-y-4 p-4 border border-neutral-200 rounded-xl bg-white">
                   <div class="flex items-start space-x-3">
                     <mat-icon class="icon-primary mt-1">location_on</mat-icon>
                     <div>
