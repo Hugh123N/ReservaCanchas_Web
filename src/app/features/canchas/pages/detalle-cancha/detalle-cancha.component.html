@@ -60,12 +60,12 @@
 
       <!-- Info Card -->
       <div class="lg:col-span-1">
-        <div class="content-card h-full">
+        <div class="content-card ">
           <div class="space-y-2">
             <!-- Title and Rating -->
             <div>
               <div class="flex items-start justify-between gap-3">
-                <h1 class="h3 !text-primary-500 flex-1">{{ canchaData.nombre }}</h1>
+                <h1 class="h3 !text-primary-500 flex-1 mt-0">{{ canchaData.nombre }}</h1>
                 <button
                   mat-icon-button
                   class="heart-button !w-10 !h-10 flex-shrink-0 mt-1"
@@ -80,7 +80,7 @@
               <div
                 class="flex items-center gap-2 text-sm text-neutral-600 mb-3"
               >
-                <mat-icon class="icon-primary">location_on</mat-icon>
+                <mat-icon class="icon-primary shrink-0">location_on</mat-icon>
                 <span>{{ getFullAddress() }}</span>
                 
               </div>
@@ -101,12 +101,11 @@
             </div>
 
             <!-- Sport Type -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               @for (tipo of canchaData.tipoDeportes; track tipo) {
-                <mat-chip color="primary" selected class="sport-chip">
-                  <mat-icon class="mr-1">{{ tipo.icono }}</mat-icon>
+                <div selected class="sport-chip font-medium">
                   {{ tipo.nombre }}
-                </mat-chip>
+                </div>
               }
             </div>
 
@@ -353,16 +352,16 @@
             <div class="services-section">
               <h3 class="h3 text-primary mb-6">Servicios y Comodidades</h3>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @for (service of services; track service) {
+                @for (service of canchaData.servicios; track service; let i = $index) {
                 <div
                   class="service-item flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <mat-icon [class]="service.iconClass" class="text-3xl mb-2">{{
-                    service.icon
+                  <mat-icon [class]="getServiceIconClass(i)" class="text-3xl mb-2">{{
+                    service.icono
                   }}</mat-icon>
                   <span
                     class="text-sm font-medium text-neutral-700 text-center"
-                    >{{ service.name }}</span
+                    >{{ service.nombre }}</span
                   >
                 </div>
                 }
@@ -379,8 +378,16 @@
                       >info</mat-icon
                     >
                     <span
-                      >Cancelación gratuita hasta 2 horas antes del horario
+                      >Cancelación gratuita hasta {{canchaData.tiempoLimiteCancelacion || "5"}} horas antes del horario
                       reservado</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5"
+                      >info</mat-icon
+                    >
+                    <span
+                      >Adelanto Minimo de {{canchaData.porcentajeAdelantoMinimo || "50"}}%</span
                     >
                   </li>
                   <li class="flex items-start">
@@ -389,18 +396,15 @@
                     >
                     <span>Tolerancia máxima de 15 minutos de retraso</span>
                   </li>
+                  
                   <li class="flex items-start">
-                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5"
-                      >sports</mat-icon
-                    >
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5">sports</mat-icon>
                     <span
                       >Uso obligatorio de zapatillas deportivas apropiadas</span
                     >
                   </li>
                   <li class="flex items-start">
-                    <mat-icon class="icon-sm !text-yellow-600 mr-2 text-lg mt-0.5"
-                      >no_smoking</mat-icon
-                    >
+                    <mat-icon class="icon-sm !text-yellow-600 mr-2 mt-0.5">smoke_free</mat-icon>
                     <span>Prohibido fumar en las instalaciones</span>
                   </li>
                 </ul>
@@ -420,7 +424,7 @@
                       <div class="font-semibold text-neutral-800">
                         Dirección
                       </div>
-                      <div class="text-neutral-600">{{ getFullAddress() }}</div>
+                      <div class="text-base">{{ getFullAddress() }}</div>
                     </div>
                   </div>
 
@@ -428,19 +432,7 @@
                     <mat-icon class="icon-primary mt-1">phone</mat-icon>
                     <div>
                       <div class="font-semibold text-neutral-800">Teléfono</div>
-                      <div class="text-neutral-600">{{ canchaData.telefonoCancha }}</div>
-                    </div>
-                  </div>
-
-                  <div class="flex items-start space-x-3">
-                    <mat-icon class="icon-primary mt-1">schedule</mat-icon>
-                    <div>
-                      <div class="font-semibold text-neutral-800">
-                        Horario de atención
-                      </div>
-                      <div class="text-neutral-600">
-                        Lunes a Domingo: 06:00 - 23:00
-                      </div>
+                      <div class="text-base">{{ canchaData.telefonoCancha }}</div>
                     </div>
                   </div>
                 </div>

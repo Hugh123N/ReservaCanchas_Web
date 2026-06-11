@@ -1,3 +1,5 @@
+@reference "../../../../../styles.css";
+
 .field-card {
   max-width: 350px;
   margin: auto;
@@ -30,4 +32,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.more-chip {
+  @apply bg-neutral-100 text-neutral-700 inline-block;
+  font-size: 11px;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 8px;
+  font-weight: 600;
+  border-radius: 12px;
 }

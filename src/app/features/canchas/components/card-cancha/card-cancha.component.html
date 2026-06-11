@@ -43,8 +43,11 @@
 
       <!-- Deporte -->
       <div class="flex flex-row flex-wrap gap-2">
-        @for (tipo of field.tipoDeportes; track tipo) {
+        @for (tipo of mostrarDeportes; track tipo) {
             <span class="sport-chip">{{ tipo.nombre }}</span>
+        }
+        @if (tieneDeportesAdicionales) {
+          <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
         }
       </div>
 

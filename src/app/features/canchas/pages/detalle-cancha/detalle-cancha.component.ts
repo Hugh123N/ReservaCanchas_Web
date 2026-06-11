@@ -31,7 +31,7 @@ import { generateFutureDates, getNombreDia, getNombreMes, formatParaInput } from
 import { agruparHorariosPorHora } from '@shared/utils/horario.utils';
 import { DateOption } from '../../core/types/date-option';
 import { TimeOption } from '../../core/types/time-option.interface';
-import { ServiceItem } from '../../core/types/service-item.interface';
+
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
 import { HorarioCanchaService } from '../../core/services/horarioCancha.service';
 
@@ -75,17 +75,8 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   // Available dates (next 7 days)
   fechasDisponibles: DateOption[] = [];
 
-  // Services offered
-  services: ServiceItem[] = [
-    { name: 'Torneos', icon: 'emoji_events', iconClass: 'icon-accent' },
-    { name: 'Cafetería', icon: 'local_cafe', iconClass: 'icon-secondary' },
-    { name: 'Estacionamiento', icon: 'local_parking', iconClass: 'icon-primary' },
-    { name: 'Implementos', icon: 'sports_soccer', iconClass: 'icon-accent' },
-    { name: 'Vestuarios', icon: 'wc', iconClass: 'icon-secondary' },
-    { name: 'Duchas', icon: 'shower', iconClass: 'icon-primary' },
-    { name: 'Iluminación LED', icon: 'lightbulb', iconClass: 'icon-accent' },
-    { name: 'WiFi Gratis', icon: 'wifi', iconClass: 'icon-secondary' }
-  ];
+  // Cycling icon colors for services
+  private readonly iconColorOrder = ['icon-accent', 'icon-secondary', 'icon-primary'] as const;
 
   constructor(
     private fb: FormBuilder,
@@ -108,8 +99,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
-    const idCancha = Number(this.route.snapshot.paramMap.get('id'));
-
     this.route.params.subscribe(params => {
       this.canchaId = +params['id'];
       this.loadCanchaData();
@@ -118,6 +107,10 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     this.generateAvailableDates();
     var telefono = this.authService.loadUserProfile()?.telefono ?? null;
     this.reservaForm.patchValue({ telefono: telefono });
+  }
+
+  getServiceIconClass(index: number): string {
+    return this.iconColorOrder[index % this.iconColorOrder.length];
   }
 
   loadCanchaData() {

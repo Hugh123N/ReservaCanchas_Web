@@ -10,11 +10,21 @@ export interface GetCancha extends Cancha {
   idCancha: number;
   duracionPreReserva?: number;
   porcentajeAdelantoMinimo?: number;
+  tiempoLimiteCancelacion?: number;
   imagenesCancha?: GetImagenCancha[];
   tipoDeportes?: GetTipoDeporte[];
+  servicios?: GetServicio[];
   estadoCancha?: GetEstadoCancha;
   faboritos?: GetCanchaFavorita[];
   ubigeo?: Ubigeo;
 
   horariosDisponibles?: HorarioDisponible[]; 
+}
+
+export interface GetServicio {
+  idServicio: number;
+  codigo: string;
+  nombre: string;
+  descripcion?: string;
+  icono?: string;
 }

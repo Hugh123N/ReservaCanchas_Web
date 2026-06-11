@@ -51,6 +51,18 @@ export class CardCanchaComponent extends BaseComponent{
     return this.field?.estadoCancha?.codigo === this.ESTADO_CANCHA.APROBADO;
   }
 
+  get mostrarDeportes(): any[] {
+    return this.field?.tipoDeportes?.slice(0, 3) ?? [];
+  }
+
+  get tieneDeportesAdicionales(): boolean {
+    return (this.field?.tipoDeportes?.length ?? 0) > 3;
+  }
+
+  get cantidadDeportesAdicionales(): number {
+    return Math.max(0, (this.field?.tipoDeportes?.length ?? 0) - 3);
+  }
+
   get estadoTexto(): string {
     const estado = this.field?.estadoCancha?.codigo;
     if (estado === this.ESTADO_CANCHA.MANTENIMIENTO) return 'En Mantenimiento';
