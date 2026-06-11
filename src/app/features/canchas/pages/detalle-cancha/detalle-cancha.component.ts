@@ -193,6 +193,11 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     this.selectedDate = fecha;
     this.selectedTime = null; // Reset selected time
 
+    // Scroll a la sección de horarios
+    setTimeout(() => {
+      document.querySelector('.time-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
     const body: RequestDisponibilidad = {
       idCancha: this.canchaData.idCancha!,
       fecha: fecha.fecha
@@ -233,6 +238,11 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       this.selectedTime.push(time);
     }
     this.reservaForm.patchValue({ duracion: this.selectedTime.length });
+
+    // Scroll al inicio del formulario de reserva
+    setTimeout(() => {
+      document.querySelector('.date-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   getFormattedSelectedDate(): string {

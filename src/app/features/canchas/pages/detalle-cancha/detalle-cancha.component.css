@@ -59,7 +59,7 @@
 }
 
 .time-btn.selected {
-  @apply bg-primary-500 text-white border-primary-500 transform scale-105 shadow-lg;
+  @apply bg-primary-500 text-white border-primary-500 transform scale-100 shadow-md;
 }
 
 .time-btn:hover:not([disabled]) {

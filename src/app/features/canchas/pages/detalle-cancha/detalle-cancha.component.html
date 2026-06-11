@@ -213,7 +213,7 @@
                     @for (h of getAvailableHours(); track h.hora) {
                     <button
                       type="button"
-                      class="time-btn rounded-lg sm:rounded-xl py-1 sm:py-2 transition-all duration-300"
+                      class="h-10 sm:h-14 min-w-50 md:h-16 rounded-lg sm:rounded-xl py-1 sm:py-2 transition-all duration-300"
                       [ngClass]="getTimeButtonClass(h)"
                       (click)="selectTime(h)"
                     >
@@ -314,10 +314,8 @@
                     <div
                       class="total-row flex justify-between items-center pt-4"
                     >
-                      <span class="text-xl font-bold text-neutral-800"
-                        >Total a pagar</span
-                      >
-                      <span class="text-3xl font-bold text-primary"
+                      <span class="title-section">Total a pagar</span>
+                      <span class="title-main text-primary"
                         >S/ {{ calculateTotal() }}</span
                       >
                     </div>
