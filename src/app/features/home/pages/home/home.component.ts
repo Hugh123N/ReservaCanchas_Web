@@ -11,8 +11,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
-import { CardCanchaComponent } from 'app/features/canchas/components/card-cancha/card-cancha.component';
-import { SearchCancha } from 'app/features/canchas/core/model/searchCancha.model';
 import { SearchBarComponent, SearchBarData } from '@shared/components/search-bar/search-bar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Ubigeo } from 'app/features/canchas/core/model/ubigeo/ubigeo.model';
@@ -27,7 +25,7 @@ import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-
   imports: [
     MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule,
     CommonModule,
-    FooterComponent, NavVarComponent, CardCanchaComponent, SearchBarComponent,
+    FooterComponent, NavVarComponent, SearchBarComponent,
     FormsModule, ReactiveFormsModule
   ],
   templateUrl: './home.component.html',
@@ -41,160 +39,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   selectedUbigeo: Ubigeo | null = null;
 
   tipoDeportes: GetTipoDeporte[] = [];
-  canchasEjemplo: SearchCancha[] = [
-    {
-      codigo: 'CAN001',
-      idCancha: 1,
-      idProveedor: 1,
-      idTipoSuperficie: 1,
-      nombre: "Arena Vóley Pro",
-      descripcion: "Cancha techada con arena especial para torneos de vóley.",
-      precio: 45,
-      telefonoCancha: "999888777",
-      direccion: "Av. Javier Prado Este 1234, Surco, Lima",
-      codigoUbigeo: "150141",
-      latitud: -12.105,
-      longitud: -76.963,
-      capacidadJugadores: 12,
-      idEstadoCancha: 1,
-      tieneTecho: true,
-      tieneIluminacion: true,
-      pais: "Perú",
-      duracionPreReserva: 15,
-      porcentajeAdelanto: 30,
-      calificacionPromedio: 4.8,
-
-      tipoDeportes: [
-        {
-          idTipoDeporte: 1,
-          codigo: 'VOL',
-          nombre: "Vóley",
-          icono: 'sports_volleyball'
-        }
-      ],
-
-      urlImagen: "https://picsum.photos/seed/voley/400/250",
-
-      estadoCancha: {
-        idEstadoCancha: 1,
-        codigo: "01",
-        nombre: "Aprobado"
-      },
-
-      faboritos: [],
-
-      ubigeo: {
-        codigoUbigeo: "150141",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "Surco"
-      }
-    },
-
-    {
-      codigo: 'CAN002',
-      idCancha: 2,
-      idProveedor: 2,
-      idTipoSuperficie: 2,
-      nombre: "Cancha Municipal",
-      descripcion: "Campo de fútbol de césped natural mantenido por la municipalidad.",
-      precio: 70,
-      telefonoCancha: "988777666",
-      direccion: "Av. La Fontana 567, La Molina, Lima",
-      codigoUbigeo: "150135",
-      latitud: -12.082,
-      longitud: -76.935,
-      capacidadJugadores: 22,
-      idEstadoCancha: 5,
-      tieneTecho: false,
-      tieneIluminacion: true,
-      pais: "Perú",
-      duracionPreReserva: 20,
-      porcentajeAdelanto: 50,
-      calificacionPromedio: 4.1,
-
-      tipoDeportes: [
-        {
-          idTipoDeporte: 2,
-          codigo: 'FUT11',
-          nombre: "Fútbol 11",
-          icono: 'sports_soccer'
-        },
-        {
-          idTipoDeporte: 1,
-          codigo: 'VOL',
-          nombre: "Vóley",
-          icono: 'sports_volleyball'
-        }
-      ],
-
-      urlImagen: "https://picsum.photos/seed/futbol/400/250",
-
-      estadoCancha: {
-        idEstadoCancha: 5,
-        codigo: "05",
-        nombre: "Mantenimiento"
-      },
-
-      faboritos: [],
-
-      ubigeo: {
-        codigoUbigeo: "150135",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "La Molina"
-      }
-    },
-
-    {
-      codigo: 'CAN003',
-      idCancha: 3,
-      idProveedor: 3,
-      idTipoSuperficie: 1,
-      nombre: "Fútbol Club Junior",
-      descripcion: "Cancha sintética para fútbol 7, ideal para partidos amistosos.",
-      precio: 60,
-      telefonoCancha: "977666555",
-      direccion: "Av. San Luis 999, San Borja, Lima",
-      codigoUbigeo: "150120",
-      latitud: -12.095,
-      longitud: -76.995,
-      capacidadJugadores: 14,
-      idEstadoCancha: 2,
-      tieneTecho: false,
-      tieneIluminacion: true,
-      pais: "Perú",
-      duracionPreReserva: 10,
-      porcentajeAdelanto: 20,
-      calificacionPromedio: 3.9,
-
-      tipoDeportes: [
-        {
-          idTipoDeporte: 2,
-          codigo: 'FUT7',
-          nombre: "Fútbol 7",
-          icono: 'sports_soccer'
-        }
-      ],
-
-      urlImagen: "https://picsum.photos/seed/futbol7/400/250",
-
-      estadoCancha: {
-        idEstadoCancha: 2,
-        codigo: "02",
-        nombre: "Pendiente"
-      },
-
-      faboritos: [],
-
-      ubigeo: {
-        codigoUbigeo: "150120",
-        departamento: "Lima",
-        provincia: "Lima",
-        distrito: "San Borja"
-      }
-    }
-  ];
   ubigeos: Ubigeo[] = [];
 
   minDate = new Date();
