@@ -97,30 +97,25 @@
 
       <!-- Empty State -->
       @if (!isLoading && canchas.length === 0) {
-        <div
-          class="empty-state text-center py-16"
-          >
+        <div class="empty-state  py-16">
           <div class="max-w-md mx-auto">
-            <mat-icon class="text-6xl text-neutral-400 mb-4"
-              >search_off</mat-icon
+            <mat-icon class="text-neutral-400 mb-4">search_off</mat-icon>
+            <h3 class="h3 text-neutral-600 mb-4 mx-auto">No se encontraron canchas</h3>
+            <p class="text-neutral-500 mb-6">
+              {{
+              isSearching
+              ? "Intenta ajustar tus filtros de búsqueda"
+              : "No hay canchas disponibles en este momento"
+              }}
+            </p>
+            <button
+              class="btn-outline-primary mx-auto"
+              (click)="onClear()"
               >
-              <h3 class="h3 text-neutral-600 mb-4">No se encontraron canchas</h3>
-              <p class="text-neutral-500 mb-6">
-                {{
-                isSearching
-                ? "Intenta ajustar tus filtros de búsqueda"
-                : "No hay canchas disponibles en este momento"
-                }}
-              </p>
-              <button
-                mat-raised-button
-                class="btn-outline-primary"
-                (click)="onClear()"
-                >
-                {{ isSearching ? "Limpiar filtros" : "Recargar" }}
-              </button>
-            </div>
+              {{ isSearching ? "Limpiar filtros" : "Recargar" }}
+            </button>
           </div>
+        </div>
         }
 
         <!-- Pagination -->

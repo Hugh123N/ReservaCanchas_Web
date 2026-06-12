@@ -170,8 +170,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .icon-2xl {
-  @apply md:w-10! sm:h-10! sm:text-2xl! 
-         lg:w-12! md:h-12! md:text-3xl!;
+  @apply w-10! h-10! text-2xl! 
+         lg:w-12! md:h-12! md:text-3xl! flex! items-center!;
 }
 
 
