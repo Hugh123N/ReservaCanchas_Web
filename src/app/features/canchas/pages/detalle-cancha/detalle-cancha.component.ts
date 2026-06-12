@@ -241,7 +241,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
 
     // Scroll al inicio del formulario de reserva
     setTimeout(() => {
-      document.querySelector('.date-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('.time-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
   }
 

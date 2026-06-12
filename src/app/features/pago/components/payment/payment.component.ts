@@ -232,14 +232,6 @@ export class PaymentComponent extends BaseComponent implements OnInit {
             </p>
           </div>
 
-          <div style="margin-bottom: 1rem;">
-            <h4 style="margin: 0 0 0.5rem 0; color: #334155;">Detalles de tu Reserva</h4>
-            <p style="margin: 0.25rem 0;"><strong>Cancha:</strong> ${this.reservaData?.cancha?.nombre || 'N/A'}</p>
-            <p style="margin: 0.25rem 0;"><strong>Fecha:</strong> ${this.formatDate(this.reservaData?.fecha!)}</p>
-            <p style="margin: 0.25rem 0;"><strong>Horarios:</strong> ${horarios}</p>
-            <p style="margin: 0.25rem 0;"><strong>Monto Total:</strong> S/ ${data.montoFormateado || this.reservaData?.total.toFixed(2)}</p>
-          </div>
-
           <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
             <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">IMPORTANTE</h4>
             <p style="margin: 0.25rem 0;">Tu reserva expirará el:</p>
