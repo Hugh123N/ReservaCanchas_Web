@@ -702,3 +702,49 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 
+/* ==========================================
+   SweetAlert2 responsive
+   ========================================== */
+@media (max-width: 640px) {
+  .pre-reserva-modal {
+    width: calc(100% - 1rem) !important;
+    margin: 0.5rem auto;
+    padding: 1rem;
+  }
+
+  .pre-reserva-modal .swal2-icon {
+    transform: scale(0.6);
+    margin: -0.5rem auto -1rem !important;
+  }
+
+  .pre-reserva-modal .swal2-title {
+    font-size: 1.25rem !important;
+    padding: 0.5rem 0 !important;
+  }
+
+  .pre-reserva-modal .swal2-html-container {
+    padding: 0 !important;
+    margin: 0.5rem 0 !important;
+  }
+
+  .swal-title-custom {
+    font-size: 1.25rem !important;
+  }
+
+  .btn-primary-large {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .swal2-confirm,
+  .swal2-cancel {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+    margin: 0.25rem !important;
+  }
+
+  .swal2-actions {
+    margin-top: 0 !important;
+    gap: 0.25rem !important;
+  }
+}

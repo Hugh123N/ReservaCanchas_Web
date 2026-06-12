@@ -243,7 +243,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
             </p>
           </div>
 
-          <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
+          <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px; border-left: 4px solid #10b981;">
             <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">Próximos Pasos</h4>
             <p style="margin: 0.25rem 0;">El operador de la cancha se contactará contigo al:</p>
             <p style="margin: 0.25rem 0; font-size: 1.2rem; font-weight: bold; color: #047857;">
