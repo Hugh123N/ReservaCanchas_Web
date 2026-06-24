@@ -8,6 +8,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { User } from 'app/features/auth/models/user';
 import { BaseComponent } from '@base/components/base-component/base.component';
+import { SessionWarningComponent } from '../session-warning/session-warning.component';
 
 @Component({
   selector: 'app-nav-var',
@@ -18,7 +19,8 @@ import { BaseComponent } from '@base/components/base-component/base.component';
     MatIconModule,
     MatMenuModule,
     MatToolbarModule,
-    MatButtonModule
+    MatButtonModule,
+    SessionWarningComponent
   ],
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'

@@ -1,0 +1,69 @@
+@reference "../../../../styles.css";
+
+.alert-banner {
+  @apply px-4 py-3 text-sm;
+}
+
+.alert-banner-content {
+  @apply max-w-[1200px] mx-auto flex items-center justify-between gap-4 w-full;
+}
+
+.alert-banner-icon {
+  @apply text-white flex-shrink-0;
+}
+
+.alert-banner-text {
+  @apply flex-1;
+}
+
+.alert-banner-actions {
+  @apply flex items-center gap-2 flex-shrink-0;
+}
+
+.alert-banner-actions .btn-sm {
+  @apply text-xs px-3 py-1;
+}
+
+.alert-banner-dismiss {
+  @apply text-white opacity-80 hover:opacity-100 transition p-1 rounded;
+}
+
+.alert-banner-dismiss mat-icon {
+  @apply w-4 h-4 text-sm;
+}
+
+.alert-banner-warning {
+  @apply bg-amber-500 text-white;
+}
+
+.alert-banner-error {
+  @apply bg-red-500 text-white;
+}
+
+.alert-banner-info {
+  @apply bg-blue-500 text-white;
+}
+
+.alert-banner-success {
+  @apply bg-green-500 text-white;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .alert-banner-content {
+    @apply flex-col items-start gap-2;
+  }
+
+  .alert-banner-actions {
+    @apply w-full justify-end;
+  }
+}

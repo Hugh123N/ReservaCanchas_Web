@@ -156,22 +156,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .icon-sm {
   @apply w-4! h-4! text-base!
-  sm:w-5! sm:h-5! sm:text-lg! flex! items-center!;
+  sm:w-5! sm:h-5! sm:text-lg! flex! items-center! justify-center!;
 }
 
 .icon-md {
   @apply w-5! h-5! text-lg! 
-         sm:w-6! sm:h-6! sm:text-xl! flex! items-center!;
+         sm:w-6! sm:h-6! sm:text-xl! flex! items-center! justify-center!;
 }
 
 .icon-lg {
   @apply w-8! h-8! text-2xl! 
-         md:w-10! md:h-10! md:text-3xl! flex! items-center!;
+         md:w-10! md:h-10! md:text-3xl! flex! items-center! justify-center!;
 }
 
 .icon-2xl {
   @apply w-10! h-10! text-2xl! 
-         lg:w-12! md:h-12! md:text-3xl! flex! items-center!;
+         lg:w-12! md:h-12! md:text-3xl! flex! items-center! justify-center!;
 }
 
 
@@ -746,5 +746,77 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .swal2-actions {
     margin-top: 0 !important;
     gap: 0.25rem !important;
+  }
+}
+
+/* ==========================================
+   ALERT BANNER GENÉRICO
+   ========================================== */
+
+.alert-banner {
+  @apply px-4 py-3 text-sm;
+}
+
+.alert-banner-content {
+  @apply max-w-[1200px] mx-auto flex items-center justify-between gap-4 w-full;
+}
+
+.alert-banner-icon {
+  @apply text-white flex-shrink-0;
+}
+
+.alert-banner-text {
+  @apply flex-1;
+}
+
+.alert-banner-actions {
+  @apply flex items-center gap-2 flex-shrink-0;
+}
+
+.alert-banner-actions .btn-sm {
+  @apply text-xs px-3 py-1;
+}
+
+.alert-banner-dismiss {
+  @apply text-white opacity-80 hover:opacity-100 transition p-1 rounded;
+}
+
+.alert-banner-dismiss mat-icon {
+  @apply w-4 h-4 text-sm;
+}
+
+.alert-banner-warning {
+  @apply bg-amber-500 text-white;
+}
+
+.alert-banner-error {
+  @apply bg-red-500 text-white;
+}
+
+.alert-banner-info {
+  @apply bg-blue-500 text-white;
+}
+
+.alert-banner-success {
+  @apply bg-green-500 text-white;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .alert-banner-content {
+    @apply flex-col items-start gap-2;
+  }
+
+  .alert-banner-actions {
+    @apply w-full justify-end;
   }
 }

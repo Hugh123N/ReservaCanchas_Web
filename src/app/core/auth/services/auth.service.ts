@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
@@ -8,6 +8,7 @@ import { User } from 'app/features/auth/models/user';
 import { UsersService } from 'app/features/auth/services/users.service';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { environment } from '@environments/environment';
+import { SessionExpiryService } from '@core/services/session-expiry.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +18,22 @@ export class AuthService {
   access_token_key = `access_token_${environment.application.code}`;
   private platformId = inject(PLATFORM_ID);
   private isBrowser: boolean;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
     private usersService: UsersService,
-    private injector: Injector
+    private injector: Injector,
+    private sessionExpiryService: SessionExpiryService
   ) {
     this.user$ = new Subject<User>();
     this.isBrowser = isPlatformBrowser(this.platformId);
+
+    this.sessionExpiryService.sessionExpired
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.logoutSession();
+      });
   }
 
   public loadUserProfile() {
@@ -73,9 +82,9 @@ export class AuthService {
         localStorage.setItem(this.access_token_key, accessToken.access_token);
         this.loadUserProfile();
 
-        //TODO: Cargar favoritos automáticamente al iniciar sesión
+        this.sessionExpiryService.startWatching(accessToken.access_token);
+
         try {
-          // Usar lazy loading para evitar dependencia circular
           const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
           const favoritosService = this.injector.get(CanchaFavoritaService);
           await favoritosService.cargarFavoritosUsuario();
@@ -119,10 +128,10 @@ export class AuthService {
 
   public async cleanAndRedirect(): Promise<void> {
     if (!this.isBrowser) return;
+    
+    this.sessionExpiryService.stopWatching();
 
-    //TODO: Limpiar favoritos al cerrar sesión o cambiar de usuario
     try {
-      // Usar lazy loading para evitar dependencia circular
       const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
       const favoritosService = this.injector.get(CanchaFavoritaService);
       favoritosService.limpiarFavoritos();
@@ -130,7 +139,6 @@ export class AuthService {
       console.error('Error al limpiar favoritos en logout:', error);
     }
 
-    //localStorage.removeItem('menuConfigV1');
     localStorage.removeItem(this.access_token_key);
     sessionStorage.clear();
     this.router.navigate(['auth/login']);
@@ -173,7 +181,7 @@ export class AuthService {
     sessionStorage.clear();
   }
 
-  public keepAlive() {
+  public keepAlive(onRenewed?: (newToken: string) => void): void {
     if (!this.isBrowser) return;
 
     let access_token = this.getToken();
@@ -196,6 +204,9 @@ export class AuthService {
                   response.data.access_token
                 );
                 this.loadUserProfile();
+                if (onRenewed) {
+                  onRenewed(response.data.access_token);
+                }
               }
             }
           }

@@ -1,0 +1,43 @@
+# Git
+.git/
+.gitignore
+
+# IDEs
+.vscode/
+.idea/
+
+# Angular cache
+.angular/
+
+# Node
+node_modules/
+
+# Build output
+dist/
+
+# Documentation
+docs/
+*.md
+AGENTS.md
+IMPLEMENTACION_MAPAS.md
+README.md
+
+# OpenCode
+.opencode/
+
+# Config files (no needed in build)
+.editorconfig
+.postcssrc.json
+
+# Docker
+Dockerfile
+.dockerignore
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+*.spec.ts
+tsconfig.spec.json
