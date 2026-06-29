@@ -1,4 +1,4 @@
-<div class="detalle-reserva-container">
+<div class="p-6">
   <!-- Header -->
   <div class="flex items-start justify-between mb-4">
     <div class="flex-1">
@@ -10,19 +10,17 @@
         {{ reserva.direccionCancha }}
       </p>
     </div>
-    <button mat-icon-button (click)="onClose()" class="text-neutral-600">
+    <button (click)="onClose()" class="btn-clean-primary">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
   <!-- Estado Badge -->
   <div class="flex justify-center mb-4">
-    <mat-chip-set>
-      <mat-chip [class]="getEstadoClass(reserva.codigoEstadoReserva)" class="text-lg px-6 py-2">
-        <mat-icon class="icon-sm mr-2">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
-        {{ reserva.estadoReserva }}
-      </mat-chip>
-    </mat-chip-set>
+    <span [class]="getEstadoClass(reserva.codigoEstadoReserva)" class="text-lg px-6 py-2 inline-flex items-center gap-2">
+      <mat-icon class="icon-sm">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
+      {{ reserva.estadoReserva }}
+    </span>
   </div>
 
   <!-- Información Principal -->
@@ -72,7 +70,7 @@
     </div>
   </div>
 
-  <mat-divider class="my-4"></mat-divider>
+  <hr class="border-neutral-200 my-4" />
 
   <!-- Información de Pago -->
   <div class="bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-lg p-4 mb-4">
@@ -87,7 +85,7 @@
         <span class="text-2xl font-bold text-accent-600">S/ {{ reserva.monto.toFixed(2) }}</span>
       </div>
 
-      <mat-divider class="my-2!"></mat-divider>
+      <hr class="border-neutral-200 my-2" />
 
       <div class="flex justify-between">
         <span class="text-neutral-600">Adelanto:</span>
@@ -105,17 +103,16 @@
 
       <div class="flex justify-between items-center">
         <span class="text-neutral-600">Estado de Pago:</span>
-        <mat-chip-set>
-          <mat-chip
-            [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
-            [class.text-green-800]="reserva.estadoPago === 'Pagado'"
-            [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
-            [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
-            [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
-            [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
-            {{ reserva.estadoPago }}
-          </mat-chip>
-        </mat-chip-set>
+        <span
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+          [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
+          [class.text-green-800]="reserva.estadoPago === 'Pagado'"
+          [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
+          [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
+          [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
+          [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
+          {{ reserva.estadoPago }}
+        </span>
       </div>
 
       @if (reserva.numeroRecibo) {
@@ -135,9 +132,9 @@
         <div class="flex-1">
           <p class="font-bold text-amber-800 mb-1">
             @if (isProximaExpirar()) {
-              ⚠️ ¡Tu reserva expira pronto!
+              ¡Tu reserva expira pronto!
             } @else {
-              ⏰ Pre-Reserva Pendiente
+              Pre-Reserva Pendiente
             }
           </p>
           <p class="text-sm text-amber-700">
@@ -161,7 +158,7 @@
       <div class="flex items-start gap-3">
         <mat-icon class="text-green-600 mt-0.5">check_circle</mat-icon>
         <div class="flex-1">
-          <p class="font-bold text-green-800 mb-1">✅ Reserva Confirmada</p>
+          <p class="font-bold text-green-800 mb-1">Reserva Confirmada</p>
           <p class="text-sm text-green-700">
             Tu reserva ha sido confirmada por el operador. Recibirás un recordatorio 1 hora antes de tu reserva.
           </p>
@@ -175,7 +172,7 @@
       <div class="flex items-start gap-3">
         <mat-icon class="text-red-600 mt-0.5">cancel</mat-icon>
         <div class="flex-1">
-          <p class="font-bold text-red-800 mb-1">❌ Reserva Cancelada</p>
+          <p class="font-bold text-red-800 mb-1">Reserva Cancelada</p>
           <p class="text-sm text-red-700">
             Esta reserva ha sido cancelada. Si tienes dudas, contacta con el operador.
           </p>
@@ -189,7 +186,7 @@
       <div class="flex items-start gap-3">
         <mat-icon class="text-neutral-600 mt-0.5">event_busy</mat-icon>
         <div class="flex-1">
-          <p class="font-bold text-neutral-700 mb-1">⏱️ Reserva Expirada</p>
+          <p class="font-bold text-neutral-700 mb-1">Reserva Expirada</p>
           <p class="text-sm text-neutral-600">
             Esta pre-reserva expiró porque no fue confirmada a tiempo.
           </p>
@@ -209,9 +206,8 @@
         </div>
         <a
           href="tel:{{ reserva.telefonoCancha }}"
-          mat-raised-button
           class="btn-primary">
-          <mat-icon class="mr-2">call</mat-icon>
+          <mat-icon class="icon-sm">call</mat-icon>
           Llamar
         </a>
       </div>
@@ -220,7 +216,7 @@
 
   <!-- Botón Cerrar -->
   <div class="flex justify-end mt-6">
-    <button mat-raised-button class="btn-secondary" (click)="onClose()">
+    <button class="btn-secondary" (click)="onClose()">
       Cerrar
     </button>
   </div>

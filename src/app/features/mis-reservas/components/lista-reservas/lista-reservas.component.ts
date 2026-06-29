@@ -1,12 +1,7 @@
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatDividerModule } from '@angular/material/divider';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { AuthService } from '@core/auth/services/auth.service';
 import { ReservaService } from 'app/features/reserva/core/services/reserva.service';
@@ -26,13 +21,8 @@ import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
-    MatButtonModule,
     MatIconModule,
-    MatChipsModule,
     MatProgressSpinnerModule,
-    MatPaginatorModule,
-    MatDividerModule,
     MatDialogModule,
     FiltrosReservasComponent
   ],
@@ -48,6 +38,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
   pageSize: number = 10;
   pageIndex: number = 0;
   totalItems: number = 0;
+  Math = Math;
 
   // Filtros
   filtrosActivos: SearchReservaClienteFilterDto = {};
@@ -123,10 +114,13 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
   /**
    * Cambio de página
    */
-  onPageChange(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+  onPageChange(page: number): void {
+    this.pageIndex = page;
     this.loadReservas();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
   }
 
   /**
@@ -234,6 +228,10 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
     if (!reserva.fechaExpiracionPreReserva) return 0;
 
     return Math.floor(calcularHorasRestantes(reserva.fechaExpiracionPreReserva));
+  }
+
+  hasFiltros(): boolean {
+    return this.filtrosActivos && Object.keys(this.filtrosActivos).length > 0;
   }
 
   override ngOnDestroy(): void {

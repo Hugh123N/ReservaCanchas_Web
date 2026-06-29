@@ -5,7 +5,7 @@
     <!-- Page Header -->
     <div class="section-spacing">
       <div class="flex items-center gap-3 sm:gap-4 mb-6">
-        <button mat-icon-button routerLink="/" class="text-neutral-600 hover:text-primary-600 transition-colors">
+        <button routerLink="/" class="btn-clean-primary">
           <mat-icon class="icon-lg">arrow_back</mat-icon>
         </button>
         <div class="flex-1">
@@ -14,11 +14,8 @@
               <h1 class="title-main text-primary-600">Mis Reservas</h1>
               <p class="text-base text-neutral-600">Historial completo de tus reservas</p>
             </div>
-            <button
-              mat-raised-button
-              class="btn-primary"
-              (click)="toggleFiltros()">
-              <mat-icon class="mr-2">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+            <button class="btn-primary" (click)="toggleFiltros()">
+              <mat-icon class="icon-sm">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
               {{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
             </button>
           </div>
@@ -51,20 +48,20 @@
         <mat-icon class="empty-state-icon">event_busy</mat-icon>
         <h3 class="empty-state-title">No tienes reservas</h3>
         <p class="empty-state-description">
-          @if (Object.keys(filtrosActivos).length > 0) {
+          @if (hasFiltros()) {
             No se encontraron reservas con los filtros aplicados. Intenta con otros criterios de búsqueda.
           } @else {
             Aún no has realizado ninguna reserva. ¡Busca una cancha y crea tu primera reserva!
           }
         </p>
-        @if (Object.keys(filtrosActivos).length > 0) {
-          <button mat-raised-button class="btn-secondary" (click)="onLimpiarFiltros()">
-            <mat-icon class="mr-2">filter_list_off</mat-icon>
+        @if (hasFiltros()) {
+          <button class="btn-secondary" (click)="onLimpiarFiltros()">
+            <mat-icon class="icon-sm">filter_list_off</mat-icon>
             Limpiar Filtros
           </button>
         } @else {
-          <button mat-raised-button class="btn-primary" routerLink="/">
-            <mat-icon class="mr-2">search</mat-icon>
+          <button class="btn-primary" routerLink="/">
+            <mat-icon class="icon-sm">search</mat-icon>
             Buscar Canchas
           </button>
         }
@@ -98,16 +95,14 @@
                   </div>
 
                   <!-- Badge de Estado -->
-                  <mat-chip-set>
-                    <mat-chip [class]="getEstadoClass(reserva.codigoEstadoReserva)">
-                      <mat-icon class="icon-sm mr-1">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
-                      {{ reserva.estadoReserva }}
-                    </mat-chip>
-                  </mat-chip-set>
+                  <span [class]="getEstadoClass(reserva.codigoEstadoReserva)">
+                    <mat-icon class="icon-sm mr-1">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
+                    {{ reserva.estadoReserva }}
+                  </span>
                 </div>
 
                 <!-- Detalles en Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mt-3">
                   <div class="flex items-center gap-2">
                     <mat-icon class="icon-sm text-primary-600">confirmation_number</mat-icon>
                     <span class="text-neutral-600">Código:</span>
@@ -137,7 +132,7 @@
                     <span class="text-xl font-bold text-primary-600">S/ {{ reserva.monto.toFixed(2) }}</span>
                   </div>
 
-                  <mat-divider class="my-2!"></mat-divider>
+                  <hr class="border-neutral-200 my-2" />
 
                   <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
@@ -154,18 +149,16 @@
                     </div>
                     <div class="flex justify-between items-center">
                       <span class="text-neutral-600">Estado Pago:</span>
-                      <mat-chip-set>
-                        <mat-chip
-                          class="text-xs"
-                          [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
-                          [class.text-green-800]="reserva.estadoPago === 'Pagado'"
-                          [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
-                          [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
-                          [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
-                          [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
-                          {{ reserva.estadoPago }}
-                        </mat-chip>
-                      </mat-chip-set>
+                      <span
+                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                        [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
+                        [class.text-green-800]="reserva.estadoPago === 'Pagado'"
+                        [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
+                        [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
+                        [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
+                        [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
+                        {{ reserva.estadoPago }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -177,7 +170,7 @@
                       <mat-icon class="icon-sm text-amber-600 mt-0.5">schedule</mat-icon>
                       <div class="flex-1 text-xs">
                         @if (isProximaExpirar(reserva)) {
-                          <p class="font-semibold text-amber-800">⚠️ ¡Expira pronto!</p>
+                          <p class="font-semibold text-amber-800">¡Expira pronto!</p>
                           <p class="text-amber-700">Quedan {{ getHorasRestantes(reserva) }} horas</p>
                         } @else {
                           <p class="text-amber-700">Expira: {{ formatFecha(reserva.fechaExpiracionPreReserva) }}</p>
@@ -209,18 +202,40 @@
           </div>
         }
 
-        <!-- Paginación -->
-        <div class="flex justify-center mt-6">
-          <mat-paginator
-            [length]="totalItems"
-            [pageSize]="pageSize"
-            [pageIndex]="pageIndex"
-            [pageSizeOptions]="[5, 10, 20, 50]"
-            (page)="onPageChange($event)"
-            showFirstLastButtons
-            class="bg-transparent">
-          </mat-paginator>
-        </div>
+        <!-- Paginación Custom -->
+        @if (totalPages > 1) {
+          <div class="flex items-center justify-center gap-2 mt-6">
+            <button
+              class="btn-outline-primary"
+              [disabled]="pageIndex === 0"
+              (click)="onPageChange(0)">
+              <mat-icon class="icon-sm">first_page</mat-icon>
+            </button>
+            <button
+              class="btn-outline-primary"
+              [disabled]="pageIndex === 0"
+              (click)="onPageChange(pageIndex - 1)">
+              <mat-icon class="icon-sm">chevron_left</mat-icon>
+            </button>
+
+            <span class="text-sm text-neutral-600 mx-2">
+              Página {{ pageIndex + 1 }} de {{ totalPages }}
+            </span>
+
+            <button
+              class="btn-outline-primary"
+              [disabled]="pageIndex >= totalPages - 1"
+              (click)="onPageChange(pageIndex + 1)">
+              <mat-icon class="icon-sm">chevron_right</mat-icon>
+            </button>
+            <button
+              class="btn-outline-primary"
+              [disabled]="pageIndex >= totalPages - 1"
+              (click)="onPageChange(totalPages - 1)">
+              <mat-icon class="icon-sm">last_page</mat-icon>
+            </button>
+          </div>
+        }
       </div>
     }
 

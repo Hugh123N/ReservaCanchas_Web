@@ -1,14 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { SearchReservaClienteFilterDto } from 'app/features/reserva/core/model/reservaCliente.model';
 import { EstadoReservaCodigo, EstadoReservaNombre } from '@shared/enums/estado-reserva.enum';
 import { EstadoPago } from '@shared/enums/estado-pago.enum';
@@ -19,14 +12,7 @@ import { EstadoPago } from '@shared/enums/estado-pago.enum';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDatepickerModule,
-    MatNativeDateModule
+    MatIconModule
   ],
   templateUrl: './filtros-reservas.component.html',
   styleUrl: './filtros-reservas.component.css'
@@ -60,18 +46,15 @@ export class FiltrosReservasComponent implements OnInit {
 
   private initializeForm(): void {
     this.filtrosForm = this.fb.group({
-      codigoEstado: [this.filtrosActivos.codigoEstado || null],
-      estadoPago: [this.filtrosActivos.estadoPago || null],
-      fechaDesde: [this.filtrosActivos.fechaDesde ? new Date(this.filtrosActivos.fechaDesde) : null],
-      fechaHasta: [this.filtrosActivos.fechaHasta ? new Date(this.filtrosActivos.fechaHasta) : null],
+      codigoEstado: [this.filtrosActivos.codigoEstado || ''],
+      estadoPago: [this.filtrosActivos.estadoPago || ''],
+      fechaDesde: [this.filtrosActivos.fechaDesde ? this.filtrosActivos.fechaDesde.substring(0, 10) : ''],
+      fechaHasta: [this.filtrosActivos.fechaHasta ? this.filtrosActivos.fechaHasta.substring(0, 10) : ''],
       codigoReserva: [this.filtrosActivos.codigoReserva || ''],
       nombreCancha: [this.filtrosActivos.nombreCancha || '']
     });
   }
 
-  /**
-   * Aplicar filtros
-   */
   onAplicarFiltros(): void {
     const formValue = this.filtrosForm.value;
 
@@ -84,7 +67,6 @@ export class FiltrosReservasComponent implements OnInit {
       nombreCancha: formValue.nombreCancha?.trim() || undefined
     };
 
-    // Eliminar propiedades undefined
     Object.keys(filtros).forEach(key => {
       if (filtros[key as keyof SearchReservaClienteFilterDto] === undefined) {
         delete filtros[key as keyof SearchReservaClienteFilterDto];
@@ -94,17 +76,11 @@ export class FiltrosReservasComponent implements OnInit {
     this.filtrosChange.emit(filtros);
   }
 
-  /**
-   * Limpiar todos los filtros
-   */
   onLimpiar(): void {
     this.filtrosForm.reset();
     this.limpiarFiltros.emit();
   }
 
-  /**
-   * Verificar si hay filtros activos
-   */
   hasFiltrosActivos(): boolean {
     const values = this.filtrosForm.value;
     return Object.values(values).some(v => v !== null && v !== '' && v !== undefined);

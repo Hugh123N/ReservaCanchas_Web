@@ -1,9 +1,1 @@
 @reference "../../../../../styles.css";
-
-.detalle-reserva-container {
-  @apply p-6;
-}
-
-::ng-deep .detalle-reserva-dialog .mat-mdc-dialog-surface {
-  padding: 0 !important;
-}

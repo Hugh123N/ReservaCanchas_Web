@@ -20,6 +20,7 @@ Este archivo contiene las reglas e instrucciones que la IA debe seguir al trabaj
 | `patrones/SKILL.md` | `.opencode/skills/patrones/` | Páginas, dialogs, filtros |
 | `estado/SKILL.md` | `.opencode/skills/estado/` | Signals, RxJS, localStorage |
 | `tailwind-4-docs/SKILL.md` | `.opencode/skills/tailwind-4-docs/` | Documentación Tailwind v4, migración |
+| `angular-developer/SKILL.md` | `.opencode/skills/angular-developer/` | Angular 20+ signals, DI, routing, SSR, testing |
 
 ---
 
