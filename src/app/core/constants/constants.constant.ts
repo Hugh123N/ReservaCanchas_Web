@@ -5,9 +5,3 @@ export const ESTADO_CANCHA = {
     SUSPENDIDO: '04',
     MANTENIMIENTO: '05'
 };
-
-export const TIPO_CANCHA = {
-    FUTBOL: 'Fútbol',
-    TENIS: 'Tenis',
-    PADEL: 'Pádel',
-};

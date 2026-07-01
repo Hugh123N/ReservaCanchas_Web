@@ -1,32 +1,15 @@
-/**
- * Enum para estados de pago
- */
 export enum EstadoPago {
   PENDIENTE = 'Pendiente',
   PARCIAL = 'Parcial',
   PAGADO = 'Pagado'
 }
 
-/**
- * Función helper para verificar si un estado de pago es válido
- */
-export function esEstadoPagoValido(estado: string): boolean {
-  return Object.values(EstadoPago).includes(estado as EstadoPago);
-}
+export const ESTADO_PAGO_META: Record<EstadoPago, { label: string; cssClass: string }> = {
+  [EstadoPago.PAGADO]: { label: 'Pagado', cssClass: 'bg-green-100 text-green-800' },
+  [EstadoPago.PARCIAL]: { label: 'Parcial', cssClass: 'bg-amber-100 text-amber-800' },
+  [EstadoPago.PENDIENTE]: { label: 'Pendiente', cssClass: 'bg-neutral-100 text-neutral-800' }
+};
 
-/**
- * Función helper para obtener el color asociado al estado de pago
- * Útil para badges/chips en la UI
- */
-export function getEstadoPagoColor(estado: string): string {
-  switch (estado) {
-    case EstadoPago.PAGADO:
-      return 'success'; // Verde
-    case EstadoPago.PARCIAL:
-      return 'warning'; // Amarillo
-    case EstadoPago.PENDIENTE:
-      return 'warn'; // Rojo
-    default:
-      return 'default';
-  }
+export function getEstadoPagoMeta(estado: string) {
+  return ESTADO_PAGO_META[estado as EstadoPago] || { label: estado, cssClass: 'bg-neutral-100 text-neutral-800' };
 }

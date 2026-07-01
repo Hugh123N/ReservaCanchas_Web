@@ -1,7 +1,3 @@
-/**
- * Enum para estados de reserva
- * Basado en los códigos del backend
- */
 export enum EstadoReservaCodigo {
   PENDIENTE = '01',
   CONFIRMADO = '02',
@@ -9,9 +5,6 @@ export enum EstadoReservaCodigo {
   EXPIRADO = '04'
 }
 
-/**
- * Enum para nombres de estados de reserva
- */
 export enum EstadoReservaNombre {
   PENDIENTE = 'Pendiente',
   CONFIRMADO = 'Confirmado',
@@ -19,9 +12,6 @@ export enum EstadoReservaNombre {
   EXPIRADO = 'Expirado'
 }
 
-/**
- * Mapa para convertir código a nombre
- */
 export const ESTADO_RESERVA_MAP: Record<EstadoReservaCodigo, EstadoReservaNombre> = {
   [EstadoReservaCodigo.PENDIENTE]: EstadoReservaNombre.PENDIENTE,
   [EstadoReservaCodigo.CONFIRMADO]: EstadoReservaNombre.CONFIRMADO,
@@ -29,16 +19,17 @@ export const ESTADO_RESERVA_MAP: Record<EstadoReservaCodigo, EstadoReservaNombre
   [EstadoReservaCodigo.EXPIRADO]: EstadoReservaNombre.EXPIRADO
 };
 
-/**
- * Función helper para obtener el nombre del estado desde el código
- */
+export const ESTADO_RESERVA_META: Record<EstadoReservaCodigo, { label: string; cssClass: string; icon: string }> = {
+  [EstadoReservaCodigo.PENDIENTE]: { label: 'Pendiente', cssClass: 'estado-pendiente', icon: 'schedule' },
+  [EstadoReservaCodigo.CONFIRMADO]: { label: 'Confirmado', cssClass: 'estado-confirmado', icon: 'check_circle' },
+  [EstadoReservaCodigo.CANCELADO]: { label: 'Cancelado', cssClass: 'estado-cancelado', icon: 'cancel' },
+  [EstadoReservaCodigo.EXPIRADO]: { label: 'Expirado', cssClass: 'estado-expirado', icon: 'event_busy' }
+};
+
 export function getEstadoReservaNombre(codigo: string): string {
   return ESTADO_RESERVA_MAP[codigo as EstadoReservaCodigo] || 'Desconocido';
 }
 
-/**
- * Función helper para verificar si un código es válido
- */
-export function esEstadoReservaValido(codigo: string): boolean {
-  return Object.values(EstadoReservaCodigo).includes(codigo as EstadoReservaCodigo);
+export function getEstadoReservaMeta(codigo: string) {
+  return ESTADO_RESERVA_META[codigo as EstadoReservaCodigo] || { label: 'Desconocido', cssClass: '', icon: 'help' };
 }

@@ -4,7 +4,7 @@ import { GetEstadoCancha } from "../../../cancha-estado/core/model/getEstadoCanc
 import { GetImagenCancha } from "./imagenCancha/getImagenCancha.model";
 import { GetTipoDeporte } from "../../../cancha-tipo/core/model/getTipoDeporte.model";
 import { Ubigeo } from "./ubigeo/ubigeo.model";
-import { HorarioDisponible } from "./horarioCancha/horarioDisponible.model";
+import { GetHorarioCancha } from "./horarioCancha/gethorarioCancha.model";
 
 export interface GetCancha extends Cancha {
   idCancha: number;
@@ -18,7 +18,7 @@ export interface GetCancha extends Cancha {
   faboritos?: GetCanchaFavorita[];
   ubigeo?: Ubigeo;
 
-  horariosDisponibles?: HorarioDisponible[]; 
+  horariosDisponibles?: GetHorarioCancha[]; 
 }
 
 export interface GetServicio {

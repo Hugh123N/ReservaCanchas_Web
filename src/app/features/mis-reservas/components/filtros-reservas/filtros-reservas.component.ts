@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, effect, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { SearchReservaClienteFilterDto } from 'app/features/reserva/core/model/reservaCliente.model';
@@ -9,21 +8,23 @@ import { EstadoPago } from '@shared/enums/estado-pago.enum';
 @Component({
   selector: 'app-filtros-reservas',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatIconModule
   ],
   templateUrl: './filtros-reservas.component.html',
   styleUrl: './filtros-reservas.component.css'
 })
-export class FiltrosReservasComponent implements OnInit {
+export class FiltrosReservasComponent {
 
-  @Input() filtrosActivos: SearchReservaClienteFilterDto = {};
-  @Output() filtrosChange = new EventEmitter<SearchReservaClienteFilterDto>();
-  @Output() limpiarFiltros = new EventEmitter<void>();
+  private fb = inject(FormBuilder);
 
-  filtrosForm!: FormGroup;
+  filtrosActivos = input<SearchReservaClienteFilterDto>({});
+  filtrosChange = output<SearchReservaClienteFilterDto>();
+  limpiarFiltros = output<void>();
+
+  filtrosForm: FormGroup;
 
   estadosReserva = [
     { value: EstadoReservaCodigo.PENDIENTE, label: EstadoReservaNombre.PENDIENTE },
@@ -38,20 +39,28 @@ export class FiltrosReservasComponent implements OnInit {
     { value: EstadoPago.PAGADO, label: EstadoPago.PAGADO }
   ];
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.initializeForm();
-  }
-
-  private initializeForm(): void {
+  constructor() {
     this.filtrosForm = this.fb.group({
-      codigoEstado: [this.filtrosActivos.codigoEstado || ''],
-      estadoPago: [this.filtrosActivos.estadoPago || ''],
-      fechaDesde: [this.filtrosActivos.fechaDesde ? this.filtrosActivos.fechaDesde.substring(0, 10) : ''],
-      fechaHasta: [this.filtrosActivos.fechaHasta ? this.filtrosActivos.fechaHasta.substring(0, 10) : ''],
-      codigoReserva: [this.filtrosActivos.codigoReserva || ''],
-      nombreCancha: [this.filtrosActivos.nombreCancha || '']
+      codigoEstado: [''],
+      estadoPago: [''],
+      fechaDesde: [''],
+      fechaHasta: [''],
+      codigoReserva: [''],
+      nombreCancha: ['']
+    });
+
+    effect(() => {
+      const filters = this.filtrosActivos();
+      if (filters && Object.keys(filters).length > 0) {
+        this.filtrosForm.patchValue({
+          codigoEstado: filters.codigoEstado || '',
+          estadoPago: filters.estadoPago || '',
+          fechaDesde: filters.fechaDesde ? filters.fechaDesde.substring(0, 10) : '',
+          fechaHasta: filters.fechaHasta ? filters.fechaHasta.substring(0, 10) : '',
+          codigoReserva: filters.codigoReserva || '',
+          nombreCancha: filters.nombreCancha || ''
+        });
+      }
     });
   }
 

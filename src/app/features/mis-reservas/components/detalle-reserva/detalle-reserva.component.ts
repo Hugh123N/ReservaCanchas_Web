@@ -1,16 +1,16 @@
-import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ReservaClienteDto } from 'app/features/reserva/core/model/reservaCliente.model';
-import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
 import { formatFechaLocal, formatFechaHora, calcularHorasRestantes } from '@shared/utils/date.utils';
+import { getEstadoReservaMeta } from '@shared/enums/estado-reserva.enum';
+import { getEstadoPagoMeta } from '@shared/enums/estado-pago.enum';
 
 @Component({
   selector: 'app-detalle-reserva',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatIconModule
   ],
@@ -19,33 +19,19 @@ import { formatFechaLocal, formatFechaHora, calcularHorasRestantes } from '@shar
 })
 export class DetalleReservaComponent {
 
-  constructor(
-    public dialogRef: MatDialogRef<DetalleReservaComponent>,
-    @Inject(MAT_DIALOG_DATA) public reserva: ReservaClienteDto
-  ) {}
+  dialogRef = inject(MatDialogRef<DetalleReservaComponent>);
+  reserva = inject<ReservaClienteDto>(MAT_DIALOG_DATA);
 
   onClose(): void {
     this.dialogRef.close();
   }
 
-  getEstadoClass(codigoEstado: string): string {
-    const estadoMap: Record<string, string> = {
-      [EstadoReservaCodigo.PENDIENTE]: 'estado-pendiente',
-      [EstadoReservaCodigo.CONFIRMADO]: 'estado-confirmado',
-      [EstadoReservaCodigo.CANCELADO]: 'estado-cancelado',
-      [EstadoReservaCodigo.EXPIRADO]: 'estado-expirado'
-    };
-    return estadoMap[codigoEstado] || '';
+  getEstadoReserva(codigoEstado: string) {
+    return getEstadoReservaMeta(codigoEstado);
   }
 
-  getEstadoIcon(codigoEstado: string): string {
-    const iconMap: Record<string, string> = {
-      [EstadoReservaCodigo.PENDIENTE]: 'schedule',
-      [EstadoReservaCodigo.CONFIRMADO]: 'check_circle',
-      [EstadoReservaCodigo.CANCELADO]: 'cancel',
-      [EstadoReservaCodigo.EXPIRADO]: 'event_busy'
-    };
-    return iconMap[codigoEstado] || 'help';
+  getEstadoPago(estadoPago: string) {
+    return getEstadoPagoMeta(estadoPago);
   }
 
   formatFecha(fecha: string): string {

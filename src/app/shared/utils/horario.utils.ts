@@ -3,7 +3,7 @@
  */
 
 import { TimeOption } from 'app/features/canchas/core/types/time-option.interface';
-import { HorarioDisponible } from '../../features/canchas/core/model/horarioCancha/horarioDisponible.model';
+import { GetHorarioCancha } from '../../features/canchas/core/model/horarioCancha/gethorarioCancha.model';
 
 /**
  * Agrupa horarios por hora exacta y suma los precios de las medias horas
@@ -13,7 +13,7 @@ import { HorarioDisponible } from '../../features/canchas/core/model/horarioCanc
  * @param horarios - Array de horarios disponibles del backend
  * @returns Array agrupado por hora exacta con precios sumados
  */
-export function agruparHorariosPorHora(horarios: HorarioDisponible[]): TimeOption[] {
+export function agruparHorariosPorHora(horarios: GetHorarioCancha[]): TimeOption[] {
   if (!horarios || horarios.length === 0) {
     return [];
   }
@@ -28,7 +28,7 @@ export function agruparHorariosPorHora(horarios: HorarioDisponible[]): TimeOptio
 
     // Sumar precios
     const precioActual = gruposMap.get(horaBase) || { idHorarioCancha: 0, precio: 0 };
-    gruposMap.set(horaBase, { idHorarioCancha: horario.idHorarioCancha, precio: precioActual.precio + horario.precio });
+    gruposMap.set(horaBase, { idHorarioCancha: horario.idHorarioCancha ?? 0, precio: precioActual.precio + (horario.precio ?? 0) });
   });
 
   // Convertir Map a array y ordenar por hora

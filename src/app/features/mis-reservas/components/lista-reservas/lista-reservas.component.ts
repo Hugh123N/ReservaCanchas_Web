@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Inject, OnInit, signal, ViewContainerRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { AuthService } from '@core/auth/services/auth.service';
@@ -13,15 +13,17 @@ import { DetalleReservaComponent } from '../detalle-reserva/detalle-reserva.comp
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { formatFechaLocal, calcularHorasRestantes } from '@shared/utils/date.utils';
-import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
+import { EstadoReservaCodigo, getEstadoReservaMeta } from '@shared/enums/estado-reserva.enum';
+import { getEstadoPagoMeta } from '@shared/enums/estado-pago.enum';
 
 @Component({
   selector: 'app-lista-reservas',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     MatIconModule,
+    MatButtonModule,
     MatProgressSpinnerModule,
     MatDialogModule,
     FiltrosReservasComponent
@@ -31,23 +33,16 @@ import { EstadoReservaCodigo } from '@shared/enums/estado-reserva.enum';
 })
 export class ListaReservasComponent extends BaseComponent implements OnInit {
 
-  reservas: ReservaClienteDto[] = [];
-  isLoading: boolean = false;
+  reservas = signal<ReservaClienteDto[]>([]);
+  isLoading = signal(false);
+  totalItems = signal(0);
 
-  // Paginación
-  pageSize: number = 10;
-  pageIndex: number = 0;
-  totalItems: number = 0;
-  Math = Math;
+  pageSize = 10;
+  pageIndex = 0;
 
-  // Filtros
   filtrosActivos: SearchReservaClienteFilterDto = {};
-  mostrarFiltros: boolean = false;
+  mostrarFiltros = false;
 
-  // Helpers para template
-  Object = Object;
-
-  // Subject para unsubscribe
   private unsubscribe = new Subject<void>();
 
   constructor(
@@ -63,9 +58,6 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
     this.loadReservas();
   }
 
-  /**
-   * Cargar reservas con filtros y paginación
-   */
   loadReservas(): void {
     const user = this.authService.loadUserProfile();
     if (!user) {
@@ -73,136 +65,94 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     const queryParams: QueryParamsModel = {
       filter: this.filtrosActivos,
       page: {
-        page: this.pageIndex + 1, // Backend usa base 1
+        page: this.pageIndex + 1,
         pageSize: this.pageSize
       },
       sort: [
         {
-          property: 'fecha',
-          direction: 'desc' // Más recientes primero
+          property: 'createDate',
+          direction: 'desc'
         }
       ]
     };
 
-    const subscription = this.reservaService
+    this.reservaService
       .searchMisReservas(user.id, queryParams)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe({
         next: (response) => {
           if (response.isValid && response.data) {
-            this.reservas = response.data.items;
-            this.totalItems = response.data.total;
+            this.reservas.set(response.data.items);
+            this.totalItems.set(response.data.total);
           } else {
             this.openErrorAlert(response || 'Error al cargar las reservas');
           }
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         error: (error) => {
           this.openErrorAlert(error || 'Error al cargar las reservas');
-          this.isLoading = false;
+          this.isLoading.set(false);
         }
       });
-
-    this.subscriptions.push(subscription);
   }
 
-  /**
-   * Cambio de página
-   */
   onPageChange(page: number): void {
     this.pageIndex = page;
     this.loadReservas();
   }
 
   get totalPages(): number {
-    return Math.ceil(this.totalItems / this.pageSize);
+    return Math.ceil(this.totalItems() / this.pageSize);
   }
 
-  /**
-   * Aplicar filtros
-   */
   onFiltrosChange(filtros: SearchReservaClienteFilterDto): void {
     this.filtrosActivos = filtros;
-    this.pageIndex = 0; // Reset a la primera página
+    this.pageIndex = 0;
     this.loadReservas();
   }
 
-  /**
-   * Limpiar filtros
-   */
   onLimpiarFiltros(): void {
     this.filtrosActivos = {};
     this.pageIndex = 0;
     this.loadReservas();
   }
 
-  /**
-   * Toggle mostrar/ocultar filtros
-   */
   toggleFiltros(): void {
     this.mostrarFiltros = !this.mostrarFiltros;
   }
 
-  /**
-   * Ver detalle de reserva en modal
-   */
   verDetalle(reserva: ReservaClienteDto): void {
     this.dialog.open(DetalleReservaComponent, {
       width: '700px',
       maxWidth: '95vw',
       maxHeight: '95vh',
       data: reserva,
-      panelClass: 'detalle-reserva-dialog'//,
-      //autoFocus: false
+      panelClass: 'detalle-reserva-dialog'
     });
   }
 
-  /**
-   * Obtener clase CSS según el estado
-   */
-  getEstadoClass(codigoEstado: string): string {
-    const estadoMap: Record<string, string> = {
-      [EstadoReservaCodigo.PENDIENTE]: 'estado-pendiente',    // Amarillo
-      [EstadoReservaCodigo.CONFIRMADO]: 'estado-confirmado',   // Verde
-      [EstadoReservaCodigo.CANCELADO]: 'estado-cancelado',    // Rojo
-      [EstadoReservaCodigo.EXPIRADO]: 'estado-expirado'      // Gris
-    };
-    return estadoMap[codigoEstado] || '';
+  getEstadoReserva(codigoEstado: string) {
+    return getEstadoReservaMeta(codigoEstado);
   }
 
-  /**
-   * Obtener icono según el estado
-   */
-  getEstadoIcon(codigoEstado: string): string {
-    const iconMap: Record<string, string> = {
-      [EstadoReservaCodigo.PENDIENTE]: 'schedule',           // Pendiente
-      [EstadoReservaCodigo.CONFIRMADO]: 'check_circle',       // Confirmado
-      [EstadoReservaCodigo.CANCELADO]: 'cancel',             // Cancelado
-      [EstadoReservaCodigo.EXPIRADO]: 'event_busy'          // Expirado
-    };
-    return iconMap[codigoEstado] || 'help';
+  getEstadoPago(estadoPago: string) {
+    return getEstadoPagoMeta(estadoPago);
   }
 
-  /**
-   * Formatear fecha
-   */
   formatFecha(fecha: string): string {
     return formatFechaLocal(fecha);
   }
 
-  /**
-   * Formatear horarios
-   */
   formatHorarios(reserva: ReservaClienteDto): string {
     if (!reserva.horarios || reserva.horarios.length === 0) return '-';
 
     const horarios = reserva.horarios.map(h => {
-      const inicio = h.horaInicio.substring(0, 5); // HH:mm
+      const inicio = h.horaInicio.substring(0, 5);
       const fin = h.horaFin.substring(0, 5);
       return `${inicio}-${fin}`;
     });
@@ -210,23 +160,14 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
     return horarios.join(', ');
   }
 
-  /**
-   * Calcular si la reserva está próxima a expirar (menos de 6 horas)
-   */
   isProximaExpirar(reserva: ReservaClienteDto): boolean {
     if (!reserva.fechaExpiracionPreReserva || !reserva.estaPendiente) return false;
-
     const horasRestantes = calcularHorasRestantes(reserva.fechaExpiracionPreReserva);
-
     return horasRestantes > 0 && horasRestantes <= 6;
   }
 
-  /**
-   * Calcular horas restantes para expiración
-   */
   getHorasRestantes(reserva: ReservaClienteDto): number {
     if (!reserva.fechaExpiracionPreReserva) return 0;
-
     return Math.floor(calcularHorasRestantes(reserva.fechaExpiracionPreReserva));
   }
 

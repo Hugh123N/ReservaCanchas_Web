@@ -5,14 +5,16 @@
     <!-- Page Header -->
     <div class="section-spacing">
       <div class="flex items-center gap-3 sm:gap-4 mb-6">
-        <button routerLink="/" class="btn-clean-primary">
-          <mat-icon class="icon-lg">arrow_back</mat-icon>
-        </button>
         <div class="flex-1">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 class="title-main text-primary-600">Mis Reservas</h1>
-              <p class="text-base text-neutral-600">Historial completo de tus reservas</p>
+            <div class="flex items-center gap-4">
+              <button mat-icon-button routerLink="/">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+              <div class="flex-1">
+                <h1 class="title-main text-primary-600">Mis Reservas</h1>
+                <p class="text-base text-neutral-600">Historial completo de tus reservas</p>
+              </div>
             </div>
             <button class="btn-primary" (click)="toggleFiltros()">
               <mat-icon class="icon-sm">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
@@ -35,7 +37,7 @@
     </div>
 
     <!-- Loading State -->
-    @if (isLoading) {
+    @if (isLoading()) {
       <div class="loading-state">
         <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
         <p class="loading-text">Cargando tus reservas...</p>
@@ -43,7 +45,7 @@
     }
 
     <!-- Empty State -->
-    @if (!isLoading && reservas.length === 0) {
+    @if (!isLoading() && reservas().length === 0) {
       <div class="empty-state">
         <mat-icon class="empty-state-icon">event_busy</mat-icon>
         <h3 class="empty-state-title">No tienes reservas</h3>
@@ -69,9 +71,9 @@
     }
 
     <!-- Reservas List -->
-    @if (!isLoading && reservas.length > 0) {
+    @if (!isLoading() && reservas().length > 0) {
       <div class="space-y-4">
-        @for (reserva of reservas; track reserva.idReserva) {
+        @for (reserva of reservas(); track reserva.idReserva) {
           <div class="content-card cursor-pointer" (click)="verDetalle(reserva)">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
@@ -95,8 +97,8 @@
                   </div>
 
                   <!-- Badge de Estado -->
-                  <span [class]="getEstadoClass(reserva.codigoEstadoReserva)">
-                    <mat-icon class="icon-sm mr-1">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
+                  <span [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
+                    <mat-icon class="icon-sm mr-1">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
                     {{ reserva.estadoReserva }}
                   </span>
                 </div>
@@ -151,12 +153,7 @@
                       <span class="text-neutral-600">Estado Pago:</span>
                       <span
                         class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                        [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
-                        [class.text-green-800]="reserva.estadoPago === 'Pagado'"
-                        [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
-                        [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
-                        [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
-                        [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
+                        [class]="getEstadoPago(reserva.estadoPago).cssClass">
                         {{ reserva.estadoPago }}
                       </span>
                     </div>

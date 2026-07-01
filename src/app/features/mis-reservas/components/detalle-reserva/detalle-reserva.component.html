@@ -17,8 +17,8 @@
 
   <!-- Estado Badge -->
   <div class="flex justify-center mb-4">
-    <span [class]="getEstadoClass(reserva.codigoEstadoReserva)" class="text-lg px-6 py-2 inline-flex items-center gap-2">
-      <mat-icon class="icon-sm">{{ getEstadoIcon(reserva.codigoEstadoReserva) }}</mat-icon>
+    <span [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass" class="text-lg px-6 py-2 inline-flex items-center gap-2">
+      <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
       {{ reserva.estadoReserva }}
     </span>
   </div>
@@ -105,12 +105,7 @@
         <span class="text-neutral-600">Estado de Pago:</span>
         <span
           class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-          [class.bg-green-100]="reserva.estadoPago === 'Pagado'"
-          [class.text-green-800]="reserva.estadoPago === 'Pagado'"
-          [class.bg-amber-100]="reserva.estadoPago === 'Parcial'"
-          [class.text-amber-800]="reserva.estadoPago === 'Parcial'"
-          [class.bg-neutral-100]="reserva.estadoPago === 'Pendiente'"
-          [class.text-neutral-800]="reserva.estadoPago === 'Pendiente'">
+          [class]="getEstadoPago(reserva.estadoPago).cssClass">
           {{ reserva.estadoPago }}
         </span>
       </div>

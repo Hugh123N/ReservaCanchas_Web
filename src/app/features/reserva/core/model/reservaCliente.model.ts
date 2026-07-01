@@ -1,3 +1,5 @@
+import { GetHorarioCancha } from "app/features/canchas/core/model";
+
 /**
  * DTO con información de reserva para visualización del cliente
  * Usado en el módulo "Mis Reservas" (Sprint 2)
@@ -20,7 +22,7 @@ export interface ReservaClienteDto {
     telefonoCancha?: string | null;
 
     // Horarios reservados
-    horarios: HorarioReservadoDto[];
+    horarios: GetHorarioCancha[];
 
     // Información del pago
     estadoPago: string; // "Pagado", "Parcial", "Pendiente"
@@ -38,14 +40,6 @@ export interface ReservaClienteDto {
     estaCancelada: boolean;
     estaExpirada: boolean;
     tienePagoPendiente: boolean;
-}
-
-/**
- * DTO para horarios reservados
- */
-export interface HorarioReservadoDto {
-    horaInicio: string; // TimeOnly "HH:mm:ss"
-    horaFin: string;    // TimeOnly "HH:mm:ss"
 }
 
 /**
