@@ -1,7 +1,4 @@
-/*@import "tailwindcss";*/
-@layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss";
 @import './auth-shared.css';
 
 @theme {
@@ -185,7 +182,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .input-base {
-  @apply w-full text-sm sm:text-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition border-2 border-neutral-300 shadow-sm;
+  @apply w-full text-sm sm:text-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition border-2 border-neutral-300 shadow-sm box-border;
 }
 
 .input-base:focus {

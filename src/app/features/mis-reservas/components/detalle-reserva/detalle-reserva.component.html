@@ -1,20 +1,21 @@
-<div class="p-6">
-  <!-- Header -->
-  <div class="flex items-start justify-between mb-4">
-    <div class="flex-1">
-      <h2 class="title-main text-neutral-800 mb-2">
-        {{ reserva.nombreCancha }}
-      </h2>
-      <p class="text-sm text-neutral-600 flex items-center gap-1">
-        <mat-icon class="icon-sm">location_on</mat-icon>
-        {{ reserva.direccionCancha }}
-      </p>
-    </div>
-    <button (click)="onClose()" class="btn-clean-primary">
-      <mat-icon>close</mat-icon>
-    </button>
+<!-- Header (fijo) -->
+<div mat-dialog-title class="flex items-start justify-between p-6 pb-0">
+  <div class="flex-1">
+    <h2 class="title-main text-neutral-800 mb-2">
+      {{ reserva.nombreCancha }}
+    </h2>
+    <p class="text-sm text-neutral-600 flex items-center gap-1">
+      <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
+      {{ reserva.direccionCancha }}
+    </p>
   </div>
+  <button mat-icon-button (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
+<!-- Contenido scrolleable -->
+<div mat-dialog-content class="px-6">
   <!-- Estado Badge -->
   <div class="flex justify-center mb-4">
     <span [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass" class="text-lg px-6 py-2 inline-flex items-center gap-2">
@@ -35,7 +36,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
         <div class="p-2 bg-primary-100 rounded-lg">
-          <mat-icon class="text-primary-600">calendar_today</mat-icon>
+          <mat-icon class="icon-primary">calendar_today</mat-icon>
         </div>
         <div class="flex-1">
           <p class="text-xs text-neutral-500">Fecha</p>
@@ -45,7 +46,7 @@
 
       <div class="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
         <div class="p-2 bg-primary-100 rounded-lg">
-          <mat-icon class="text-primary-600">event</mat-icon>
+          <mat-icon class="icon-primary">event</mat-icon>
         </div>
         <div class="flex-1">
           <p class="text-xs text-neutral-500">Fecha de Creación</p>
@@ -57,7 +58,7 @@
     <!-- Horarios -->
     <div class="p-4 bg-neutral-50 rounded-lg">
       <div class="flex items-center gap-2 mb-3">
-        <mat-icon class="text-primary-600">schedule</mat-icon>
+        <mat-icon class="icon-primary">schedule</mat-icon>
         <p class="font-semibold text-neutral-800">Horarios Reservados</p>
       </div>
       <div class="flex flex-wrap gap-2">
@@ -75,7 +76,7 @@
   <!-- Información de Pago -->
   <div class="bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-lg p-4 mb-4">
     <div class="flex items-center gap-2 mb-3">
-      <mat-icon class="text-accent-600">payments</mat-icon>
+      <mat-icon class="icon-accent">payments</mat-icon>
       <p class="font-bold text-neutral-800">Información de Pago</p>
     </div>
 
@@ -208,11 +209,11 @@
       </div>
     </div>
   }
+</div>
 
-  <!-- Botón Cerrar -->
-  <div class="flex justify-end mt-6">
-    <button class="btn-secondary" (click)="onClose()">
-      Cerrar
-    </button>
-  </div>
+<!-- Footer (fijo) -->
+<div mat-dialog-actions class="flex justify-end p-6 pt-0">
+  <button class="btn-secondary" (click)="onClose()">
+    Cerrar
+  </button>
 </div>

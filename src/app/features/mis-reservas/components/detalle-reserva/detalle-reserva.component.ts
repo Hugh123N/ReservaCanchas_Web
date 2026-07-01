@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ReservaClienteDto } from 'app/features/reserva/core/model/reservaCliente.model';
 import { formatFechaLocal, formatFechaHora, calcularHorasRestantes } from '@shared/utils/date.utils';
 import { getEstadoReservaMeta } from '@shared/enums/estado-reserva.enum';
@@ -12,7 +13,8 @@ import { getEstadoPagoMeta } from '@shared/enums/estado-pago.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './detalle-reserva.component.html',
   styleUrl: './detalle-reserva.component.css'

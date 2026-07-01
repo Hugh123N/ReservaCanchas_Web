@@ -74,7 +74,70 @@
     @if (!isLoading() && reservas().length > 0) {
       <div class="space-y-4">
         @for (reserva of reservas(); track reserva.idReserva) {
-          <div class="content-card cursor-pointer" (click)="verDetalle(reserva)">
+          <!-- ===== MOBILE CARD (< 640px) ===== -->
+          <div class="content-card cursor-pointer sm:hidden" (click)="verDetalle(reserva)">
+            <!-- Nombre + Estado -->
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <h5 class="text-base font-bold text-primary-600 leading-tight m-0 flex-1">
+                {{ reserva.nombreCancha }}
+              </h5>
+              <span class="inline-flex items-center gap-1" [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
+                <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
+                {{ reserva.estadoReserva }}
+              </span>
+            </div>
+
+            <!-- Dirección -->
+            <p class="text-sm text-neutral-600 flex items-center gap-1 mb-3">
+              <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
+              {{ reserva.direccionCancha }}
+            </p>
+
+            <!-- Código + Fecha (misma fila) -->
+            <div class="flex items-center justify-between text-sm mb-2">
+              <div class="flex items-center gap-2">
+                <mat-icon class="icon-sm icon-primary">confirmation_number</mat-icon>
+                <strong class="text-neutral-800">{{ reserva.codigoReserva }}</strong>
+              </div>
+              <div class="flex items-center gap-2">
+                <mat-icon class="icon-sm icon-primary">calendar_today</mat-icon>
+                <strong class="text-neutral-800">{{ formatFecha(reserva.fecha) }}</strong>
+              </div>
+            </div>
+
+            <!-- Horarios -->
+            <div class="flex items-center gap-2 text-sm mb-3">
+              <mat-icon class="icon-sm">schedule</mat-icon>
+              <strong class="text-neutral-800">{{ formatHorarios(reserva) }}</strong>
+            </div>
+
+            <!-- Precio + Estado Pago (misma fila) -->
+            <div class="flex items-center justify-between pt-3 border-t border-neutral-200">
+              <span class="text-lg font-bold text-primary-600">S/ {{ reserva.monto.toFixed(2) }}</span>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                [class]="getEstadoPago(reserva.estadoPago).cssClass">
+                {{ reserva.estadoPago }}
+              </span>
+            </div>
+
+            <!-- Alerta expiración -->
+            @if (reserva.estaPendiente && reserva.fechaExpiracionPreReserva) {
+              <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                <div class="flex items-center gap-2 text-xs">
+                  <mat-icon class="icon-sm text-amber-600">schedule</mat-icon>
+                  @if (isProximaExpirar(reserva)) {
+                    <span class="font-semibold text-amber-800">¡Expira pronto! Quedan {{ getHorasRestantes(reserva) }}h</span>
+                  } @else {
+                    <span class="text-amber-700">Expira: {{ formatFecha(reserva.fechaExpiracionPreReserva) }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- ===== DESKTOP CARD (≥ 640px) ===== -->
+          <div class="content-card cursor-pointer hidden sm:block" (click)="verDetalle(reserva)">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
               <!-- Columna Izquierda: Info Principal -->
@@ -91,14 +154,14 @@
                       }
                     </div>
                     <p class="text-sm text-neutral-600 flex items-center gap-1">
-                      <mat-icon class="icon-sm">location_on</mat-icon>
+                      <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
                       {{ reserva.direccionCancha }}
                     </p>
                   </div>
 
                   <!-- Badge de Estado -->
-                  <span [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
-                    <mat-icon class="icon-sm mr-1">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
+                  <span class="inline-flex items-center gap-1" [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
+                    <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
                     {{ reserva.estadoReserva }}
                   </span>
                 </div>
@@ -106,19 +169,19 @@
                 <!-- Detalles en Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mt-3">
                   <div class="flex items-center gap-2">
-                    <mat-icon class="icon-sm text-primary-600">confirmation_number</mat-icon>
+                    <mat-icon class="icon-sm icon-primary">confirmation_number</mat-icon>
                     <span class="text-neutral-600">Código:</span>
                     <strong class="text-neutral-800">{{ reserva.codigoReserva }}</strong>
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <mat-icon class="icon-sm text-primary-600">calendar_today</mat-icon>
+                    <mat-icon class="icon-sm icon-primary">calendar_today</mat-icon>
                     <span class="text-neutral-600">Fecha:</span>
                     <strong class="text-neutral-800">{{ formatFecha(reserva.fecha) }}</strong>
                   </div>
 
                   <div class="flex items-center gap-2 sm:col-span-2">
-                    <mat-icon class="icon-sm text-primary-600">schedule</mat-icon>
+                    <mat-icon class="icon-sm icon-primary">schedule</mat-icon>
                     <span class="text-neutral-600">Horarios:</span>
                     <strong class="text-neutral-800">{{ formatHorarios(reserva) }}</strong>
                   </div>
