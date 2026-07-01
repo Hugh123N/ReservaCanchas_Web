@@ -27,7 +27,6 @@ README.md
 
 # Config files (no needed in build)
 .editorconfig
-.postcssrc.json
 
 # Docker
 Dockerfile
