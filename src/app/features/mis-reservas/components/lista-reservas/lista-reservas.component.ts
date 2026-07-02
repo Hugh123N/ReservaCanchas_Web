@@ -130,7 +130,6 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
     this.dialog.open(DetalleReservaComponent, {
       width: '700px',
       maxWidth: '95vw',
-      minHeight: '900px',
       maxHeight: '95vh',
       data: reserva,
       panelClass: 'detalle-reserva-dialog'

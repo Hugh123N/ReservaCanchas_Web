@@ -1,5 +1,5 @@
 <!-- Header (fijo) -->
-<div mat-dialog-title class="flex items-start justify-between p-6 pb-0">
+<div mat-dialog-title class="!flex !items-center !justify-between">
   <div class="flex-1">
     <h2 class="title-main text-neutral-800 mb-2">
       {{ reserva.nombreCancha }}
@@ -201,19 +201,20 @@
           <p class="font-bold text-neutral-800">{{ reserva.telefonoCancha }}</p>
         </div>
         <a
-          href="tel:{{ reserva.telefonoCancha }}"
+          href="https://wa.me/51{{ reserva.telefonoCancha }}"
+          target="_blank"
           class="btn-primary">
-          <mat-icon class="icon-sm">call</mat-icon>
-          Llamar
+          <mat-icon class="icon-sm">chat</mat-icon>
+          Contactar
         </a>
       </div>
     </div>
   }
 </div>
 
-<!-- Footer (fijo) -->
+<!-- Footer (fijo) 
 <div mat-dialog-actions class="flex justify-end p-6 pt-0">
   <button class="btn-secondary" (click)="onClose()">
     Cerrar
   </button>
-</div>
+</div>-->

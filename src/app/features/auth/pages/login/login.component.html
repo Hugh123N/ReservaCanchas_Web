@@ -3,6 +3,7 @@
   @if (!(isHandset$ | async)) {
     <div class="auth-visual-panel">
       <app-auth-visual-panel
+        title="Inicia Sesión"
         [features]="features">
       </app-auth-visual-panel>
     </div>
@@ -26,7 +27,9 @@
           <div class="logo-icon">
             <img src="assets/images/logo_hover.svg" alt="Logo" class="w-12" />
           </div>
-          <h1 class="title-main">{{ TITULO_LOGO }}</h1>
+          <span class="logo-text title-main">
+            {{ TITULO_LOGO1 }}<span class="text-primary-500">{{ TITULO_LOGO2 }}</span>
+          </span>
         </div>
         }
 

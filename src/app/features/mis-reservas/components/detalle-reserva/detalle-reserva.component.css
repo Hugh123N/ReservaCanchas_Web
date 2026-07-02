@@ -1,1 +1,10 @@
 @reference "../../../../../styles.css";
+
+::ng-deep .mat-mdc-dialog-actions {
+  margin-top: 0 !important;
+}
+
+::ng-deep .mat-mdc-dialog-content {
+  max-height: unset !important;
+  overflow: auto !important;
+}

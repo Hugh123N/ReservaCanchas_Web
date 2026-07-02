@@ -11,6 +11,8 @@
 }
 
 .logo-text {
-  font-size: 24px;
-  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: rgb(34, 37, 37);
+  font-family: system-ui, sans-serif;
+  user-select: none;
 }

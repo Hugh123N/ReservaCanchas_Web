@@ -2,7 +2,7 @@
 
 /* Hero Section - Específico de Home */
 .hero-section {
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 50%, var(--color-accent-500) 100%);
+  background: url('../../../../../assets/images/fondoHome1.png') center/cover no-repeat;
   position: relative;
   overflow: hidden;
 }
@@ -88,11 +88,7 @@
   .floating-icon {
     display: none;
   }
-
-  .hero-container {
-    padding: 2rem 1rem;
-  }
-
+  
   /* En tablet/mobile: botón visible, search-bar oculto por defecto */
   .filter-toggle-container {
     display: block;

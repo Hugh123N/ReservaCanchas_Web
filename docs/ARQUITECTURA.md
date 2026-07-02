@@ -98,7 +98,7 @@ BaseComponent (abstract)
 ├── Helpers de datos (fetchData, fetchById)
 ├── Validación de formularios
 ├── Permisos (carga por módulo)
-└── Constantes (ESTADO_CANCHA, TITULO_LOGO)
+└── Constantes (ESTADO_CANCHA, TITULO_LOGO1,TITULO_LOGO2)
 
     ↓ extiende
 

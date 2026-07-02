@@ -13,7 +13,7 @@ import { FeatureAuth } from '../../types/featureAuth';
   }
 })
 export class AuthVisualPanelComponent {
-  @Input() title: string = 'Cancha Reservas';
+  @Input() title: string = 'RESERVA FAST';
   @Input() subtitle: string = 'La plataforma más completa para encontrar y reservar canchas';
   @Input() features: FeatureAuth[] = [];
 }
