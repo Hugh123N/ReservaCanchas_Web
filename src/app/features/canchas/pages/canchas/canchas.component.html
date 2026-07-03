@@ -2,7 +2,7 @@
 <app-nav-var></app-nav-var>
 
 <!-- Search Section -->
-<section class="relative py-8 bg-gradient-to-br from-primary-50 to-secondary-50">
+<section class="relative py-8" style="background: url('assets/images/fondo2.png') center/cover no-repeat;">
   <div class="hero-container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Page Title with Filter Button (Mobile/Tablet) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -41,7 +41,7 @@
 
   <!-- Results Header -->
   <div
-    class="results-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+    class="results-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8"
     >
     <div class="results-info">
       <h2 class="title-main text-primary mb-2">
@@ -53,18 +53,13 @@
       </h2>
     </div>
 
-    <!-- View Toggle -->
-    <div class="view-toggle-container flex justify-center md:justify-end">
-      <mat-button-toggle-group [(value)]="vistaActual" (change)="onCambiarVista($event)" class="shadow-sm">
-        <mat-button-toggle value="lista">
-          <mat-icon class="mr-1">view_list</mat-icon>
-          Lista
-        </mat-button-toggle>
-        <mat-button-toggle value="mapa">
-          <mat-icon class="mr-1">map</mat-icon>
-          Mapa
-        </mat-button-toggle>
-      </mat-button-toggle-group>
+    <!-- Ver Mapa -->
+    <div class="flex justify-center md:justify-end">
+      <a routerLink="/cancha/mapa"
+         [state]="{ canchas: convertirCanchasAUbicacion(canchas), filtros: filterForm.value }"
+         class="text-primary-600 hover:text-primary-700 font-semibold underline underline-offset-4 cursor-pointer transition-colors">
+        Ver mapa
+      </a>
     </div>
   </div>
 

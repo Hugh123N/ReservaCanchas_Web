@@ -1,194 +1,180 @@
-<!-- Perfil de Usuario Page -->
-<div class="page-wrapper">
-  <div class="page-container">
 
-    <!-- Page Header -->
-    <div class="section-spacing">
-      <div class="flex items-center gap-3 mb-6">
-        <button
-          mat-icon-button
-          (click)="onBack()"
-          class="text-neutral-600">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <div class="flex-1">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 class="title-main text-primary-600">Mi Perfil</h1>
-              <p class="text-base text-neutral-600">Información personal y configuración de cuenta</p>
-            </div>
-            <button
-              mat-raised-button
-              class="btn-primary"
-              routerLink="/perfil/editar">
-              <mat-icon class="mr-2">edit</mat-icon>
-              Editar Perfil
-            </button>
-          </div>
-        </div>
+<!-- Form Section -->
+<section class="form-section-container">
+
+  <div class="max-w-4xl mx-auto">
+    <div class="flex items-center gap-4">
+      <button mat-icon-button class="!text-neutral-500" (click)="onBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="flex-1">
+        <h1 class="title-main mb-1">Mi Perfil</h1>
+        <p class="text-sm sm:text-base opacity-90">Actualiza tu información personal y foto de perfil</p>
       </div>
     </div>
 
-    <!-- Loading State -->
-    @if (isLoading) {
-      <div class="loading-state">
-        <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
-        <p class="loading-text">Cargando perfil...</p>
-      </div>
-    }
-
-    <!-- Profile Content -->
-    @if (!isLoading && usuario) {
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Card Izquierda: Avatar y Nombre -->
-        <div class="lg:col-span-1">
-          <mat-card class="card-base text-center p-6">
-            <!-- Avatar -->
-            <div class="flex justify-center mb-4">
-              <div class="relative">
-                <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-primary-200 shadow-lg">
-                  @if (hasCustomAvatar()) {
-                    <img
-                      [src]="getAvatarUrl()"
-                      [alt]="getFullName()"
-                      class="w-full h-full object-cover"
-                      (error)="usuario!.imagen = ''"
-                    />
-                  } @else {
-                    <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                      <mat-icon class="!text-6xl sm:!text-7xl text-white">account_circle</mat-icon>
-                    </div>
-                  }
-                </div>
-                <!-- Badge de estado activo -->
-                <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
-              </div>
-            </div>
-
-            <!-- Nombre y Username -->
-            <h2 class="title-main text-neutral-800 mb-1">
-              {{ getFullName() }}
-            </h2>
-            <p class="text-sm text-neutral-500 mb-4">
-              &#64;{{ usuario.userName }}
-            </p>
-
-            <mat-divider class="my-4!"></mat-divider>
-
-            <!-- Estado de cuenta -->
-            <div class="flex items-center justify-center gap-2 text-sm">
-              @if (usuario.activo) {
-                <div class="flex items-center gap-1 text-green-600">
-                  <mat-icon class="icon-sm">check_circle</mat-icon>
-                  <span class="font-semibold">Cuenta Activa</span>
-                </div>
-              } @else {
-                <div class="flex items-center gap-1 text-neutral-500">
-                  <mat-icon class="icon-sm">cancel</mat-icon>
-                  <span class="font-semibold">Cuenta Inactiva</span>
-                </div>
-              }
-            </div>
-          </mat-card>
-        </div>
-
-        <!-- Card Derecha: Información Detallada -->
-        <div class="lg:col-span-2">
-          <mat-card class="card-base p-6">
-            <h3 class="text-lg font-bold text-neutral-800 mb-4 flex items-center gap-2">
-              <mat-icon class="text-primary-600">person</mat-icon>
-              Información Personal
-            </h3>
-
-            <!-- Grid de información -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-              <!-- Nombre -->
-              <div class="flex items-start gap-3">
-                <div class="p-2 bg-primary-100 rounded-lg">
-                  <mat-icon class="text-primary-600">badge</mat-icon>
-                </div>
-                <div class="flex-1">
-                  <p class="text-xs text-neutral-500 mb-1">Nombre</p>
-                  <p class="font-semibold text-neutral-800">{{ usuario.firstName }}</p>
-                </div>
-              </div>
-
-              <!-- Apellido -->
-              <div class="flex items-start gap-3">
-                <div class="p-2 bg-primary-100 rounded-lg">
-                  <mat-icon class="text-primary-600">badge</mat-icon>
-                </div>
-                <div class="flex-1">
-                  <p class="text-xs text-neutral-500 mb-1">Apellido</p>
-                  <p class="font-semibold text-neutral-800">{{ usuario.lastName }}</p>
-                </div>
-              </div>
-
-              <!-- Email -->
-              <div class="flex items-start gap-3">
-                <div class="p-2 bg-accent-100 rounded-lg">
-                  <mat-icon class="text-accent-600">email</mat-icon>
-                </div>
-                <div class="flex-1">
-                  <p class="text-xs text-neutral-500 mb-1">Correo Electrónico</p>
-                  <p class="font-semibold text-neutral-800 break-all">{{ usuario.email }}</p>
-                </div>
-              </div>
-
-              <!-- Teléfono -->
-              <div class="flex items-start gap-3">
-                <div class="p-2 bg-secondary-100 rounded-lg">
-                  <mat-icon class="text-secondary-600">phone</mat-icon>
-                </div>
-                <div class="flex-1">
-                  <p class="text-xs text-neutral-500 mb-1">Teléfono</p>
-                  <p class="font-semibold text-neutral-800">
-                    {{ usuario.phoneNumber || 'No registrado' }}
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Acciones rápidas -->
-            <div class="flex flex-col sm:flex-row gap-3">
-              <button
-                mat-stroked-button
-                class="btn-outline-primary flex-1"
-                routerLink="/perfil/editar">
-                <mat-icon class="mr-2">edit</mat-icon>
-                Actualizar Información
-              </button>
-              <button
-                mat-stroked-button
-                class="btn-outline-secondary flex-1!"
-                routerLink="/mis-reservas">
-                <mat-icon class="mr-2">event_available</mat-icon>
-                Ver Mis Reservas
-              </button>
-            </div>
-          </mat-card>
-        </div>
-
-      </div>
-    }
-
-    <!-- Empty State (si no se cargó el usuario) -->
-    @if (!isLoading && !usuario) {
+    @if (!usuario) {
       <div class="empty-state">
-        <mat-icon class="empty-state-icon">person_off</mat-icon>
-        <h3 class="empty-state-title">No se pudo cargar el perfil</h3>
-        <p class="empty-state-description">
-          Ocurrió un error al cargar tu información de perfil. Por favor, intenta nuevamente.
-        </p>
+        <mat-icon class="icon-2xl text-neutral-400 mb-4 mx-auto">person_off</mat-icon>
+        <h3 class="title-section mb-2">No se pudo cargar el perfil</h3>
+        <p class="text-base text-neutral-600 mb-6">Ocurrió un error al cargar tu información. Por favor, intenta nuevamente.</p>
         <button mat-raised-button class="btn-primary" (click)="loadUserProfile()">
-          <mat-icon class="mr-2">refresh</mat-icon>
+          <mat-icon class="icon-md">refresh</mat-icon>
           Reintentar
         </button>
       </div>
     }
 
+    @if (usuario) {
+      <div class="content-card">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Foto de Perfil -->
+          <div class="form-section mb-4">
+
+            <div class="flex flex-col items-center gap-3">
+              <!-- Círculo clickeable -->
+              <label for="imageInput" class="relative shrink-0 cursor-pointer group">
+                <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-primary-200 shadow-lg">
+                  @if (hasImage()) {
+                    <img [src]="imagePreview" alt="Vista previa" class="w-full h-full object-cover" />
+                  } @else {
+                    <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                      <span class="text-white font-semibold text-3xl">{{ getIniciales() }}</span>
+                    </div>
+                  }
+                </div>
+                  <!-- Icono cámara -->
+                <div class="absolute bottom-0 right-0 w-8 h-8 bg-neutral-200 border-2 border-primary-300 rounded-full flex items-center justify-center shadow-md transition">
+                  <mat-icon class="!text-base text-primary-600! text-center!">photo_camera</mat-icon>
+                </div>
+                <!-- X eliminar imagen -->
+                @if (hasImage()) {
+                  <button
+                    type="button"
+                    (click)="$event.preventDefault(); removeImage()"
+                    class="absolute top-0 right-0 w-6 h-6 rounded-full flex items-center justify-center border-none bg-transparent hover:bg-neutral-200 cursor-pointer transition">
+                    <mat-icon class="!text-sm !leading-none text-neutral-500! text-center! flex! items-center! justify-center! bg-transparent!">close</mat-icon>
+                  </button>
+                }
+                <input id="imageInput" type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+              </label>
+
+              <div class="flex flex-col gap-2 items-center">
+                <p class="text-sm text-neutral-500">Haz click en la imagen para cambiarla</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información Personal -->
+          <div class="form-section mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <!-- Nombre -->
+              <div>
+                <label class="block text-sm mb-1">
+                  Nombre <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  formControlName="firstName"
+                  placeholder="Ej: Juan"
+                  maxlength="50"
+                  autocomplete="given-name"
+                  class="w-full px-4 py-3 rounded-lg transition"
+                  [class.border-red-500]="form.controls.firstName.invalid && form.controls.firstName.touched">
+                @if (form.controls.firstName.hasError('required') && form.controls.firstName.touched) {
+                  <p class="text-red-500 text-xs mt-1">El nombre es requerido</p>
+                }
+                @if (form.controls.firstName.hasError('minlength') && form.controls.firstName.touched) {
+                  <p class="text-red-500 text-xs mt-1">Mínimo 2 caracteres</p>
+                }
+              </div>
+
+              <!-- Apellido -->
+              <div>
+                <label class="block text-sm mb-1">
+                  Apellido <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  formControlName="lastName"
+                  placeholder="Ej: Pérez García"
+                  maxlength="50"
+                  autocomplete="family-name"
+                  class="w-full px-4 py-3 rounded-lg transition"
+                  [class.border-red-500]="form.controls.lastName.invalid && form.controls.lastName.touched">
+                @if (form.controls.lastName.hasError('required') && form.controls.lastName.touched) {
+                  <p class="text-red-500 text-xs mt-1">El apellido es requerido</p>
+                }
+                @if (form.controls.lastName.hasError('minlength') && form.controls.lastName.touched) {
+                  <p class="text-red-500 text-xs mt-1">Mínimo 2 caracteres</p>
+                }
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label class="block text-sm mb-1">
+                  Correo Electrónico <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  formControlName="email"
+                  placeholder="correo@ejemplo.com"
+                  autocomplete="email"
+                  class="w-full px-4 py-3 rounded-lg transition"
+                  [class.border-red-500]="form.controls.email.invalid && form.controls.email.touched">
+                @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+                  <p class="text-red-500 text-xs mt-1">El correo es requerido</p>
+                }
+                @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+                  <p class="text-red-500 text-xs mt-1">Correo inválido</p>
+                }
+              </div>
+
+              <!-- Teléfono -->
+              <div>
+                <label class="block text-sm mb-1">Teléfono</label>
+                <input
+                  type="text"
+                  formControlName="phoneNumber"
+                  placeholder="Ej: 987654321"
+                  maxlength="12"
+                  autocomplete="tel"
+                  class="w-full px-4 py-3 rounded-lg transition"
+                  [class.border-red-500]="form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched">
+                <p class="text-neutral-500 text-xs mt-1">Formato: 9XXXXXXXX o +519XXXXXXXX</p>
+                @if (form.controls.phoneNumber.hasError('pattern') && form.controls.phoneNumber.touched) {
+                  <p class="text-red-500 text-xs mt-1">Formato de teléfono inválido</p>
+                }
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-col sm:flex-row justify-end gap-2">
+            <button
+              type="button"
+              mat-stroked-button
+              class="btn-outline-primary w-full sm:w-auto"
+              (click)="onBack()">
+              <mat-icon>close</mat-icon>
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              mat-raised-button
+              class="btn-primary w-full sm:w-auto"
+              [disabled]="form.invalid">
+              <mat-icon>save</mat-icon>
+              Guardar Cambios
+            </button>
+          </div>
+
+        </form>
+      </div>
+    }
+
   </div>
-</div>
+</section>

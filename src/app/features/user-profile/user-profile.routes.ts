@@ -5,17 +5,7 @@ export const userProfileRoutes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
-      },
-      {
-        path: 'editar',
-        loadComponent: () =>
-          import('./pages/editar-perfil/editar-perfil.component').then(m => m.EditarPerfilComponent),
-      }
-    ]
+    loadComponent: () =>
+      import('./pages/perfil/perfil.component').then(m => m.PerfilComponent)
   }
 ];

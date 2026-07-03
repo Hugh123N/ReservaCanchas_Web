@@ -1,1 +1,40 @@
-/* Perfil Component Styles */
+@reference "../../../../../styles.css";
+
+.form-section-container {
+  @apply py-1 bg-neutral-50 min-h-screen;
+}
+
+.form-section {
+  @apply pb-6 border-neutral-200;
+}
+
+.form-section input[type="text"],
+.form-section input[type="email"] {
+  @apply border-2 border-neutral-300 shadow-sm;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.form-section input[type="text"]:focus,
+.form-section input[type="email"]:focus {
+  @apply border-primary-500 ring-2 ring-primary-200 outline-none;
+}
+
+.form-section input[type="text"].border-red-500,
+.form-section input[type="email"].border-red-500 {
+  @apply border-red-500 ring-2 ring-red-200;
+}
+
+.form-section label {
+  @apply text-neutral-800 font-semibold;
+}
+
+.form-section > div,
+.form-section .grid > div {
+  min-width: 0;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
