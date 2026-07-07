@@ -94,8 +94,12 @@ export class MapboxService {
     el.style.height = '50px';
     el.dataset['canchaId'] = cancha.id.toString();
 
+    // Wrapper interno para efecto hover (no afecta el transform de posicionamiento de Mapbox)
+    const inner = document.createElement('div');
+    inner.className = 'marcador-inner';
+
     // Crear SVG del marcador usando las variables CSS del proyecto
-    el.innerHTML = `
+    inner.innerHTML = `
       <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="shadow-${cancha.id}" x="-50%" y="-50%" width="200%" height="200%">
@@ -114,14 +118,16 @@ export class MapboxService {
       </svg>
     `;
 
-    // Agregar efecto hover usando clases CSS
+    el.appendChild(inner);
+
+    // Agregar efecto hover usando clases CSS en el wrapper interno
     el.addEventListener('mouseenter', () => {
-      el.classList.add('marcador-hover');
+      inner.classList.add('marcador-hover');
       if (alPasarMouse) alPasarMouse(cancha, true);
     });
 
     el.addEventListener('mouseleave', () => {
-      el.classList.remove('marcador-hover');
+      inner.classList.remove('marcador-hover');
       if (alPasarMouse) alPasarMouse(cancha, false);
     });
 
@@ -188,9 +194,10 @@ export class MapboxService {
     const marcador = this.marcadores.get(canchaId);
     if (marcador) {
       const el = marcador.getElement();
-      // Agregar clase directamente en lugar de simular evento
-      // Esto evita que Mapbox GL JS recalcule la posición del marcador
-      el.classList.add('marcador-hover');
+      const inner = el.querySelector('.marcador-inner');
+      if (inner) {
+        inner.classList.add('marcador-hover');
+      }
     }
   }
 
@@ -202,8 +209,10 @@ export class MapboxService {
     const marcador = this.marcadores.get(canchaId);
     if (marcador) {
       const el = marcador.getElement();
-      // Remover clase directamente
-      el.classList.remove('marcador-hover');
+      const inner = el.querySelector('.marcador-inner');
+      if (inner) {
+        inner.classList.remove('marcador-hover');
+      }
     }
   }
 
