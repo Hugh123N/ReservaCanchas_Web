@@ -1,0 +1,44 @@
+@reference "../../../../../styles.css";
+
+.page-section {
+  @apply py-4 px-4 bg-neutral-50 min-h-screen;
+}
+
+.planes-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8;
+}
+
+.plan-card {
+  @apply relative bg-white rounded-2xl p-2 sm:p-4 shadow-lg border-2 border-neutral-200
+         transition-all duration-300 hover:shadow-2xl hover:-translate-y-2
+         flex flex-col;
+}
+
+.plan-destacado {
+  @apply border-primary-500 shadow-2xl scale-105 lg:scale-110 z-10;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(14, 165, 233, 0.05) 100%);
+}
+
+.plan-badge {
+  @apply absolute -top-4 left-1/2 transform -translate-x-1/2
+         bg-gradient-to-r from-primary-500 to-secondary-500
+         text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-full shadow-lg;
+}
+
+.plan-header {
+  @apply text-center mb-6 pb-6 border-b border-neutral-200;
+}
+
+.plan-precio-container { @apply mb-4; }
+
+.plan-caracteristicas {
+  @apply space-y-3 mb-8 flex-1;
+}
+
+.plan-caracteristica-item {
+  @apply flex items-start gap-3 text-left text-sm text-neutral-700 overflow-visible;
+}
+
+@media (max-width: 1024px) {
+  .plan-destacado { @apply scale-100; }
+}

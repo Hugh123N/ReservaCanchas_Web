@@ -10,6 +10,7 @@ export const routes: Routes = [
     { path: 'pago', loadChildren: () => import('./features/pago/pago.routes').then(m => m.pagoRoutes) },
     { path: 'mis-reservas', loadChildren: () => import('./features/mis-reservas/mis-reservas.routes').then(m => m.misReservasRoutes) },
     { path: 'perfil', loadChildren: () => import('./features/user-profile/user-profile.routes').then(m => m.userProfileRoutes) },
+    { path: 'planes', loadChildren: () => import('./features/planes/planes.routes').then(m => m.planesRoutes) },
     ...pagesRoutes,
     { path: '**', redirectTo: '404' }
 ];

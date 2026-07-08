@@ -1,0 +1,91 @@
+<section class="page-section">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="text-center mb-8">
+      <h1 class="title-main text-primary-600 mb-2">Planes disponibles</h1>
+      <p class="text-base text-neutral-600">Elige el plan perfecto para tu negocio</p>
+    </div>
+
+    @if (isLoading) {
+      <div class="flex justify-center py-12">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+
+    @if (!isLoading && planes.length === 0) {
+      <div class="empty-state">
+        <mat-icon class="icon-2xl text-neutral-400 mb-4 mx-auto">workspace_premium</mat-icon>
+        <h3 class="title-section mb-2">No hay planes disponibles</h3>
+        <p class="text">No se pudieron cargar los planes. Vuelve e inténtalo de nuevo.</p>
+      </div>
+    }
+
+    @if (!isLoading && planes.length > 0) {
+      <div class="planes-grid">
+        @for (plan of planes; track plan.idPlane) {
+          <mat-card class="plan-card" [class.plan-destacado]="plan.destacado">
+
+            @if (plan.destacado) {
+              <div class="plan-badge">Más Popular</div>
+            }
+
+            <div class="plan-header">
+              <h3 class="title-section mb-2">{{ plan.nombre }}</h3>
+              <p class="text-sm text-neutral-600 mb-6">{{ plan.descripcion }}</p>
+
+              <div class="plan-precio-container">
+                @if (getTarifaForPlan(plan); as tarifa) {
+                  @if (tarifa.precio === 0) {
+                    <span class="title-main block text-primary-600">GRATIS</span>
+                    <span class="text-sm text-neutral-500">por 30 días</span>
+                  } @else {
+                    <div class="flex items-baseline justify-center gap-2">
+                      <span class="title-main text-neutral-600">S/</span>
+                      <span class="title-main text-primary-600">{{ tarifa.precio }}</span>
+                      <span class="text-sm text-neutral-500">/ mes</span>
+                    </div>
+                  }
+                } @else {
+                  <span class="text-sm text-neutral-400">No disponible</span>
+                }
+              </div>
+
+              <div class="text-base text-neutral-600 mt-2">
+                @if (getLimite(plan, 'MAX_CANCHAS') >= 999) {
+                  <span class="text-base font-semibold text-primary-600">Canchas ilimitadas</span>
+                } @else {
+                  <span>Hasta <strong>{{ getLimite(plan, 'MAX_CANCHAS') }}</strong> {{ getLimite(plan, 'MAX_CANCHAS') === 1 ? 'cancha' : 'canchas' }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="plan-caracteristicas">
+              @for (caracteristica of plan.planCaracteristicas; track caracteristica.descripcion) {
+                <div class="plan-caracteristica-item">
+                  <mat-icon class="icon-md text-primary-600! shrink-0">check_circle</mat-icon>
+                  <span>{{ caracteristica.descripcion }}</span>
+                </div>
+              }
+            </div>
+
+            <button
+              [class]="plan.destacado ? 'btn-primary w-full btn-responsive' : 'btn-outline-primary w-full btn-responsive'"
+              (click)="onSeleccionarPlan(plan)">
+              <mat-icon class="icon-md">shopping_cart</mat-icon>
+              Seleccionar Plan
+            </button>
+
+          </mat-card>
+        }
+      </div>
+
+      <div class="text-center mt-10 max-w-2xl mx-auto">
+        <p class="text-base text-neutral-600 bg-white rounded-xl p-6 shadow-sm border border-neutral-100">
+          <strong>Nota:</strong> Todos los planes incluyen 30 días de prueba gratuita.
+          Sin permanencia mínima. Cancela cuando quieras.
+        </p>
+      </div>
+    }
+
+  </div>
+</section>
