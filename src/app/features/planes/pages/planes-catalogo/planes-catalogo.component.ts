@@ -7,6 +7,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 import { PlanService } from '../../core/services/plan.service';
 import { ListPlaneDto } from '../../core/models/plan.model';
 import { GetPlanTarifaDto } from '../../core/models/plan-tarifa.model';
+import { SeoService } from 'app/features/seo/core/services/seo.service';
 
 @Component({
   selector: 'app-planes-catalogo',
@@ -24,12 +25,14 @@ export class PlanesCatalogoComponent extends BaseComponent implements OnInit {
 
   constructor(
     private planService: PlanService,
+    private seoService: SeoService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('PLANES', viewContainerRef);
   }
 
   ngOnInit(): void {
+    this.seoService.setPlanes();
     this.loadPlanes();
   }
 

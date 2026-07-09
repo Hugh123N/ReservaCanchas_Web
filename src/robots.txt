@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Páginas privadas - no indexar
+Disallow: /auth/
+Disallow: /mis-reservas/
+Disallow: /perfil/
+Disallow: /pago/
+
+# Sitemap
+Sitemap: https://www.reservafast.com/sitemap.xml

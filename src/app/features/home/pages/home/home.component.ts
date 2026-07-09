@@ -18,6 +18,7 @@ import { UbigeoService } from 'app/features/canchas/core/services/ubigeo.service
 import { BaseSearchComponent } from '@base/components/base-search-component/search-base.component';
 import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
+import { SeoService } from 'app/features/seo/core/services/seo.service';
 
 @Component({
   selector: 'app-home',
@@ -47,12 +48,14 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     private router: Router,
     private ubigeoService: UbigeoService,
     private TipoDeporteService: TipoDeporteService,
+    private seoService: SeoService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('CANCHAS', viewContainerRef);
   }
 
   ngOnInit() {
+    this.seoService.setHome();
     this.cargarUbigeos();
     this.cargarTipoDeportes();
   }

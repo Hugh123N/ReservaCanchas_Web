@@ -5,41 +5,44 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
 COPY package*.json ./
-
-# Instalar dependencias (incluye devDependencies necesarias para el build)
 RUN npm ci
 
-# Copiar todo el código fuente
 COPY . .
-
-# Build SSR (genera dist/court-reservation-public con browser + server)
 RUN npm run build
 
 # ==================================================
-# Stage 2: Imagen de producción (solo runtime)
+# Stage 2: Imagen de producción con Nginx + Node.js
 # ==================================================
 FROM node:22-alpine
 
+# Instalar nginx
+RUN apk add --no-cache nginx
+
 WORKDIR /app
 
-# Copiar solo los archivos compilados necesarios desde el builder
+# Copiar archivos compilados desde builder
 COPY --from=builder /app/dist/court-reservation-public ./
 COPY --from=builder /app/package*.json ./
 
-# Instalar SOLO dependencias de producción (no devDependencies)
+# Instalar dependencias de producción
 RUN npm ci --only=production
+
+# Copiar configuración de nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Crear directorios necesarios
+RUN mkdir -p /var/cache/nginx /var/run /var/log/nginx
 
 # Variables de entorno
 ENV PORT=4000
 ENV NODE_ENV=production
 
-# Exponer puerto del servidor SSR
-EXPOSE 4000
+# Exponer puertos (80 para nginx, 4000 para SSR)
+EXPOSE 80 4000
 
-# Usar usuario no-root para seguridad
-USER node
+# Script de inicio
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
-# Comando para ejecutar el servidor SSR
-CMD ["node", "server/server.mjs"]
+CMD ["/app/start.sh"]

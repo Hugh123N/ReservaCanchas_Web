@@ -1,0 +1,40 @@
+<section class="page-section">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="text-center mb-8">
+      <h1 class="title-main text-primary-600 mb-2">
+        @if (resolution?.ciudad && resolution?.deporte) {
+          Canchas de {{ resolution!.deporte!.nombre }} en {{ resolution!.ciudad!.provincia }}
+        } @else if (resolution?.ciudad) {
+          Canchas en {{ resolution!.ciudad!.provincia }}
+        } @else if (resolution?.deporte) {
+          Canchas de {{ resolution!.deporte!.nombre }} en Perú
+        }
+      </h1>
+      <p class="text-base text-neutral-600">Encuentra y reserva la cancha perfecta</p>
+    </div>
+
+    @if (isLoading) {
+      <div class="flex justify-center py-12">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+
+    @if (!isLoading && canchas.length === 0) {
+      <div class="empty-state">
+        <mat-icon class="icon-2xl text-neutral-400 mb-4 mx-auto">sports_tennis</mat-icon>
+        <h3 class="title-section mb-2">No se encontraron canchas</h3>
+        <p class="text">No hay canchas disponibles para esta búsqueda.</p>
+      </div>
+    }
+
+    @if (!isLoading && canchas.length > 0) {
+      <div class="canchas-grid">
+        @for (cancha of canchas; track cancha.idCancha) {
+          <app-card-cancha [field]="cancha"></app-card-cancha>
+        }
+      </div>
+    }
+
+  </div>
+</section>
