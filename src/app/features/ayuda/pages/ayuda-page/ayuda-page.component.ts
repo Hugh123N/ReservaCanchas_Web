@@ -57,6 +57,13 @@ export class AyudaPageComponent extends BaseComponent implements OnInit {
       url: '/ayuda',
       keywords: ['ayuda', 'soporte', 'preguntas frecuentes', 'reserva canchas']
     });
+
+    this.seoService.setAyudaJsonLd(
+      PREGUNTAS_FRECUENTES.map(p => ({
+        pregunta: p.pregunta,
+        respuesta: p.respuesta
+      }))
+    );
   }
 
   onBuscar(): void {

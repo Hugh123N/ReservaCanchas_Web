@@ -101,4 +101,55 @@ export class SeoService {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
   }
+
+  addJsonLd(data: Record<string, any>, id?: string): void {
+    const scriptId = id || `json-ld-${data['@type']}`;
+    const existing = this.document.getElementById(scriptId);
+    if (existing) {
+      existing.remove();
+    }
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = scriptId;
+    script.text = JSON.stringify(data);
+    this.document.head.appendChild(script);
+  }
+
+  setAyudaJsonLd(preguntas: Array<{ pregunta: string; respuesta: string }>): void {
+    const faqSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: preguntas.map(p => ({
+        '@type': 'Question',
+        name: p.pregunta,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: p.respuesta
+        }
+      }))
+    };
+
+    this.addJsonLd(faqSchema, 'json-ld-faqpage');
+
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Inicio',
+          item: this.BASE_URL
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Ayuda',
+          item: `${this.BASE_URL}/ayuda`
+        }
+      ]
+    };
+
+    this.addJsonLd(breadcrumbSchema, 'json-ld-breadcrumblist');
+  }
 }
