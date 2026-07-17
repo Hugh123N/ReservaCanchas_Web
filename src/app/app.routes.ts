@@ -12,6 +12,7 @@ export const routes: Routes = [
     { path: 'pago', loadChildren: () => import('./features/pago/pago.routes').then(m => m.pagoRoutes) },
     { path: 'mis-reservas', loadChildren: () => import('./features/mis-reservas/mis-reservas.routes').then(m => m.misReservasRoutes) },
     { path: 'perfil', loadChildren: () => import('./features/user-profile/user-profile.routes').then(m => m.userProfileRoutes) },
+    { path: 'ayuda', loadChildren: () => import('./features/ayuda/ayuda.routes').then(m => m.ayudaRoutes) },
 
     // Legacy redirects
     { path: 'cancha/canchas', redirectTo: '/canchas', pathMatch: 'full' },

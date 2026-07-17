@@ -10,6 +10,8 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { tokenInterceptor } from '@core/auth/interceptor/token.interceptor.functional';
 import { loadingInterceptor } from '@core/interceptors/loading.interceptor';
 import { ConfigService } from '@core/services/config.service';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 export const appConfig: ApplicationConfig = {
@@ -26,6 +28,15 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const configService = inject(ConfigService);
       return configService.load();
+    }),
+    provideAppInitializer(() => {
+      const iconRegistry = inject(MatIconRegistry);
+      const sanitizer = inject(DomSanitizer);
+      iconRegistry
+        .addSvgIcon('facebook',
+          sanitizer.bypassSecurityTrustResourceUrl('assets/images/icons/facebook.svg'))
+        .addSvgIcon('whatsapp',
+          sanitizer.bypassSecurityTrustResourceUrl('assets/images/icons/whatsapp.svg'));
     }),
   ]
 };

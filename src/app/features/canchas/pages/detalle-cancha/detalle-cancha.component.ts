@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -40,6 +40,7 @@ import { HorarioCanchaService } from '../../core/services/horarioCancha.service'
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     NavVarComponent,
     FooterComponent,
     FormErrorComponent,

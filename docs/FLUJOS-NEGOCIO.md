@@ -8,8 +8,10 @@
 4. [Flujo de Pago](#4-flujo-de-pago)
 5. [Flujo de "Mis Reservas"](#5-flujo-de-mis-reservas)
 6. [Flujo de Favoritos](#6-flujo-de-favoritos)
-7. [Entidades del Dominio](#7-entidades-del-dominio)
-8. [Catálogos del Sistema](#8-catálogos-del-sistema)
+7. [Flujo de URLs SEO](#7-flujo-de-urls-seo)
+8. [Flujo de Catálogo de Planes](#8-flujo-de-catálogo-de-planes)
+9. [Entidades del Dominio](#9-entidades-del-dominio)
+10. [Catálogos del Sistema](#10-catálogos-del-sistema)
 
 ---
 
@@ -695,9 +697,202 @@
 
 ---
 
-## 7. Entidades del Dominio
+## 7. Flujo de URLs SEO
 
-### 7.1 Cancha
+### 7.1 URLs Amigables (Ciudad/Deporte)
+
+```
+┌─────────────────────────────────────────────┐
+│  Usuario ingresa URL amigable:              │
+│  /lima/futbol                               │
+│  /miraflores/tenis                          │
+│  /arequipa                                  │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  Angular Router captura ruta dinámica:      │
+│  { path: ':parametro1' }                   │
+│  { path: ':parametro1/:parametro2' }       │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  SlugResolverService.initialize()          │
+│  ├── GET /Ubigeo/listAll → ciudades        │
+│  ├── GET /TipoDeporte/SelectCombo → deportes│
+│  └── Cache en memoria (Map)                │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  SlugResolverService.resolver(p1, p2)      │
+│  ├── normaliza: 'lima' → 'lima'           │
+│  ├── busca en ciudadesCache                │
+│  ├── busca en deportesCache                │
+│  └── retorna: {                            │
+│       ciudad: { codigoUbigeo: '150101' }, │
+│       deporte: { idTipoDeporte: 1 },      │
+│       esValido: true,                      │
+│       urlCanonical: '/lima/futbol'         │
+│     }                                      │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  Validación de URL canónica:               │
+│  ├── Si URL actual ≠ urlCanonical          │
+│  │   └── Redirige a urlCanonical           │
+│  └── Si es válida, continúa                │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  SeoService.setCanchasSEO(ciudad, deporte) │
+│  ├── title: 'Canchas de Fútbol en Lima'   │
+│  ├── description: 'Reserva canchas...'    │
+│  ├── canonical: '/lima/futbol'             │
+│  └── Open Graph tags                       │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  CanchasSeoComponent.loadCanchas()         │
+│  ├── Filtro: {                             │
+│  │     codigoUbigeo: '150101',            │
+│  │     idTipoDeporte: 1                    │
+│  │   }                                     │
+│  ├── POST /Cancha/search                   │
+│  └── Renderiza cards de canchas            │
+└─────────────────────────────────────────────┘
+```
+
+### 7.2 Resolución de Slugs
+
+```
+┌─────────────────────────────────────────────┐
+│  Entrada    →  Resultado                   │
+├─────────────────────────────────────────────┤
+│  /lima      →  Ciudad: Lima                │
+│  /futbol    →  Deporte: Fútbol             │
+│  /lima/futbol → Ciudad: Lima + Deporte: Fútbol │
+│  /futbol/lima → Ciudad: Lima + Deporte: Fútbol │
+│                 (orden invertido, válido)   │
+│  /xyz        →  404 (no existe)            │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 8. Flujo de Catálogo de Planes
+
+### 8.1 Listado de Planes
+
+```
+┌─────────────────────────────────────────────┐
+│  PlanesCatalogoComponent                   │
+│  Ruta: /planes (Prerender)                 │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  SeoService.setPlanes()                    │
+│  ├── title: 'Planes para Administrar Canchas'│
+│  ├── description: 'Software para gestionar'│
+│  └── Open Graph tags                       │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  PlanService.getPlanes()                   │
+│  └── GET /Plane/list                       │
+│      Retorna ListPlaneDto[]:               │
+│      ├── idPlane, codigo, nombre           │
+│      ├── descripcion                       │
+│      ├── planCaracteristicas[]             │
+│      ├── planTarifa[] (MONTHLY, YEARLY)    │
+│      ├── planLimite[] (canchas, usuarios)  │
+│      ├── precio, icono, destacado          │
+│      └── activo                            │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  Renderizado de cards de planes:           │
+│  ├── Nombre del plan                       │
+│  ├── Precio (tarifa mensual/anual)         │
+│  ├── Características destacadas            │
+│  ├── Límites (canchas, usuarios)           │
+│  ├── Badge "Destacado" (si aplica)         │
+│  └── Botón "Seleccionar Plan"              │
+└────────────────────────────────────────────┘
+```
+
+### 8.2 Selección de Plan
+
+```
+┌─────────────────────────────────────────────┐
+│  Click "Seleccionar Plan"                  │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  window.open(ONBOARDING_BASE_URL/idPlan)   │
+│  └── Abre en nueva pestaña:                │
+│      https://gestion.reservafast.com/      │
+│      onboarding/{idPlane}                  │
+└────────┬────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│  Plataforma de onboarding (externa)        │
+│  └── Proveedor completa registro,          │
+│      selección de plan y pago              │
+└─────────────────────────────────────────────┘
+```
+
+### 8.3 Modelos de Planes
+
+```
+┌─────────────────────────────────────────────┐
+│  Plan (base)                               │
+│  ├── idPlane: number                       │
+│  ├── codigo: string                        │
+│  ├── nombre: string                        │
+│  ├── descripcion: string                   │
+│  ├── ordenVisual: number                   │
+│  └── activo: boolean                       │
+├─────────────────────────────────────────────┤
+│  ListPlaneDto (respuesta /list)            │
+│  └── Extiende Plan +                       │
+│      ├── planCaracteristicas[]             │
+│      ├── planTarifa[]                      │
+│      ├── planLimite[]                      │
+│      ├── precio?: number                   │
+│      ├── icono?: string                    │
+│      └── destacado?: boolean               │
+├─────────────────────────────────────────────┤
+│  PlanTarifa                                │
+│  ├── codigo: 'MONTHLY' | 'YEARLY'         │
+│  ├── monto: number                         │
+│  └── moneda: string                        │
+├─────────────────────────────────────────────┤
+│  PlanLimite                                │
+│  ├── codigo: 'CANCHAS' | 'USUARIOS'       │
+│  └── valor: number                         │
+├─────────────────────────────────────────────┤
+│  PlanCaracteristica                        │
+│  ├── codigo: string                        │
+│  ├── nombre: string                        │
+│  └── incluido: boolean                     │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 9. Entidades del Dominio
+
+### 9.1 Cancha
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -732,7 +927,7 @@ Relaciones:
 └── Cancha → CanchaFavorita[] (favoritos)
 ```
 
-### 7.2 Reserva
+### 9.2 Reserva
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -762,7 +957,7 @@ Relaciones:
 └── Reserva → HorarioReservadoDto[] (horarios)
 ```
 
-### 7.3 Pago
+### 9.3 Pago
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -788,7 +983,7 @@ Relaciones:
 └── Pago → Reserva
 ```
 
-### 7.4 Horario Disponible
+### 9.4 Horario Disponible
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -816,7 +1011,7 @@ Desagrupación:
 └── Output: [10:00 ($50), 10:30 ($50)] (desagruparHorasPorMediaHora)
 ```
 
-### 7.5 Ubigeo (Perú)
+### 9.5 Ubigeo (Perú)
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -837,9 +1032,9 @@ Estructura jerárquica:
 
 ---
 
-## 8. Catálogos del Sistema
+## 10. Catálogos del Sistema
 
-### 8.1 Estados de Cancha
+### 10.1 Estados de Cancha
 
 | Código | Estado | Descripción |
 |--------|--------|-------------|
@@ -849,7 +1044,7 @@ Estructura jerárquica:
 | `'04'` | Suspendido | Cancha temporalmente deshabilitada |
 | `'05'` | Mantenimiento | Cancha en mantenimiento preventivo/correctivo |
 
-### 8.2 Tipos de Deporte
+### 10.2 Tipos de Deporte
 
 | Código | Deporte |
 |--------|---------|
@@ -860,7 +1055,7 @@ Estructura jerárquica:
 | `'Voleibol'` | Voleibol |
 | `'Otros'` | Otros deportes |
 
-### 8.3 Estados de Reserva
+### 10.3 Estados de Reserva
 
 | Código | Estado | Color Badge |
 |--------|--------|-------------|
@@ -869,7 +1064,7 @@ Estructura jerárquica:
 | `'03'` | Cancelado | red-100 / red-800 |
 | `'04'` | Expirado | neutral-200 / neutral-600 |
 
-### 8.4 Estados de Pago
+### 10.4 Estados de Pago
 
 | Estado | Color Badge |
 |--------|-------------|
@@ -877,7 +1072,7 @@ Estructura jerárquica:
 | Parcial | yellow-100 / yellow-800 |
 | Pagado | green-100 / green-800 |
 
-### 8.5 Métodos de Pago
+### 10.5 Métodos de Pago
 
 | Código | Método |
 |--------|--------|
@@ -887,7 +1082,7 @@ Estructura jerárquica:
 
 ---
 
-## 9. Diagrama de Flujo General
+## 11. Diagrama de Flujo General
 
 ```
                     ┌─────────────────┐

@@ -31,6 +31,23 @@
   color: white;
 }
 
+.footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.footer-contact-link:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+.footer-contact-link mat-icon {
+  color: white !important;
+}
+
 .footer-bottom {
   color: #aaa;
   font-size: 0.9rem;

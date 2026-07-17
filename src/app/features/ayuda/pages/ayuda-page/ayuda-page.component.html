@@ -1,0 +1,144 @@
+<app-nav-var></app-nav-var>
+
+<!-- Hero Section -->
+<section class="hero-ayuda">
+  <div class="max-w-4xl mx-auto text-center px-4 py-16">
+    <mat-icon class="icon-2xl text-white! mb-4">help_outline</mat-icon>
+    <h1 class="title-main text-white mb-4">Centro de Ayuda</h1>
+    <p class="text-lg text-white/90 mb-8">Encuentra respuestas a tus preguntas sobre reservas, pagos y más</p>
+
+    <!-- Buscador -->
+    <div class="max-w-2xl mx-auto">
+      <div class="relative">
+        <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">search</mat-icon>
+        <input
+          type="text"
+          class="input-base pl-12! pr-4 py-3 w-full text-base"
+          placeholder="Buscar pregunta..."
+          [(ngModel)]="busqueda"
+          (input)="onBuscar()"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="bg-neutral-50 py-16">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h2 class="title-section text-neutral-900 mb-2">Preguntas Frecuentes</h2>
+      <p class="text-base text-neutral-600">Selecciona una categoría o busca tu pregunta</p>
+    </div>
+
+    <!-- Filtros de categoría -->
+    <div class="flex flex-wrap justify-center gap-2 mb-8">
+      @for (cat of categorias; track cat) {
+        <button
+          class="btn-sm"
+          [class]="categoriaSeleccionada === cat ? 'btn-primary' : 'btn-outline-primary'"
+          (click)="onSeleccionarCategoria(cat)">
+          {{ cat }}
+        </button>
+      }
+      @if (categoriaSeleccionada || busqueda) {
+        <button class="btn-sm btn-outline-secondary" (click)="onLimpiarFiltros()">
+          <mat-icon class="icon-sm">close</mat-icon>
+          Limpiar
+        </button>
+      }
+    </div>
+
+    <!-- Acordeón de preguntas -->
+    @if (preguntasFiltradas.length > 0) {
+      <mat-accordion class="faq-accordion">
+        @for (pregunta of preguntasFiltradas; track pregunta.id) {
+          <mat-expansion-panel class="faq-panel mb-3">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="text-base font-medium">
+                {{ pregunta.pregunta }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p class="text-neutral-700 leading-relaxed">{{ pregunta.respuesta }}</p>
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    } @else {
+      <div class="flex flex-col items-center py-12">
+        <mat-icon class="icon-2xl text-neutral-400 mb-4">search_off</mat-icon>
+        <h3 class="text-lg font-medium text-neutral-600 mb-2">No se encontraron resultados</h3>
+        <p class="text-sm text-neutral-500">Intenta con otros términos o limpia los filtros</p>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Guía Rápida -->
+<section class="bg-white py-16">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="title-section text-neutral-900 mb-2">¿Cómo funciona?</h2>
+      <p class="text-base text-neutral-600">Reservar una cancha es fácil, sigue estos pasos</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      @for (paso of pasos; track paso.numero) {
+        <div class="text-center">
+          <div class="paso-circle mx-auto mb-4">
+            <mat-icon class="icon-lg text-white!">{{ paso.icono }}</mat-icon>
+          </div>
+          <div class="paso-numero">Paso {{ paso.numero }}</div>
+          <h3 class="text-base font-semibold text-neutral-800 mb-2">{{ paso.titulo }}</h3>
+          <p class="text-sm text-neutral-600 leading-relaxed">{{ paso.descripcion }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Contacto -->
+<section class="bg-white py-16">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="title-section text-neutral-900 mb-2">¿Necesitas más ayuda?</h2>
+      <p class="text-base text-neutral-600">Contáctanos por cualquiera de estos medios</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <!-- WhatsApp -->
+      <a [href]="contacto.whatsappUrl" target="_blank" rel="noopener noreferrer"
+         class="content-card enhanced-card text-center no-underline group">
+        <div class="contact-icon mx-auto mb-4">
+          <mat-icon svgIcon="whatsapp" class="icon-lg"></mat-icon>
+        </div>
+        <h3 class="text-base font-semibold text-neutral-800 mb-1">WhatsApp</h3>
+        <p class="text-sm text-neutral-600 mb-3">{{ contacto.whatsapp }}</p>
+        <span class="text-sm text-green-600 font-medium group-hover:underline">Escribir ahora</span>
+      </a>
+
+      <!-- Facebook -->
+      <a [href]="contacto.facebookUrl" target="_blank" rel="noopener noreferrer"
+         class="content-card enhanced-card text-center no-underline group">
+        <div class="contact-icon mx-auto mb-4">
+          <mat-icon svgIcon="facebook" class="icon-lg"></mat-icon>
+        </div>
+        <h3 class="text-base font-semibold text-neutral-800 mb-1">Facebook</h3>
+        <p class="text-sm text-neutral-600 mb-3">{{ contacto.facebook }}</p>
+        <span class="text-sm text-blue-600 font-medium group-hover:underline">Visitar página</span>
+      </a>
+
+      <!-- Email -->
+      <a [href]="contacto.emailUrl"
+         class="content-card enhanced-card text-center no-underline group">
+        <div class="contact-icon mx-auto mb-4">
+          <mat-icon class="icon-lg text-primary-600!">email</mat-icon>
+        </div>
+        <h3 class="text-base font-semibold text-neutral-800 mb-1">Email</h3>
+        <p class="text-sm text-neutral-600 mb-3">{{ contacto.email }}</p>
+        <span class="text-sm text-primary-600 font-medium group-hover:underline">Enviar correo</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

@@ -76,7 +76,9 @@ src/app/
 │   ├── home/                # Landing page
 │   ├── cancha-estado/       # Catálogo de estados de cancha
 │   ├── cancha-tipo/         # Catálogo de tipos de deporte
-│   └── entity/              # Entidades compartidas (horarios, días)
+│   ├── entity/              # Entidades compartidas (horarios, días)
+│   ├── planes/              # Catálogo de planes para proveedores
+│   └── seo/                 # SEO: meta tags, sitemap, URLs amigables
 │
 ├── app.routes.ts            # Rutas principales
 ├── app.routes.server.ts     # Rutas SSR (Server/Prerender)
@@ -205,11 +207,20 @@ Backend API
 
 ```typescript
 // app.routes.ts
+// Rutas principales
+{ path: '', loadComponent: () => import('./features/home/pages/home/home.component') }
+{ path: 'planes', loadChildren: () => import('./features/planes/planes.routes') }
+
+// Rutas de funcionalidad
 { path: 'cancha', loadChildren: () => import('./features/canchas/cancha.routes') }
 { path: 'auth', loadChildren: () => import('./features/auth/auth.routes') }
 { path: 'pago', loadChildren: () => import('./features/pago/pago.routes') }
 { path: 'mis-reservas', loadChildren: () => import('./features/mis-reservas/mis-reservas.routes') }
 { path: 'perfil', loadChildren: () => import('./features/user-profile/user-profile.routes') }
+
+// Rutas SEO dinámicas (ciudad/deporte) - catch-all dinámico
+{ path: ':parametro1', loadChildren: () => import('./features/seo/seo.routes') }
+{ path: ':parametro1/:parametro2', loadChildren: () => import('./features/seo/seo.routes') }
 ```
 
 ### 3.7 SSR con RenderMode
@@ -217,9 +228,114 @@ Backend API
 ```typescript
 // app.routes.server.ts
 export const serverRoutes: ServerRoute[] = [
-  { path: 'cancha/:id', renderMode: RenderMode.Server },  // SSR dinámico (SEO)
-  { path: '**', renderMode: RenderMode.Prerender }         // Prerender estático
+  // Rutas que requieren renderizado dinámico (auth, sesión)
+  { path: 'auth', renderMode: RenderMode.Server },
+  { path: 'mis-reservas', renderMode: RenderMode.Server },
+  { path: 'perfil', renderMode: RenderMode.Server },
+  { path: 'pago', renderMode: RenderMode.Server },
+
+  // Detalle de cancha (SEO + dinámico)
+  { path: 'cancha/:id', renderMode: RenderMode.Server },
+
+  // Rutas SEO dinámicas - Server para resolver slugs
+  { path: ':parametro1', renderMode: RenderMode.Server },
+  { path: ':parametro1/:parametro2', renderMode: RenderMode.Server },
+
+  // Rutas estáticas - Prerender
+  { path: '', renderMode: RenderMode.Prerender },
+  { path: 'planes', renderMode: RenderMode.Prerender },
+
+  // Todo lo demás - Prerender
+  { path: '**', renderMode: RenderMode.Prerender }
 ];
+```
+
+### 3.8 Feature: SEO (features/seo/)
+
+```
+features/seo/
+├── seo.routes.ts                          # Rutas SEO dinámicas
+├── core/
+│   ├── models/
+│   │   └── seo-config.model.ts            # SeoConfig, SeoResolution, SitemapUrl
+│   └── services/
+│       ├── seo.service.ts                 # Meta tags, Open Graph, canonical URLs
+│       ├── sitemap.service.ts             # Generación de sitemap XML
+│       └── slug-resolver.service.ts       # Resolución de URLs amigables
+└── pages/
+    └── canchas-seo/
+        ├── canchas-seo.component.ts       # Página dinámica SEO
+        ├── canchas-seo.component.html
+        └── canchas-seo.component.css
+```
+
+**Servicios SEO:**
+
+| Servicio | Responsabilidad |
+|----------|-----------------|
+| `SeoService` | Actualiza title, meta description, keywords, Open Graph tags, canonical URL |
+| `SitemapService` | Genera XML de sitemap (estáticas, ciudades, deportes, combinaciones, canchas) |
+| `SlugResolverService` | Resuelve URLs como `/lima/futbol` → ciudad + deporte con cache |
+
+**Flujo de URLs SEO:**
+```
+URL: /lima/futbol
+    ↓
+SlugResolverService.initialize() → carga ciudades y deportes del backend
+    ↓
+SlugResolverService.resolver('lima', 'futbol')
+    ↓
+Resolución: { ciudad: Lima, deporte: Fútbol, esValido: true }
+    ↓
+SeoService.setCanchasSEO('Lima', 'Fútbol')
+    ↓
+Canaliza search con filtros (codigoUbigeo, idTipoDeporte)
+```
+
+### 3.9 Feature: Planes (features/planes/)
+
+```
+features/planes/
+├── planes.routes.ts                       # Rutas de planes
+├── core/
+│   ├── models/
+│   │   ├── plan.model.ts                  # Plan, ListPlaneDto, GetPlaneDto
+│   │   ├── plan-caracteristica.model.ts   # PlanCaracteristicaDto
+│   │   ├── plan-limite.model.ts           # PlanLimiteDto
+│   │   ├── plan-tarifa.model.ts           # GetPlanTarifaDto
+│   │   └── index.ts                       # Barrel exports
+│   └── services/
+│       └── plan.service.ts                # PlanService (GET /Plane/list)
+└── pages/
+    └── planes-catalogo/
+        ├── planes-catalogo.component.ts   # Catálogo de planes para proveedores
+        ├── planes-catalogo.component.html
+        └── planes-catalogo.component.css
+```
+
+**Modelo de Planes:**
+```typescript
+interface ListPlaneDto {
+  idPlane: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  planCaracteristicas: PlanCaracteristicaDto[];  // Características del plan
+  planTarifa: GetPlanTarifaDto[];                // Tarifas (mensual, anual)
+  planLimite: PlanLimiteDto[];                   // Límites (canchas, usuarios)
+  precio?: number;
+  icono?: string;
+  destacado?: boolean;
+}
+```
+
+**Flujo de Selección de Plan:**
+```
+PlanesCatalogoComponent
+    → GET /Plane/list → Lista de planes
+    → Click "Seleccionar Plan"
+    → window.open('https://gestion.reservafast.com/onboarding/{idPlan}')
+    → Redirige a plataforma de onboarding
 ```
 
 ---
@@ -468,7 +584,9 @@ node dist/court-reservation-public/server/server.mjs  # Ejecutar SSR
 
 - `AuthService` y `AuthGuard` verifican `isPlatformBrowser()` antes de acceder a `localStorage`
 - `NavVarComponent` verifica `typeof window !== 'undefined'`
-- Las rutas usan `RenderMode.Server` para SEO (detalle de cancha) y `RenderMode.Prerender` para el resto
+- Las rutas SEO dinámicas (`/:parametro1`, `/:parametro1/:parametro2`) usan `RenderMode.Server` para resolver slugs
+- Detalle de cancha (`/cancha/:id`) usa `RenderMode.Server` para SEO
+- Rutas estáticas (home, planes) usan `RenderMode.Prerender`
 
 ### 9.2 Performance
 
@@ -490,3 +608,5 @@ node dist/court-reservation-public/server/server.mjs  # Ejecutar SSR
 2. **Interceptor legacy**: `token.interceptor.ts` (clase) existe pero no se usa
 3. **LanguageInterceptor inactivo**: No se envía header `Accept-Language`
 4. **Permisos incompletos**: Solo hay permisos de ejemplo, no específicos del dominio
+5. **SEO hardcodeado**: URLs base (`reservafast.com`) hardcodeadas en SeoService y SitemapService
+6. **SlugResolver con cache**: Cache en memoria, se reinicia al recargar (se inicializa bajo demanda)

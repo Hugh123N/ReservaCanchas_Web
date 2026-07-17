@@ -25,6 +25,20 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
 
+  // Rutas estáticas - Prerender
+  {
+    path: '',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'planes',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'ayuda',
+    renderMode: RenderMode.Prerender
+  },
+
   // Rutas SEO dinámicas - Server para resolver slugs
   {
     path: ':parametro1',

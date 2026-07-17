@@ -155,7 +155,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .icon-sm {
   @apply w-4! h-4! text-base!
-  sm:w-5! sm:h-5! sm:text-lg! flex! items-center! justify-center!;
+        sm:w-5! sm:h-5! sm:text-lg! flex! items-center! justify-center!;
 }
 
 .icon-md {
