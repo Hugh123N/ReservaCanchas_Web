@@ -1,16 +1,19 @@
 <mat-toolbar class="header-toolbar !bg-white-600 text-white">
-  <div
-    class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4"
-  >
+  <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
     <!-- Logo (izquierda) -->
-    <a
-      [routerLink]="['/']"
-      class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition no-underline"
-    >
+    <a [routerLink]="['/']" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition no-underline">
       <img src="assets/images/logo.svg" alt="Logo" class="logo-icon" />
       <span class="logo-text title-main">
         {{ TITULO_LOGO1 }}<span class="text-primary-500">{{ TITULO_LOGO2 }}</span>
       </span>
+    </a>
+
+    <!-- Centro - Panel Proveedor (siempre visible) -->
+    <a href="https://gestion.reservafast.com/auth/login"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hidden sm:flex items-center gap-1 text-sm font-medium text-neutral-800 hover:text-neutral-600 transition no-underline">
+      Panel Proveedor
     </a>
 
     <!-- Acciones (derecha) -->
@@ -93,6 +96,10 @@
     <mat-icon>person_add</mat-icon>
     <span>Registrarse</span>
   </button>
+  <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
+    <mat-icon>business_center</mat-icon>
+    <span>Panel Proveedor</span>
+  </a>
 </mat-menu>
 
 <!-- Mobile Menu - Autenticado (Authenticated) -->
@@ -108,6 +115,10 @@
       <mat-icon>event_available</mat-icon>
       <span>Mis Reservas</span>
     </button>
+    <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
+      <mat-icon>business_center</mat-icon>
+      <span>Panel Proveedor</span>
+    </a>
     <button mat-menu-item (click)="onCerrarSesion()">
       <mat-icon>logout</mat-icon>
       <span>Cerrar Sesión</span>
@@ -130,6 +141,9 @@
     <mat-icon>event_available</mat-icon>
     <span>Mis Reservas</span>
   </button>
+  <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
+    <span>Panel Proveedor</span>
+  </a>
   <button mat-menu-item (click)="onCerrarSesion()">
     <mat-icon>logout</mat-icon>
     <span>Cerrar Sesión</span>

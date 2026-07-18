@@ -8,6 +8,7 @@ import { PlanService } from '../../core/services/plan.service';
 import { ListPlaneDto } from '../../core/models/plan.model';
 import { GetPlanTarifaDto } from '../../core/models/plan-tarifa.model';
 import { SeoService } from 'app/features/seo/core/services/seo.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-planes-catalogo',
@@ -26,6 +27,7 @@ export class PlanesCatalogoComponent extends BaseComponent implements OnInit {
   constructor(
     private planService: PlanService,
     private seoService: SeoService,
+    private router: Router,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('PLANES', viewContainerRef);
@@ -34,6 +36,10 @@ export class PlanesCatalogoComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setPlanes();
     this.loadPlanes();
+  }
+
+  onVolver(): void {
+    this.router.navigate(['/']);
   }
 
   private loadPlanes(): void {
@@ -65,6 +71,6 @@ export class PlanesCatalogoComponent extends BaseComponent implements OnInit {
   }
 
   onSeleccionarPlan(plan: ListPlaneDto): void {
-    window.open(`${this.ONBOARDING_BASE_URL}/${plan.idPlane}`, '_blank');
+    window.open(`${this.ONBOARDING_BASE_URL}?planId=${plan.idPlane}`, '_blank');
   }
 }

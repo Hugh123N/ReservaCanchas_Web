@@ -61,13 +61,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   }
 
   onRegistrarCancha() {
-    console.log("Registrar nueva cancha")
-    // Aquí iría la navegación al formulario de registro
-  }
-
-  onAccesoOperador() {
-    console.log("Acceso operador")
-    // Aquí iría la navegación al panel de operador
+    this.router.navigate(['/planes']);
   }
 
   onSearchBarSearch(searchData: SearchBarData) {
