@@ -170,7 +170,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
 
     // DTO para crear pre-reserva con EFECTIVO
     const createReservaDto: CreateReserva = {
-      idCliente: this.userData.id,
+      idCliente: this.userData.idUserNegocio,
       idCancha: this.reservaData.canchaId,
       fechaReserva: this.reservaData.fecha,
       montoTotal: this.reservaData.total,

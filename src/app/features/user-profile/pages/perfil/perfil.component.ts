@@ -8,8 +8,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { AuthService } from '@core/auth/services/auth.service';
 import { UsersService } from 'app/features/auth/services/users.service';
+import { ClienteService } from 'app/features/auth/services/cliente.service';
 import { GetUserModel } from 'app/features/auth/models/get-user.model';
-import { UpdateUserModel } from 'app/features/auth/models/update-user.model';
+import { UpdateClienteModel } from 'app/features/auth/models/update-cliente.model';
 import { Subject, takeUntil } from 'rxjs';
 import { TypedFormGroup } from '@shared/types/types-form';
 import { UserProfileFormModel } from '../../models/user-profile-form.model';
@@ -43,6 +44,7 @@ export class PerfilComponent extends BaseComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private usersService: UsersService,
+    private clienteService: ClienteService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('USER_PROFILE', viewContainerRef);
@@ -87,22 +89,33 @@ export class PerfilComponent extends BaseComponent implements OnInit {
     );
     if (!confirmed) return;
 
-    const updateDto = new UpdateUserModel();
-    updateDto.id = this.usuario!.id;
-    updateDto.firstName = this.form.controls.firstName.value;
-    updateDto.lastName = this.form.controls.lastName.value;
-    updateDto.userName = this.form.controls.userName.value;
-    updateDto.email = this.form.controls.email.value;
-    updateDto.phoneNumber = this.form.controls.phoneNumber.value || '';
-    updateDto.imagen = this.imagePreview || '';
-    updateDto.roleIds = this.usuario!.roleIds || [];
+    const currentUser = this.authService.loadUserProfile();
+    if (!currentUser?.idUserNegocio) {
+      this.openErrorAlert('Tu cuenta no tiene un perfil de cliente asociado');
+      return;
+    }
 
-    const sub = this.usersService.updateUser(updateDto)
+    const updateDto = new UpdateClienteModel();
+    updateDto.idCliente = Number(currentUser.idUserNegocio);
+    updateDto.nombres = this.form.controls.firstName.value;
+    updateDto.apellidos = this.form.controls.lastName.value;
+    updateDto.email = this.form.controls.email.value;
+    updateDto.telefono = this.form.controls.phoneNumber.value || '';
+    updateDto.imagen = this.imagePreview || '';
+
+    const sub = this.clienteService.update(updateDto)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe({
         next: (response) => {
           if (response.isValid) {
-            this.usuario = { ...this.usuario!, ...updateDto } as GetUserModel;
+            this.usuario = {
+              ...this.usuario!,
+              firstName: updateDto.nombres,
+              lastName: updateDto.apellidos,
+              email: updateDto.email ?? '',
+              phoneNumber: updateDto.telefono || '',
+              imagen: updateDto.imagen || ''
+            };
             this.openSuccessAlert('Perfil actualizado exitosamente');
           } else {
             this.openErrorAlert(response || 'Error al actualizar el perfil');

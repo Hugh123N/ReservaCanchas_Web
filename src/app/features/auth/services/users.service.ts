@@ -3,15 +3,12 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { LoginModel } from '../models/login.model';
 import { GetUserModel } from '../models/get-user.model';
-import { CreateUserModel } from '../models/create-user.model';
-import { UpdateUserModel } from '../models/update-user.model';
 import { SearchUserModel } from '../models/search-user.model';
 import { AccessTokenModel } from '../models/access-token.model';
 import { LoginResultModel } from '../models/login-result.model';
 import { BaseService } from '@base/services/base.service';
 import { ResponseDto } from '@base/models/api/response.dto';
 import { ResetPasswordModel } from '../models/reset-password.model';
-import { ApplicationUserModel } from '../models/application-user.model';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { QueryResultsModel } from '@base/models/query/query-results.model';
@@ -23,14 +20,6 @@ import { UpdateTelefonoUser } from '../models/updateTelefonoUser.model';
 export class UsersService extends BaseService {
   constructor(http: HttpClient) {
     super(http, '/Usuario');
-  }
-
-  createUser(body: CreateUserModel): Observable<ResponseDto<ApplicationUserModel>> {
-    return this.postRequest<CreateUserModel, ResponseDto<ApplicationUserModel>>(`/register/cliente`, body);
-  }
-
-  updateUser(body: UpdateUserModel): Observable<ResponseDto<ApplicationUserModel>> {
-    return this.putRequest<UpdateUserModel, ResponseDto<ApplicationUserModel>>(``, body);
   }
 
   deleteUser(id: string): Observable<ResponseBaseDto> {

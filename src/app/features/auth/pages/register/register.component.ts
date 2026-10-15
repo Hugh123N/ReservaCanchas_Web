@@ -17,7 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
 import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { LayoutModule } from '@angular/cdk/layout';
-import { UsersService } from '../../services/users.service';
+import { ClienteService } from '../../services/cliente.service';
 import { CreateUserModel } from '../../models/create-user.model';
 import { OAuthHandlerService } from '../../services/oauth-handler.service';
 import { OAuthProvider } from '../../services/oauth';
@@ -71,7 +71,7 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
     private router: Router,
     private cdr: ChangeDetectorRef,
     private responsiveService: ResponsiveService,
-    private usersService: UsersService,
+    private clienteService: ClienteService,
     private oauthHandler: OAuthHandlerService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
@@ -124,8 +124,8 @@ export class RegisterComponent extends BaseComponent implements OnInit, OnDestro
       phoneNumber: ''
     };
 
-    const subscription = this.usersService
-      .createUser(registerData)
+    const subscription = this.clienteService
+      .create(registerData)
       .pipe(
         tap((response) => {
           if (response) {

@@ -1,5 +1,5 @@
 export interface Reserva {
-  idCliente: string;
+  idCliente: number;
   idCancha: number;
   idTipoDeporte: number;
   fechaReserva: string;
