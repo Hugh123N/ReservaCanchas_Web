@@ -61,11 +61,11 @@ export class ReservaService extends BaseService {
 
   /**
    * Buscar las reservas del cliente con filtros y paginación
-   * Endpoint: POST /api/Reserva/mis-reservas/{idUsuario}
+   * Endpoint: POST /api/Reserva/mis-reservas/{idCliente}
    */
-  searchMisReservas(idUsuario: string, searchParams: QueryParamsModel): Observable<ResponseDto<QueryResultsModel<ReservaClienteDto>>> {
+  searchMisReservas(idCliente: number, searchParams: QueryParamsModel): Observable<ResponseDto<QueryResultsModel<ReservaClienteDto>>> {
     return this.postRequest<QueryParamsModel, ResponseDto<QueryResultsModel<ReservaClienteDto>>>(
-      `/mis-reservas/${idUsuario}`,
+      `/mis-reservas/${idCliente}`,
       searchParams
     );
   }

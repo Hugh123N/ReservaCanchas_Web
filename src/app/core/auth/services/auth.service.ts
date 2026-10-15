@@ -42,6 +42,7 @@ export class AuthService {
       const user = new User();
 
       user.id = claims.UserId;
+      user.idUserNegocio = claims.UserIdNegocio;
       user.email = claims.email == 'no_information' ? '' : claims.email;
       user.username = claims.UserName;
       user.fullname = claims.DisplayName;

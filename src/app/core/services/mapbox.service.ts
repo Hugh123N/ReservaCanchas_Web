@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 //import * as mapboxgl from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
-import { environment } from '@environments/environment';
+import { inject } from '@angular/core';
 import { UbicacionCancha, LimitesMapa, ViewportMapa } from '../../shared/interfaces/location.interface';
+import { ConfigService } from '@core/services/config.service';
 
 /**
  * Servicio para administrar instancias de mapas Mapbox GL JS e interacciones
@@ -15,10 +16,11 @@ export class MapboxService {
   private marcadores: Map<number, mapboxgl.Marker> = new Map();
   private marcadorUbicacionUsuario: mapboxgl.Marker | null = null;
 
+  private configService = inject(ConfigService);
+
   constructor() {
-    // Inicializar token de acceso de Mapbox
-    if (environment.mapbox?.accessToken) {
-      (mapboxgl as any).accessToken = environment.mapbox.accessToken;
+    if (this.configService.mapboxToken) {
+      (mapboxgl as any).accessToken = this.configService.mapboxToken;
     }
   }
 

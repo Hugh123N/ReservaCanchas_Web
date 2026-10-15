@@ -82,7 +82,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
     };
 
     this.reservaService
-      .searchMisReservas(user.id, queryParams)
+      .searchMisReservas(user.idUserNegocio, queryParams)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe({
         next: (response) => {

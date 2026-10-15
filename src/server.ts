@@ -20,8 +20,8 @@ const angularApp = new AngularNodeAppEngine();
  */
 app.get('/api/config', (req, res) => {
   res.json({
-    apiUrl: process.env['API_URL'] ?? 'https://api.reservafast.com/api',
-    mapboxToken: process.env['MAPBOX_TOKEN'] ?? '',
+    apiUrl: process.env['API_URL'] ?? 'http://localhost:5108/api',
+    mapboxToken: process.env['MAPBOX_TOKEN'] ?? 'pk.eyJ1IjoiaHVnbzA5bnAiLCJhIjoiY21pMXdhMzhpMWVkcTJqb3FkanhkN3BqMyJ9.jU-LYk6hLrkk-iB01eUBFg',
   });
 });
 

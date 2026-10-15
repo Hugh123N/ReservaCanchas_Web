@@ -4,7 +4,7 @@ export const environment = {
 	variableepesajeText: 'Reserva',
 	Requerido:'Campo requerido',
 	application: {
-		code: 'pesaje',
+		code: 'prod',
 		version: '0.0.1',
 		versionPrefix: '',
 		header: 'Reserva',
@@ -15,7 +15,7 @@ export const environment = {
 		baseUrl: 'http://localhost:4200'
 	},
 	backend: {
-		baseApiUrl: 'https://{host}/api',
+		baseApiUrl: '',
 	},
 	security: {
 		externalProvider: false,
@@ -26,7 +26,5 @@ export const environment = {
 		silentRefreshRedirectUri: '/assets/silent-refresh.html',
 		clientId: 'client.id',
 		scope: 'openid profile email role client.id.resource'
-	},
-	USER: 'system@administrator',
-	PASSWORD: 'Creative2023$'
+	}
 };

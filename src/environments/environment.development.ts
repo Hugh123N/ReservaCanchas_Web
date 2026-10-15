@@ -3,7 +3,7 @@ export const environment = {
 	production: false,
 	Requerido: 'Campo requerido',
 	application: {
-		code: '',
+		code: 'dev',
 		version: '0.0.0',
 		versionPrefix: '',
 		header: '', //head title
@@ -14,8 +14,8 @@ export const environment = {
 		baseUrl: 'http://localhost:4200'
 	},
 	backend: {
-		host: "10.147.18.108:9090",
-		baseApiUrl: 'http://10.147.18.108:9090/api',
+		host: "localhost:5108",
+		baseApiUrl: 'http://localhost:5108/api',
 		baseApiSecurityUrl: 'https://{host}/seguridadApi/api'
 	},
 	security: {
@@ -27,8 +27,6 @@ export const environment = {
 		clientId: 'client.id',
 		scope: 'openid profile email role client.id.resource'
 	},
-	email: 'user@email.com',
-	password: 'password$',
 	mapbox: {
 		accessToken: 'pk.eyJ1IjoiaHVnbzA5bnAiLCJhIjoiY21pMXdhMzhpMWVkcTJqb3FkanhkN3BqMyJ9.jU-LYk6hLrkk-iB01eUBFg' // Register at https://www.mapbox.com/ to get your token
 	}

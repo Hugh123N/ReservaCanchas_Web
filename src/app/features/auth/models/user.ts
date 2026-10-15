@@ -1,5 +1,6 @@
 export class User {
     id: string = '';
+    idUserNegocio: number = 0;
     username: string = '';
     password: string = '';
     email: string = '';
@@ -15,6 +16,7 @@ export class User {
 
     clear(): void {
         this.id = '';
+        this.idUserNegocio = 0;
         this.username = '';
         this.password = '';
         this.email = '';
