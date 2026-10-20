@@ -1,44 +1,45 @@
 <app-nav-var></app-nav-var>
 
-<!-- Hero Section -->
-<section class="hero-section relative min-h-[500px] flex items-center">
-  <div class="hero-container text-center w-full p-2! sm:!p-6 lg:!p-8">
-    <h1 class="title-main text-white mb-6 leading-tight">
-      Reserva tu cancha
-      <span class="block text-accent-300">deportiva favorita</span>
-    </h1>
-    <p class="hero-subtitle text-lg text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-      Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.
-      <span class="font-semibold">La plataforma más completa</span> para deportistas y propietarios de canchas.
-    </p>
+<!-- Hero Section - Carrusel de banners -->
+<section class="hero-section">
+  @for (slide of slides; track slide.id; let i = $index) {
+    <div [class]="'slide ' + slide.cssClass + (i === currentSlide ? ' on' : '')">
+      <picture>
+        <source media="(max-width:700px)" [attr.srcset]="slide.mobile" />
+        <img [src]="slide.desktop" alt="" (error)="onSlideImgError($event)" />
+      </picture>
+    </div>
+  }
 
-    <!-- CTA Principal -->
-    <div class="flex flex-row flex-wrap justify-center items-center gap-2 sm:gap-4">
-      <button class="btn-white-primary" (click)="onExplorarCanchas()">
-        <mat-icon class="icon-lg">search</mat-icon>
-        Explorar Canchas
-      </button>
-      <button class="btn-white-secondary" (click)="onVerMapa()">
-        <mat-icon class="mr-2 icon-lg">map</mat-icon>
-        Ver Mapa de Canchas
-      </button>
-      <button class="btn-white-accent" (click)="onRegistrarCancha()">
-        <mat-icon class="mr-2 icon-lg">business</mat-icon>
-        Registrar Mi Cancha
-      </button>
+  <div class="hero-txt">
+    <div class="hero-container w-full">
+      <h1 class="hero-title">
+        Reserva tu cancha
+        <span class="block">deportiva favorita</span>
+      </h1>
+      <p class="hero-subtitle">
+        Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.
+        <span class="font-semibold">La plataforma más completa</span> para deportistas y propietarios de canchas.
+      </p>
     </div>
   </div>
 
-  <!-- Floating Sports Icons -->
-  <div class="floating-icons">
-    <mat-icon class="floating-icon floating-icon-1">sports_soccer</mat-icon>
-    <mat-icon class="floating-icon floating-icon-2">sports_tennis</mat-icon>
-    <mat-icon class="floating-icon floating-icon-3">sports_basketball</mat-icon>
+  <div class="dots" role="tablist" aria-label="Banners">
+    @for (slide of slides; track slide.id; let i = $index) {
+      <button
+        type="button"
+        role="tab"
+        [class.on]="i === currentSlide"
+        [attr.aria-label]="'Banner ' + (i + 1)"
+        [attr.aria-selected]="i === currentSlide"
+        (click)="goToSlide(i)"
+      ></button>
+    }
   </div>
 </section>
 
 <!-- Search Bar Flotante -->
-<section class="relative -mt-12 mb-16 z-10">
+<section class="relative -mt-28 sm:-mt-17 md:-mt-12 mb-4 z-10">
   <div class="hero-container mx-auto px-4 sm:px-6 lg:px-8 pt-0!">
     <div class="search-bar-wrapper">
       <app-search-bar
@@ -153,6 +154,28 @@
         <h3 class="text-lg font-medium text-secondary mb-3">Soporte 24/7</h3>
         <p class="text-responsive-sm text-neutral-600 leading-relaxed">Nuestro equipo está disponible para ayudarte cuando lo necesites</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ¿Cómo funciona? -->
+<section id="como" class="bg-neutral-50">
+  <div class="section-container">
+    <div class="section-header text-center mb-12">
+      <h2 class="title-main text-neutral-900 mb-4">Cómo funciona</h2>
+      <p class="text-base text-neutral-600 max-w-2xl mx-auto">Reservar toma menos de un minuto</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      @for (paso of pasos; track paso.numero) {
+        <div class="content-card enhanced-card text-center p-6! sm:p-8!">
+          <div class="role-avatar bg-primary-500 text-white font-bold text-xl mx-auto mb-4">
+            {{ paso.numero }}
+          </div>
+          <h3 class="text-lg font-semibold text-neutral-800 mb-2">{{ paso.titulo }}</h3>
+          <p class="text-responsive-sm text-neutral-600 leading-relaxed">{{ paso.descripcion }}</p>
+        </div>
+      }
     </div>
   </div>
 </section>

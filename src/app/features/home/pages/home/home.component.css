@@ -1,23 +1,11 @@
 @reference "../../../../../styles.css";
 
-/* Hero Section - Específico de Home */
+/* Hero Section - Carrusel de banners (mismo layout que reservafast-home.html) */
 .hero-section {
-  background: url('../../../../../assets/images/fondoHome1.png') center/cover no-repeat;
   position: relative;
+  height: clamp(460px, 62vh, 600px);
+  background: #052e33;
   overflow: hidden;
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    radial-gradient(circle at 25% 25%, color-mix(in srgb, var(--color-primary-500) 10%, transparent) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, color-mix(in srgb, var(--color-secondary-500) 10%, transparent) 0%, transparent 50%);
-  pointer-events: none;
 }
 
 .hero-container {
@@ -28,44 +16,122 @@
   padding: 4rem 1rem;
 }
 
-/* Floating Icons - Específico de Home */
-.floating-icons {
+.slide {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s;
+}
+
+.slide.on {
+  opacity: 1;
+}
+
+.slide picture,
+.slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fondos de respaldo hasta que se suban assets/banners/*.webp */
+.s1 { background: linear-gradient(135deg, #065f5b, #0b3b4a); }
+.s2 { background: linear-gradient(135deg, #0c4a6e, #134e4a); }
+.s3 { background: linear-gradient(135deg, #3f3a0d, #064e3b); }
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   z-index: 1;
+  background: linear-gradient(90deg, rgba(3, 30, 34, 0.85) 0%, rgba(3, 30, 34, 0.45) 55%, rgba(3, 30, 34, 0.1) 100%);
+  pointer-events: none;
 }
 
-.floating-icon {
+.hero-txt {
   position: absolute;
-  color: rgba(255, 255, 255, 0.15);
-  animation: float 6s ease-in-out infinite;
-  font-size: 4rem !important;
-  width: 4rem;
-  height: 4rem;
+  z-index: 2;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding-bottom: 70px;
 }
 
-.floating-icon-1 {
-  top: 5rem;
-  left: 2rem;
-  animation-delay: 0s;
+.hero-txt .hero-container {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.floating-icon-2 {
-  top: 8rem;
-  right: 3rem;
-  font-size: 3rem !important;
-  animation-delay: 2s;
+.hero-title {
+  color: #fff;
+  font-size: clamp(2rem, 5.2vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  max-width: 14ch;
 }
 
-.floating-icon-3 {
-  bottom: 6rem;
-  left: 25%;
-  font-size: 2.5rem !important;
-  animation-delay: 4s;
+.hero-subtitle {
+  margin-top: 16px;
+  color: #d7f3ef;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  line-height: 1.5;
+  max-width: 44ch;
+}
+
+.dots {
+  position: absolute;
+  z-index: 3;
+  right: 20px;
+  bottom: 72px;
+  display: flex;
+  gap: 8px;
+}
+
+.dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+
+.dots button.on {
+  width: 28px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .hero-section {
+    height: 520px;
+  }
+
+  .hero-section::after {
+    background: linear-gradient(180deg, rgba(3, 30, 34, 0.8), rgba(3, 30, 34, 0.35));
+  }
+
+  .hero-txt {
+    align-items: flex-start;
+    padding: 44px 0 0;
+  }
+
+  .dots {
+    left: 50%;
+    right: auto;
+    top: 20px;
+    bottom: auto;
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition: none;
+  }
 }
 
 .role-avatar {
@@ -74,25 +140,7 @@
 
 /* ========== FILTROS RESPONSIVE ========== */
 
-/* En desktop: botón de filtros oculto, search-bar siempre visible */
-.filter-toggle-container {
-  display: none;
-}
-
 .search-bar-wrapper {
   display: block;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .floating-icon {
-    display: none;
-  }
-  
-  /* En tablet/mobile: botón visible, search-bar oculto por defecto */
-  .filter-toggle-container {
-    display: block;
-  }
-
 }
 

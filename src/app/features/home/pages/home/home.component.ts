@@ -44,6 +44,21 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
 
   minDate = new Date();
 
+  // Mientras no existan los .webp en assets/banners, cada slide muestra su gradiente de respaldo
+  readonly slides = [
+    { id: 1, cssClass: 's1', desktop: 'assets/banners/banner1-desktop.webp', mobile: 'assets/banners/banner1-mobile.webp' },
+    { id: 2, cssClass: 's2', desktop: 'assets/banners/banner2-desktop.webp', mobile: 'assets/banners/banner2-mobile.webp' },
+    { id: 3, cssClass: 's3', desktop: 'assets/banners/banner3-desktop.webp', mobile: 'assets/banners/banner3-mobile.webp' },
+  ];
+  currentSlide = 0;
+  private slideTimer: ReturnType<typeof setInterval> | null = null;
+
+  readonly pasos = [
+    { numero: 1, titulo: 'Busca', descripcion: 'Filtra por ciudad, deporte y fecha para ver canchas libres.' },
+    { numero: 2, titulo: 'Elige tu horario', descripcion: 'Revisa precios y disponibilidad en tiempo real.' },
+    { numero: 3, titulo: 'Paga y juega', descripcion: 'Confirma tu reserva y recibe el comprobante al instante.' },
+  ];
+
   constructor(
     private router: Router,
     private ubigeoService: UbigeoService,
@@ -58,6 +73,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     this.seoService.setHome();
     this.cargarUbigeos();
     this.cargarTipoDeportes();
+    this.startCarousel();
   }
 
   onRegistrarCancha() {
@@ -92,12 +108,35 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     this.selectedUbigeo = null;
   }
 
-  onExplorarCanchas() {
-    this.router.navigate(['/cancha/canchas']);
+  goToSlide(index: number): void {
+    this.currentSlide = index;
+    this.startCarousel();
   }
 
-  onVerMapa() {
-    this.router.navigate(['/cancha/mapa']);
+  onSlideImgError(event: Event): void {
+    // Si falta la imagen, se elimina y queda visible el gradiente de respaldo
+    (event.target as HTMLImageElement | null)?.remove();
+  }
+
+  private startCarousel(): void {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.stopCarousel();
+    this.slideTimer = setInterval(() => {
+      this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+    }, 5000);
+  }
+
+  private stopCarousel(): void {
+    if (this.slideTimer !== null) {
+      clearInterval(this.slideTimer);
+      this.slideTimer = null;
+    }
+  }
+
+  override ngOnDestroy(): void {
+    this.stopCarousel();
+    super.ngOnDestroy();
   }
 
   private cargarUbigeos(): void {

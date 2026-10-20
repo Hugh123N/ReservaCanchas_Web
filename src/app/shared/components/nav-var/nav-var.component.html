@@ -1,129 +1,144 @@
-<mat-toolbar class="header-toolbar !bg-white-600 text-white">
-  <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4">
-    <!-- Logo (izquierda) -->
-    <a [routerLink]="['/']" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition no-underline">
-      <img src="assets/images/logo.svg" alt="Logo" class="logo-icon" />
-      <span class="logo-text title-main">
-        {{ TITULO_LOGO1 }}<span class="text-primary-500">{{ TITULO_LOGO2 }}</span>
-      </span>
-    </a>
+<div class="header-wrap">
+  <mat-toolbar class="header-toolbar !bg-white-600 text-white">
+    <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4 gap-4">
+      <!-- Logo (izquierda) -->
+      <a [routerLink]="['/']" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition no-underline">
+        <img src="assets/images/logo.svg" alt="Logo" class="logo-icon" />
+        <span class="logo-text title-main">
+          {{ TITULO_LOGO1 }}<span class="text-primary-500">{{ TITULO_LOGO2 }}</span>
+        </span>
+      </a>
 
-    <!-- Centro - Panel Proveedor (siempre visible) -->
-    <a href="https://gestion.reservafast.com/auth/login"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hidden sm:flex items-center gap-1 text-sm font-medium text-neutral-800 hover:text-neutral-600 transition no-underline">
-      Panel Proveedor
-    </a>
+      <!-- Links de navegación (desktop >=1024px) -->
+      <nav class="hidden lg:flex items-center gap-7">
+        <a [routerLink]="['/cancha/mapa']" class="nav-link">Canchas en mapa</a>
+        <a (click)="onComoFunciona($event)" class="nav-link">Cómo funciona</a>
+        <a href="https://gestion.reservafast.com/auth/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-link">
+          Panel Proveedor
+        </a>
+      </nav>
 
-    <!-- Acciones (derecha) -->
-    <div class="flex items-center gap-4">
-      <!-- Desktop (>=640px) - Usuario NO autenticado -->
-      @if (!isAuthenticated) {
-      <div class="hidden sm:flex items-center gap-4">
+      <!-- Acciones (derecha) -->
+      <div class="flex items-center gap-4">
+        <!-- Desktop - Usuario NO autenticado -->
+        @if (!isAuthenticated) {
+        <div class="hidden lg:flex items-center gap-4">
+          <button
+            mat-button
+            class="btn-clean-primary"
+            (click)="onIniciarSesion()"
+          >
+            <mat-icon>login</mat-icon>
+            Iniciar Sesión
+          </button>
+
+          <button
+            class="btn-primary"
+            mat-button
+            (click)="onRegistrarse()"
+          >
+            Registrarse
+          </button>
+        </div>
+        }
+
+        <!-- Desktop - Usuario autenticado -->
+        @if (isAuthenticated) {
+        <div class="hidden lg:flex items-center gap-4">
+          <button mat-button class="btn-clean-primary" (click)="onMisReservas()">
+            <mat-icon>event_available</mat-icon>
+            Mis Reservas
+          </button>
+
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="userMenu"
+            class="text-primary-600!"
+          >
+            <mat-icon>account_circle</mat-icon>
+          </button>
+        </div>
+        }
+
+        <!-- Hamburguesa (tablet y móvil <1024px) -->
         <button
-          mat-button
-          class="btn-clean-primary"
-          (click)="onIniciarSesion()"
+          mat-icon-button
+          class="lg:hidden! text-neutral-800! hover:text-neutral-600!"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="isMenuOpen"
+          aria-controls="nav-panel"
+          [attr.aria-label]="isMenuOpen ? 'Cerrar menú' : 'Abrir menú'"
         >
-          <mat-icon>login</mat-icon>
-          Iniciar Sesión
+          <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
         </button>
+      </div>
+    </div>
+  </mat-toolbar>
 
-        <button
-          class="btn-primary"
-          mat-button
-          (click)="onRegistrarse()"
-        >
+  <!-- Panel desplegable full-width (tablet y móvil) -->
+  @if (isMenuOpen) {
+  <div id="nav-panel" class="nav-panel">
+    <div class="max-w-[1200px] mx-auto px-4 py-2">
+      <nav class="flex flex-col">
+        <a [routerLink]="['/cancha/mapa']" class="nav-panel-link" (click)="closeMenu()">
+          <mat-icon class="icon-md">map</mat-icon>
+          <span>Canchas en mapa</span>
+        </a>
+        <a (click)="onComoFunciona($event)" class="nav-panel-link">
+          <mat-icon class="icon-md">help_outline</mat-icon>
+          <span>Cómo funciona</span>
+        </a>
+        <a href="https://gestion.reservafast.com/auth/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-panel-link"
+          (click)="closeMenu()">
+          <mat-icon class="icon-md">business_center</mat-icon>
+          <span>Panel Proveedor</span>
+        </a>
+      </nav>
+
+      @if (!isAuthenticated) {
+      <div class="flex flex-col gap-3 pt-4 pb-2">
+        <button class="btn-clean-primary w-full justify-center" (click)="onIniciarSesion()">
+          <mat-icon>login</mat-icon>
+          Iniciar sesión
+        </button>
+        <button class="btn-primary w-full" (click)="onRegistrarse()">
+          <mat-icon>person_add</mat-icon>
           Registrarse
         </button>
       </div>
-      }
-
-      <!-- Desktop (>=640px) - Usuario autenticado -->
-      @if (isAuthenticated) {
-      <div class="hidden sm:flex items-center gap-4">
-        <button mat-button class="btn-clean-primary" (click)="onMisReservas()">
-          <mat-icon>event_available</mat-icon>
-          Mis Reservas
+      } @else {
+      <div class="mt-1 pt-3 border-t border-neutral-200">
+        <div class="px-1 pb-2">
+          <p class="font-semibold text-neutral-800 text-sm">{{ currentUser?.username || 'Usuario' }}</p>
+          <p class="text-xs text-neutral-500">{{ currentUser?.email }}</p>
+        </div>
+        <button class="nav-panel-link" (click)="onMisReservas()">
+          <mat-icon class="icon-md">event_available</mat-icon>
+          <span>Ver mis reservas</span>
         </button>
-
-        <button
-          mat-icon-button
-          [matMenuTriggerFor]="userMenu"
-          class="!text-primary-600"
-        >
-          <mat-icon>account_circle</mat-icon>
+        <button class="nav-panel-link" (click)="onPerfil()">
+          <mat-icon class="icon-md">person</mat-icon>
+          <span>Ver perfil</span>
+        </button>
+        <button class="nav-panel-logout" (click)="onCerrarSesion()">
+          <mat-icon class="icon-md">logout</mat-icon>
+          <span>Cerrar sesión</span>
         </button>
       </div>
       }
-
-      <!-- Mobile (<640px) - NO autenticado -->
-      @if (!isAuthenticated) {
-      <button
-        mat-icon-button
-        class="sm:!hidden !text-primary-600 hover:!text-primary-700"
-        [matMenuTriggerFor]="mobileMenuGuest"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
-      }
-      <!-- Mobile (<640px) - Autenticado -->
-      @if (isAuthenticated) {
-      <button
-        mat-icon-button
-        class="sm:!hidden !text-primary-600 hover:!text-primary-700"
-        [matMenuTriggerFor]="mobileMenuAuth"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
-      }
     </div>
   </div>
-</mat-toolbar>
+  }
+</div>
 
 <!-- Session Warning Banner -->
 <app-session-warning (logout)="onCerrarSesion()"></app-session-warning>
-
-<!-- Mobile Menu - NO autenticado -->
-<!-- Mobile Menu - NO autenticado (Guest) -->
-<mat-menu #mobileMenuGuest="matMenu">
-  <button mat-menu-item (click)="onIniciarSesion()">
-    <mat-icon>login</mat-icon>
-    <span>Iniciar Sesión</span>
-  </button>
-  <button mat-menu-item (click)="onRegistrarse()">
-    <mat-icon>person_add</mat-icon>
-    <span>Registrarse</span>
-  </button>
-  <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
-    <mat-icon>business_center</mat-icon>
-    <span>Panel Proveedor</span>
-  </a>
-</mat-menu>
-
-<!-- Mobile Menu - Autenticado (Authenticated) -->
-  <mat-menu #mobileMenuAuth="matMenu">
-    <div class="px-4 py-2 border-b">
-      <p class="font-semibold text-neutral-800">{{ currentUser?.username || 'Usuario' }}</p>
-    </div>
-    <button mat-menu-item (click)="onPerfil()">
-      <mat-icon>person</mat-icon>
-      <span>Mi Perfil</span>
-    </button>
-    <button mat-menu-item (click)="onMisReservas()">
-      <mat-icon>event_available</mat-icon>
-      <span>Mis Reservas</span>
-    </button>
-    <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
-      <mat-icon>business_center</mat-icon>
-      <span>Panel Proveedor</span>
-    </a>
-    <button mat-menu-item (click)="onCerrarSesion()">
-      <mat-icon>logout</mat-icon>
-      <span>Cerrar Sesión</span>
-    </button>
-  </mat-menu>
 
 <!-- User Menu - Desktop -->
 <mat-menu #userMenu="matMenu">

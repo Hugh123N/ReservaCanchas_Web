@@ -1,10 +1,11 @@
-import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, HostListener, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { User } from 'app/features/auth/models/user';
 import { BaseComponent } from '@base/components/base-component/base.component';
@@ -29,6 +30,7 @@ export class NavVarComponent extends BaseComponent implements OnInit {
 
   isAuthenticated: boolean = false;
   currentUser: User | null = null;
+  isMenuOpen: boolean = false;
 
   constructor(
     private router: Router,
@@ -40,6 +42,12 @@ export class NavVarComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkAuthentication();
+
+    this.subscriptions.push(
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe(() => this.closeMenu())
+    );
   }
 
   private checkAuthentication(): void {
@@ -52,13 +60,66 @@ export class NavVarComponent extends BaseComponent implements OnInit {
     }
   }
 
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu(): void {
+    this.isMenuOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isMenuOpen || typeof document === 'undefined') return;
+    const target = event.target as HTMLElement | null;
+    if (target && !target.closest('.header-wrap')) {
+      this.closeMenu();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.closeMenu();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      this.closeMenu();
+    }
+  }
+
+  onComoFunciona(event?: Event): void {
+    event?.preventDefault();
+    this.closeMenu();
+
+    if (typeof window === 'undefined') return;
+
+    // Si ya estamos en home, scroll directo; si no, navegar y esperar el render
+    if (this.router.url.split('#')[0] === '/') {
+      this.scrollToComo();
+      return;
+    }
+
+    this.router.navigate(['/'], { fragment: 'como' }).then(() => {
+      setTimeout(() => this.scrollToComo());
+    });
+  }
+
+  private scrollToComo(): void {
+    const element = document.getElementById('como');
+    if (!element) return;
+    const offset = element.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: offset, behavior: 'smooth' });
+  }
+
   onIniciarSesion(): void {
-    console.log("Iniciar sesión")
+    this.closeMenu();
     this.router.navigate(['/auth/login']);
   }
 
   onRegistrarse(): void {
-    console.log("Registrarse")
+    this.closeMenu();
     this.router.navigate(['/auth/register']);
   }
 
@@ -71,6 +132,7 @@ export class NavVarComponent extends BaseComponent implements OnInit {
   }
 
   onCerrarSesion(): void {
+    this.closeMenu();
     this.authService.logOut().subscribe({
       next: (response) => {
         if (response.isValid) {
