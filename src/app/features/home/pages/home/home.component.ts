@@ -8,7 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
 import { SearchBarComponent, SearchBarData } from '@shared/components/search-bar/search-bar.component';
@@ -25,7 +25,7 @@ import { SeoService } from 'app/features/seo/core/services/seo.service';
   standalone: true,
   imports: [
     MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule,
-    CommonModule,
+    CommonModule, RouterModule,
     FooterComponent, NavVarComponent, SearchBarComponent,
     FormsModule, ReactiveFormsModule
   ],
@@ -54,10 +54,22 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   private slideTimer: ReturnType<typeof setInterval> | null = null;
 
   readonly pasos = [
-    { numero: 1, titulo: 'Busca', descripcion: 'Filtra por ciudad, deporte y fecha para ver canchas libres.' },
-    { numero: 2, titulo: 'Elige tu horario', descripcion: 'Revisa precios y disponibilidad en tiempo real.' },
-    { numero: 3, titulo: 'Paga y juega', descripcion: 'Confirma tu reserva y recibe el comprobante al instante.' },
+    { numero: 1, titulo: 'Busca', icono: 'search', descripcion: 'Elige ciudad, deporte y fecha. Te mostramos las canchas disponibles con precios y fotos reales.' },
+    { numero: 2, titulo: 'Elige tu horario', icono: 'schedule', descripcion: 'Compara disponibilidad en tiempo real y reserva el momento que mejor te queda.' },
+    { numero: 3, titulo: 'Paga y juega', icono: 'check_circle', descripcion: 'Confirma al instante con Yape, Plin, tarjeta o en local, y recibe tu comprobante en el momento.' },
   ];
+
+  readonly duenoTabs = [
+    { id: 'h1', titulo: 'Menú del negocio', descripcion: 'Canchas, operadores, reservas, calendario y configuración, todo en un solo lugar.' },
+    { id: 'h2', titulo: 'Resumen del mes', descripcion: 'Ingresos, reservas del mes y de hoy, y qué tan ocupadas están tus canchas.' },
+    { id: 'h3', titulo: 'Ingresos por mes', descripcion: 'Mira cómo crece tu negocio en los últimos 6 meses.' },
+    { id: 'h4', titulo: 'Canchas más populares', descripcion: 'Descubre cuáles se reservan más y cuánto generan.' },
+  ];
+  selectedDuenoTab: string = 'h1';
+
+  get selectedDuenoTabData() {
+    return this.duenoTabs.find((tab) => tab.id === this.selectedDuenoTab) ?? this.duenoTabs[0];
+  }
 
   constructor(
     private router: Router,
@@ -111,6 +123,10 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   goToSlide(index: number): void {
     this.currentSlide = index;
     this.startCarousel();
+  }
+
+  selectDuenoTab(id: string): void {
+    this.selectedDuenoTab = id;
   }
 
   onSlideImgError(event: Event): void {
