@@ -1,0 +1,118 @@
+<app-nav-var />
+
+<section id="dueno" class="owner-section">
+  <div class="owner-wrap">
+    <div class="owner-head">
+      <div>
+        <span class="owner-badge">🏟️ Soy dueño de cancha</span>
+        <h1 class="owner-title">
+          Tu cancha, siempre ocupada.
+          <span>Sin complicarte.</span>
+        </h1>
+      </div>
+      <div>
+        <p class="owner-lead">Publica tu complejo, define horarios y precios, y empieza a recibir reservas. Así se ve tu panel por dentro.</p>
+        <div class="owner-head-actions">
+          <button type="button" class="owner-btn" (click)="onRegistrarCancha()">Publicar mi cancha</button>
+          <a href="/publica-tu-cancha#perks" class="owner-btn owner-btn-ghost">Ver beneficios</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel real -->
+    <div class="owner-frame">
+      <div class="owner-bar" aria-hidden="true">
+        <i></i><i></i><i></i>
+        <span class="owner-url">reservafast.com/panel/dashboard</span>
+        <span class="owner-live">● Panel real</span>
+      </div>
+      <div class="owner-shot">
+        <img
+          src="assets/images/panelProveedor.jpeg"
+          alt="Panel de ReservaFast con resumen de ingresos, reservas y canchas populares"
+          width="1583"
+          height="733"
+          loading="lazy"
+        />
+        @for (tab of duenoTabs; track tab.id; let i = $index) {
+          <div
+            [class]="'owner-hotspot owner-hotspot-' + (i + 1) + (tab.id === selectedDuenoTab ? ' on' : '')"
+          >
+            <b>{{ i + 1 }}</b>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Explicación por secciones -->
+    <div class="owner-tabs" role="tablist" aria-label="Secciones del panel">
+      @for (tab of duenoTabs; track tab.id; let i = $index) {
+        <button
+          type="button"
+          role="tab"
+          class="owner-tab"
+          [class.selected]="tab.id === selectedDuenoTab"
+          [attr.aria-selected]="tab.id === selectedDuenoTab"
+          (click)="selectDuenoTab(tab.id)"
+        >
+          <span class="owner-tab-num">{{ i + 1 }}</span>
+          <h3>{{ tab.titulo }}</h3>
+          <p>{{ tab.descripcion }}</p>
+        </button>
+      }
+    </div>
+    <div class="owner-panel" aria-live="polite">
+      <h3>{{ selectedDuenoTabData.titulo }}</h3>
+      <p>{{ selectedDuenoTabData.descripcion }}</p>
+    </div>
+
+    <!-- Beneficios -->
+    <div class="owner-perks" id="perks">
+      <div class="owner-perk">
+        <div class="owner-perk-ic p1"><mat-icon class="icon-lg icon-primary">calendar_month</mat-icon></div>
+        <h3>Más reservas</h3>
+        <p>Los jugadores ya buscan canchas. Tus horarios libres se llenan solos.</p>
+      </div>
+      <div class="owner-perk">
+        <div class="owner-perk-ic p2"><mat-icon class="icon-lg icon-secondary">payments</mat-icon></div>
+        <h3>Cobra como prefieras</h3>
+        <p>Tarjeta, Yape, Plin o pago en local. Tú confirmas y listo.</p>
+      </div>
+      <div class="owner-perk">
+        <div class="owner-perk-ic p3"><mat-icon class="icon-lg icon-accent">dashboard</mat-icon></div>
+        <h3>Todo en un panel</h3>
+        <p>Calendario, ingresos y ocupación. Sin Excel ni mensajes sueltos.</p>
+      </div>
+      <div class="owner-perk">
+        <div class="owner-perk-ic p4"><mat-icon class="icon-lg text-pink-600">groups</mat-icon></div>
+        <h3>Trabaja en equipo</h3>
+        <p>Agrega operadores para que gestionen reservas por ti.</p>
+      </div>
+    </div>
+
+    <!-- Ayuda para dueños -->
+    <div class="owner-help">
+      <div class="owner-help-ic">
+        <mat-icon>support_agent</mat-icon>
+      </div>
+      <div class="owner-help-txt">
+        <h3>¿Tienes dudas antes de publicar?</h3>
+        <p>Registro, reservas, cobros y más. Te acompañamos en el proceso.</p>
+      </div>
+      <a class="owner-help-btn" routerLink="/ayuda" fragment="dueno">
+        Ayuda para dueños
+        <mat-icon class="owner-help-arrow">arrow_forward</mat-icon>
+      </a>
+    </div>
+
+    <div class="owner-cta">
+      <div>
+        <h3>¿Tienes un complejo deportivo?</h3>
+        <p>Publícalo en minutos y empieza a recibir reservas.</p>
+      </div>
+      <button type="button" class="owner-btn" (click)="onRegistrarCancha()">Publicar mi cancha →</button>
+    </div>
+  </div>
+</section>
+
+<app-footer />

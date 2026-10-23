@@ -10,6 +10,8 @@ export class SitemapService {
     return [
       { loc: '/', changefreq: 'daily', priority: 1.0 },
       { loc: '/planes', changefreq: 'weekly', priority: 0.8 },
+      { loc: '/publica-tu-cancha', changefreq: 'weekly', priority: 0.8 },
+      { loc: '/ayuda', changefreq: 'monthly', priority: 0.7 },
       { loc: '/para-proveedores', changefreq: 'monthly', priority: 0.7 },
       { loc: '/beneficios', changefreq: 'monthly', priority: 0.6 },
       { loc: '/blog', changefreq: 'weekly', priority: 0.7 }

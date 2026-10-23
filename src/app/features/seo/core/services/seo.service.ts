@@ -70,6 +70,17 @@ export class SeoService {
     });
   }
 
+  setPublicaTuCancha(): void {
+    this.updateTags({
+      titulo: 'Publica tu Cancha y Recibe Reservas Online | ReservaFast',
+      descripcion: 'Registra tu complejo deportivo, define horarios y precios, y empieza a recibir reservas de jugadores en un solo panel. Hecho para dueños de cancha.',
+      url: '/publica-tu-cancha',
+      keywords: ['publicar cancha', 'registrar cancha', 'software para canchas', 'sistema de reservas', 'panel proveedor']
+    });
+
+    this.addBreadcrumb('Publica tu cancha', '/publica-tu-cancha');
+  }
+
   setCanchasSEO(ciudad: string | null, deporte: string | null): void {
     let titulo = 'ReservaFast - Reserva de Canchas Deportivas';
     let descripcion = 'Encuentra y reserva canchas de deportes en Perú.';
@@ -130,7 +141,11 @@ export class SeoService {
     };
 
     this.addJsonLd(faqSchema, 'json-ld-faqpage');
+    this.addBreadcrumb('Ayuda', '/ayuda');
+  }
 
+  // Un solo script por id: al navegar entre páginas se reemplaza el breadcrumb anterior
+  private addBreadcrumb(nombre: string, path: string): void {
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -144,8 +159,8 @@ export class SeoService {
         {
           '@type': 'ListItem',
           position: 2,
-          name: 'Ayuda',
-          item: `${this.BASE_URL}/ayuda`
+          name: nombre,
+          item: `${this.BASE_URL}${path}`
         }
       ]
     };

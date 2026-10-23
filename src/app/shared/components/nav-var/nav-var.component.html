@@ -13,6 +13,7 @@
       <nav class="hidden lg:flex items-center gap-7">
         <a [routerLink]="['/cancha/mapa']" class="nav-link">Canchas en mapa</a>
         <a (click)="onComoFunciona($event)" class="nav-link">Cómo funciona</a>
+        <a [routerLink]="['/publica-tu-cancha']" class="nav-link">Publica tu cancha</a>
         <a href="https://gestion.reservafast.com/auth/login"
           target="_blank"
           rel="noopener noreferrer"
@@ -90,6 +91,10 @@
         <a (click)="onComoFunciona($event)" class="nav-panel-link">
           <mat-icon class="icon-md">help_outline</mat-icon>
           <span>Cómo funciona</span>
+        </a>
+        <a [routerLink]="['/publica-tu-cancha']" class="nav-panel-link" (click)="closeMenu()">
+          <mat-icon class="icon-md">business</mat-icon>
+          <span>Publica tu cancha</span>
         </a>
         <a href="https://gestion.reservafast.com/auth/login"
           target="_blank"

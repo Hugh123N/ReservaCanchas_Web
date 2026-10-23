@@ -11,3 +11,40 @@
 .empty-state {
   @apply flex flex-col items-center justify-center py-16 text-center;
 }
+
+.seo-help {
+  @apply mx-auto my-10 flex max-w-3xl items-center gap-5 rounded-2xl border border-neutral-200 bg-white px-7 py-6;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.seo-help-ic {
+  @apply flex h-13 w-13 flex-none place-items-center rounded-2xl bg-primary-100 text-primary-600;
+  font-size: 26px;
+}
+
+.seo-help-txt h2 {
+  @apply mb-1 text-lg font-bold text-neutral-900;
+}
+
+.seo-help-txt p {
+  @apply text-sm text-neutral-600;
+  margin: 0;
+}
+
+.seo-help-btns {
+  @apply ml-auto flex flex-wrap gap-2.5;
+}
+
+@media (max-width: 700px) {
+  .seo-help {
+    @apply flex-col items-start;
+  }
+
+  .seo-help-btns {
+    @apply ml-0 w-full;
+  }
+
+  .seo-help-btns a {
+    @apply flex-1;
+  }
+}

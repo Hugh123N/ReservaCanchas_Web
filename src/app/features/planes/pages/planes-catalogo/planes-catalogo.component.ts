@@ -1,9 +1,12 @@
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
+import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
+import { FooterComponent } from '@shared/components/footer/footer.component';
 import { PlanService } from '../../core/services/plan.service';
 import { ListPlaneDto } from '../../core/models/plan.model';
 import { GetPlanTarifaDto } from '../../core/models/plan-tarifa.model';
@@ -13,7 +16,15 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-planes-catalogo',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatCardModule, MatProgressSpinnerModule],
+  imports: [
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    NavVarComponent,
+    FooterComponent
+  ],
   templateUrl: './planes-catalogo.component.html',
   styleUrl: './planes-catalogo.component.css'
 })
@@ -39,7 +50,7 @@ export class PlanesCatalogoComponent extends BaseComponent implements OnInit {
   }
 
   onVolver(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/publica-tu-cancha']);
   }
 
   private loadPlanes(): void {

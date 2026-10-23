@@ -59,18 +59,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     { numero: 3, titulo: 'Paga y juega', icono: 'check_circle', descripcion: 'Confirma al instante con Yape, Plin, tarjeta o en local, y recibe tu comprobante en el momento.' },
   ];
 
-  readonly duenoTabs = [
-    { id: 'h1', titulo: 'Menú del negocio', descripcion: 'Canchas, operadores, reservas, calendario y configuración, todo en un solo lugar.' },
-    { id: 'h2', titulo: 'Resumen del mes', descripcion: 'Ingresos, reservas del mes y de hoy, y qué tan ocupadas están tus canchas.' },
-    { id: 'h3', titulo: 'Ingresos por mes', descripcion: 'Mira cómo crece tu negocio en los últimos 6 meses.' },
-    { id: 'h4', titulo: 'Canchas más populares', descripcion: 'Descubre cuáles se reservan más y cuánto generan.' },
-  ];
-  selectedDuenoTab: string = 'h1';
-
-  get selectedDuenoTabData() {
-    return this.duenoTabs.find((tab) => tab.id === this.selectedDuenoTab) ?? this.duenoTabs[0];
-  }
-
   constructor(
     private router: Router,
     private ubigeoService: UbigeoService,
@@ -86,10 +74,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     this.cargarUbigeos();
     this.cargarTipoDeportes();
     this.startCarousel();
-  }
-
-  onRegistrarCancha() {
-    this.router.navigate(['/planes']);
   }
 
   onSearchBarSearch(searchData: SearchBarData) {
@@ -123,10 +107,6 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   goToSlide(index: number): void {
     this.currentSlide = index;
     this.startCarousel();
-  }
-
-  selectDuenoTab(id: string): void {
-    this.selectedDuenoTab = id;
   }
 
   onSlideImgError(event: Event): void {

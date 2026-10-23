@@ -13,6 +13,7 @@ export const routes: Routes = [
     { path: 'mis-reservas', loadChildren: () => import('./features/mis-reservas/mis-reservas.routes').then(m => m.misReservasRoutes) },
     { path: 'perfil', loadChildren: () => import('./features/user-profile/user-profile.routes').then(m => m.userProfileRoutes) },
     { path: 'ayuda', loadChildren: () => import('./features/ayuda/ayuda.routes').then(m => m.ayudaRoutes) },
+    { path: 'publica-tu-cancha', title: 'Publica tu cancha | ReservaFast', loadComponent: () => import('./features/dueno/pages/dueno-landing/dueno-landing.component').then(m => m.DuenoLandingComponent) },
 
     // Legacy redirects
     { path: 'cancha/canchas', redirectTo: '/canchas', pathMatch: 'full' },
