@@ -1,3 +1,5 @@
+export type Audiencia = 'cliente' | 'dueno';
+
 export interface PreguntaFrecuente {
   id: number;
   categoria: string;
@@ -19,4 +21,16 @@ export interface ContactInfo {
   facebookUrl: string;
   email: string;
   emailUrl: string;
+}
+
+export interface AyudaAudience {
+  id: Audiencia;
+  etiqueta: string;
+  eyebrow: string;
+  subtitle: string;
+  sideLead: string;
+  stepsTitle: string;
+  stepsSubtitle: string;
+  contactEyebrow: string;
+  contactCopy: string;
 }

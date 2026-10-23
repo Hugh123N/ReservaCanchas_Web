@@ -1,29 +1,62 @@
-<footer class="footer">
-  <div class="footer-container">
+<footer class="ft">
+  <div class="ft-wrap">
 
-    <!-- Iconos de contacto -->
-    <div class="flex justify-center items-center gap-6 mb-6">
-      <a href="https://wa.me/51965147445" target="_blank" rel="noopener noreferrer"
-         class="footer-contact-link" title="WhatsApp">
-        <mat-icon svgIcon="whatsapp" class="icon-md"></mat-icon>
-      </a>
-      <a href="https://facebook.com/reservafast" target="_blank" rel="noopener noreferrer"
-         class="footer-contact-link" title="Facebook">
-        <mat-icon svgIcon="facebook" class="icon-md"></mat-icon>
-      </a>
-      <a href="mailto:ayuda@reservafast.com"
-         class="footer-contact-link" title="Email">
-        <mat-icon class="icon-md icon-primary">email</mat-icon>
-      </a>
-      <a routerLink="/ayuda"
-         class="footer-contact-link" title="Centro de Ayuda">
-        <mat-icon class="icon-md icon-primary">help_outline</mat-icon>
-      </a>
+    <!-- Columnas -->
+    <div class="ft-main">
+      <div class="ft-brand">
+        <a routerLink="/" class="ft-logo">{{ TITULO_LOGO1 }}<b>{{ TITULO_LOGO2 }}</b></a>
+        <p>La plataforma para reservar canchas deportivas de forma rápida y sencilla, y para que los dueños gestionen su negocio.</p>
+      </div>
+
+      <div class="ft-col">
+        <h3>Plataforma</h3>
+        <a routerLink="/cancha/canchas">Reservar cancha</a>
+        <a routerLink="/cancha/mapa">Canchas en mapa</a>
+        <a href="#" (click)="onComoFunciona($event)">Cómo funciona</a>
+        <a routerLink="/auth/login">Iniciar sesión</a>
+      </div>
+
+      <div class="ft-col">
+        <h3>Para dueños</h3>
+        <a routerLink="/planes">Registrar mi cancha</a>
+        <a href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">Panel proveedor</a>
+      </div>
+
+      <div class="ft-col">
+        <h3>Ayuda</h3>
+        <a routerLink="/ayuda">Centro de ayuda</a>
+        <a routerLink="/ayuda" fragment="dueno">Ayuda para dueños</a>
+      </div>
+
+      <div class="ft-col">
+        <h3>Contacto</h3>
+        <div class="ft-soc">
+          <a href="https://wa.me/51965147445" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <mat-icon svgIcon="whatsapp"></mat-icon>
+          </a>
+          <a href="https://facebook.com/reservafast" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <mat-icon svgIcon="facebook"></mat-icon>
+          </a>
+          <a href="mailto:ayuda@reservafast.com" aria-label="Correo">
+            <mat-icon>email</mat-icon>
+          </a>
+        </div>
+      </div>
     </div>
 
-    <!-- Bottom -->
-    <div class="footer-bottom text-center">
-      <p class="text-primary-500 font-medium">&copy; 2026 {{TITULO_LOGO1}}{{TITULO_LOGO2}}. Todos los derechos reservados.</p>
+    <!-- Barra inferior -->
+    <div class="ft-bar">
+      <span>&copy; {{ anio }} {{ TITULO_LOGO1 }}{{ TITULO_LOGO2 }}. Todos los derechos reservados.</span>
+      <nav aria-label="Enlaces legales y de ayuda">
+        <a routerLink="/ayuda">Centro de ayuda</a>
+        <a routerLink="/planes">Planes</a>
+      </nav>
+      <button type="button" class="ft-top" aria-label="Volver arriba" (click)="onVolverArriba()">↑</button>
     </div>
+  </div>
+
+  <!-- Marca de agua gigante -->
+  <div class="ft-mark-clip" aria-hidden="true">
+    <div class="ft-mark">{{ TITULO_LOGO1 }}{{ TITULO_LOGO2 }}</div>
   </div>
 </footer>
