@@ -27,6 +27,7 @@ import { CanchasFilter } from '../../core/types/canchas-filter';
 import { CanchaService } from '../../core/services/cancha.service';
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TypedFormGroup } from '@shared/types/types-form';
 import { CommonModule } from '@angular/common';
 import { CanchaEstadoService } from 'app/features/cancha-estado/core/services/cancha-estado.service';
@@ -41,7 +42,7 @@ import { SearchCancha } from '../../core/model/searchCancha.model';
 
 @Component({
   selector: 'app-canchas',
-  imports: [FooterComponent, NavVarComponent, SearchBarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, CommonModule, MatButtonModule, RouterModule],
+  imports: [FooterComponent, NavVarComponent, SearchBarComponent, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatCardModule, CardCanchaComponent, MatAutocompleteModule, MatPaginatorModule, MatProgressSpinnerModule, CommonModule, MatButtonModule, RouterModule],
   templateUrl: './canchas.component.html',
   styleUrl: './canchas.component.css',
   providers: [CanchaService]
@@ -153,13 +154,14 @@ export class CanchasComponent extends BaseSearchComponent {
 
   onSearch(filter = null, page = 1) {
     const sort = canchasSort();
-    const pageSize = 5;
+    const pageSize = 12;
     const filterToUse = filter || canchasParams(this.filterForm.value);
     const pageParams = new PageParamsModel(page, pageSize);
 
     this.updateFilter(filterToUse);
     this.updateSort(sort);
     this.updatePage(pageParams);
+    this.isLoading = true;
 
     const params = this.getPageParams();
     const subscription = this.canchaService.search(params).subscribe({
@@ -170,7 +172,10 @@ export class CanchasComponent extends BaseSearchComponent {
         }
         this.isLoading = false;
       },
-      error: (err) => this.openAlert(err)
+      error: (err) => {
+        this.isLoading = false;
+        this.openAlert(err);
+      }
     });
     this.subscriptions.push(subscription);
   }

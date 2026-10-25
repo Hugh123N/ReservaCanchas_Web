@@ -1,9 +1,5 @@
 import { Component, Inject, Input, ViewContainerRef } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { SearchCancha } from '../../core/model/searchCancha.model';
 import { Router } from '@angular/router';
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
@@ -13,7 +9,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 @Component({
   selector: 'app-card-cancha',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatTooltipModule],
+  imports: [MatIconModule],
   templateUrl: './card-cancha.component.html',
   styleUrl: './card-cancha.component.css'
 })
@@ -68,6 +64,14 @@ export class CardCanchaComponent extends BaseComponent{
     if (estado === this.ESTADO_CANCHA.MANTENIMIENTO) return 'En Mantenimiento';
     if (estado !== this.ESTADO_CANCHA.APROBADO) return 'No Disponible';
     return '';
+  }
+
+  get esMantenimiento(): boolean {
+    return this.field?.estadoCancha?.codigo === this.ESTADO_CANCHA.MANTENIMIENTO;
+  }
+
+  get calificacion(): number {
+    return Math.round((this.field?.calificacionPromedio ?? 0) * 10) / 10;
   }
 
   verDetalle(id: number) {

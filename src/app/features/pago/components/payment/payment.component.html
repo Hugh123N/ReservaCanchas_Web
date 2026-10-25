@@ -1,25 +1,22 @@
-<!-- Pre-Reserva Page -->
-<div class="page-wrapper">
-  <div class="page-container">
+<div class="pay-page">
+  <div class="pay-wrap">
 
-    <!-- Page Header -->
-    <div class="section-spacing">
-      <div class="flex items-center gap-3 sm:gap-4 mb-6">
-        <button mat-icon-button (click)="onBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <div>
-          <h1 class="title-main text-primary-600">Confirmar Reserva</h1>
-          <p class="text-base text-neutral-600">Revisa los detalles de tu reserva</p>
-        </div>
+    <!-- Header -->
+    <header class="pay-head">
+      <button type="button" class="pay-back" (click)="onBack()" aria-label="Volver">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Confirmar reserva</h1>
+        <p>Revisa los datos antes de enviar tu solicitud</p>
       </div>
-    </div>
+    </header>
 
     <!-- Loading State -->
     @if (isLoading) {
       <div class="loading-state">
-        <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
-        <p class="loading-text">Cargando información de la reserva...</p>
+        <mat-spinner diameter="52" color="primary" class="loading-spinner"></mat-spinner>
+        <p class="loading-text">Cargando información de la reserva…</p>
       </div>
     }
 
@@ -28,188 +25,190 @@
       <div class="empty-state">
         <mat-icon class="empty-state-icon">receipt_long</mat-icon>
         <h3 class="empty-state-title">No hay reserva pendiente</h3>
-        <p class="empty-state-description">No se encontró información de la reserva. Por favor, vuelve a seleccionar una cancha.</p>
-        <button mat-raised-button class="btn-primary" routerLink="/cancha/canchas">
-          Volver al Inicio
+        <p class="empty-state-description">
+          No se encontró información de la reserva. Vuelve a seleccionar una cancha.
+        </p>
+        <button type="button" class="btn-primary" routerLink="/cancha/canchas">
+          Explorar canchas
         </button>
       </div>
     }
 
     <!-- Main Content -->
     @if (!isLoading && reservaData) {
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="pay-grid">
 
-        <!-- Columna Izquierda - Resumen de Reserva -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- Columna principal -->
+        <div class="pay-main">
 
-          <!-- Información de la Cancha -->
-          <div class="content-card">
-            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 p-2">
-              <div class="flex-1">
-                <h2 class="title-main text-neutral-800 mb-0">
-                  {{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}
-                </h2>
-                <p class="text-base text-neutral-600 flex items-center gap-2 mb-4">
-                  <mat-icon class="icon-sm">location_on</mat-icon>
+          <!-- Resumen de la reserva -->
+          <section class="pay-card">
+            <div class="pay-cancha">
+              <span class="pay-cancha-ic"><mat-icon>sports</mat-icon></span>
+              <div class="pay-cancha-txt">
+                <h2>{{ reservaData.cancha?.nombre || 'Cancha Deportiva' }}</h2>
+                <p>
+                  <mat-icon class="pay-loc-ic">location_on</mat-icon>
                   {{ reservaData.cancha?.direccion || 'Lima, Perú' }}
                 </p>
-
-                <mat-divider class="my-4"></mat-divider>
-
-                <!-- Detalles de la Reserva -->
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600! icon-sm">calendar_today</mat-icon>
-                    </div>
-                    <div>
-                      <p class="text-sm text-neutral-500">Fecha</p>
-                      <p class="text-base font-semibold text-neutral-800">{{ formatDate(reservaData.fecha) }}</p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600! icon-sm">schedule</mat-icon>
-                    </div>
-                    <div>
-                      <p class="text-sm text-neutral-500">Horarios</p>
-                      <p class="text-base font-semibold text-neutral-800">
-                        @for (time of reservaData.selectedTime; track time.hora) {
-                          {{ time.hora }}@if (!$last) {<span>, </span>}
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary-50 rounded-lg">
-                      <mat-icon class="text-primary-600! icon-sm">timer</mat-icon>
-                    </div>
-                    <div>
-                      <p class="text-sm text-neutral-500">Duración</p>
-                      <p class="text-base font-semibold text-neutral-800">{{ reservaData.duracion }} hora(s)</p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-accent-50 rounded-lg">
-                      <mat-icon class="text-accent-600! icon-sm">payments</mat-icon>
-                    </div>
-                    <div>
-                      <p class="text-sm text-neutral-500">Precio por Hora</p>
-                      <p class="text-base font-semibold text-neutral-800">S/ {{ reservaData.precioHora }}</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Información Importante -->
-          <div class="content-card bg-yellow-100!">
-              <div class="flex-1">
-                <h3 class="title-section my-2">Información Importante</h3>
-                <ul class="space-y-2 text-sm text-neutral-700">
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="icon-sm !text-yellow-600 mt-0.5">phone</mat-icon>
-                    <span>El operador de la cancha se contactará contigo para coordinar el <strong>metodo de Pago</strong></span>
-                  </li>
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="icon-sm !text-yellow-600 mt-0.5">schedule</mat-icon>
-                    <span>Tu reserva expirará en <strong>{{reservaData.cancha!.duracionPreReserva }} horas</strong> si no es confirmada por el operador</span>
-                  </li>
-                  <li class="flex items-start gap-2">
-                    <mat-icon class="icon-sm !text-yellow-600 mt-0.5">notifications</mat-icon>
-                    <span>Recibirás notificaciones por email y WhatsApp cuando tu reserva sea confirmada</span>
-                  </li>
-                </ul>
-              </div>
+            <div class="pay-facts">
+              <span class="pay-fact">
+                <mat-icon>calendar_today</mat-icon>
+                <span>
+                  <small>Fecha</small>
+                  <b>{{ formatDate(reservaData.fecha) }}</b>
+                </span>
+              </span>
+
+              <span class="pay-fact">
+                <mat-icon>schedule</mat-icon>
+                <span>
+                  <small>Horario</small>
+                  <b>
+                    @for (time of reservaData.selectedTime; track time.hora) {
+                      {{ time.hora }}@if (!$last) { · }
+                    }
+                  </b>
+                </span>
+              </span>
+
+              <span class="pay-fact">
+                <mat-icon>timer</mat-icon>
+                <span>
+                  <small>Duración</small>
+                  <b>{{ reservaData.duracion }} {{ reservaData.duracion === 1 ? 'hora' : 'horas' }}</b>
+                </span>
+              </span>
+
+              <span class="pay-fact">
+                <mat-icon>payments</mat-icon>
+                <span>
+                  <small>Precio</small>
+                  <b>S/ {{ reservaData.precioHora }} /hora</b>
+                </span>
+              </span>
             </div>
+          </section>
+
+          <!-- Qué pasa después -->
+<section class="pay-card">
+    <h3 class="pay-card-title">¿Qué pasa después?</h3>
+    <ol class="pay-steps">
+      <li>
+        <span class="pay-step-num">1</span>
+        <div>
+          <b>Enviamos tu solicitud</b>
+          <p>El operador de la cancha recibe tu reserva al instante.</p>
         </div>
+      </li>
+      <li>
+        <span class="pay-step-num">2</span>
+        <div>
+          <b>Te contacta por WhatsApp</b>
+          <p>Coordina contigo el método de pago y confirma la reserva.</p>
+        </div>
+      </li>
+      <li>
+        <span class="pay-step-num">3</span>
+        <div>
+          <b>Recibes la confirmación</b>
+          <p>Te avisamos por email y WhatsApp. ¡Lista para jugar!</p>
+        </div>
+      </li>
+    </ol>
+    @if (reservaData.cancha?.duracionPreReserva) {
+      <div class="pay-expira">
+        <mat-icon>alarm</mat-icon>
+        <span>
+          Tu reserva expira en <b>{{ reservaData.cancha!.duracionPreReserva }} horas</b>
+          si el operador no la confirma.
+        </span>
+      </div>
+    }
+  </section>
+</div>
 
-        <!-- Columna Derecha - Total y Acción -->
-        <div class="lg:col-span-1">
-          <div class="sticky top-4 space-y-4">
+        <!-- Columna lateral: total + acción -->
+        <aside class="pay-side">
+          <div class="pay-card pay-total">
+            <p class="pay-total-label">Total a pagar</p>
+            <p class="pay-total-amount">S/ {{ reservaData.total }}</p>
+            <p class="pay-total-calc">
+              {{ reservaData.duracion }} {{ reservaData.duracion === 1 ? 'hora' : 'horas' }}
+              × S/ {{ reservaData.precioHora }} /hora
+            </p>
 
-            <!-- Card de Total -->
-            <mat-card class="card-base bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200! p-2">
-              <div class="total-card-content text-center">
-                <div class="total-header-wrapper">
-                  <div class="total-header-content">
-                    <p class="title-section text-neutral-600 mb-1">Monto Total</p>
-                    <p class="title-main text-primary-600 mb-0">
-                      S/ {{ reservaData.total }}
-                    </p>
-                  </div>
-                </div>
-                <!-- <p class="total-detail text-sm text-neutral-500">
-                  {{ reservaData.duracion }} hora(s) × S/ {{ reservaData.precioHora }}
-                </p> -->
+            <div class="pay-pago">
+              <mat-icon>payments</mat-icon>
+              <span>Pago en efectivo al operador</span>
+            </div>
 
-                <mat-divider class="my-4 p-2"></mat-divider>
+            <p class="pay-nota">
+              El operador puede solicitar un adelanto al confirmar tu reserva.
+            </p>
 
-                <!-- Desglose -->
-                <div class="space-y-2 text-sm">
-                  <div class="flex justify-between text-neutral-600">
-                    <span>Subtotal:</span>
-                    <span class="font-semibold">S/ {{ reservaData.total }}</span>
-                  </div>
-                  <div class="flex justify-between text-neutral-600">
-                    <span>Adelanto:</span>
-                    <span class="font-semibold text-green-600">S/ 0.00</span>
-                  </div>
-                  <div class="flex justify-between text-xs text-neutral-500">
-                    <span colspan="2">El operador puede solicitar un adelanto al confirmar</span>
-                  </div>
-                </div>
-              </div>
-            </mat-card>
+            <!-- Reglas de la cancha -->
+            <div class="pay-reglas">
+              <p class="pay-reglas-title">
+                <mat-icon>gavel</mat-icon>
+                <span>Reglas de la cancha</span>
+              </p>
 
-            <!-- Botón de Acción Principal -->
+              <ul class="pay-reglas-list">
+                @for (regla of reglasAMostrar; track $index) {
+                  <li>
+                    <b>{{ regla.titulo }}:</b> {{ regla.texto }}
+                  </li>
+                }
+              </ul>
+
+              @if (hayMasReglas) {
+                <button type="button" class="pay-reglas-toggle" (click)="toggleReglas()">
+                  {{ reglasExpandidas ? 'Ver menos' : 'Ver más' }}
+                </button>
+              }
+
+              <label class="pay-reglas-check">
+                <input type="checkbox" [(ngModel)]="reglasAceptadas" />
+                <span>He leído y acepto las reglas</span>
+              </label>
+            </div>
+
             <button
-              mat-stroked-button
-              class="btn-primary w-full py-4 text-lg font-bold shadow-lg hover:shadow-xl"
-              [disabled]="isProcessing"
-              (click)="onConfirmPreReserva()">
-              <mat-icon class="mr-2">check_circle</mat-icon>
-                Crear Reserva
+              type="button"
+              class="pay-cta"
+              [disabled]="isProcessing || !reglasAceptadas"
+              (click)="onConfirmPreReserva()"
+            >
+              @if (isProcessing) {
+                <mat-spinner diameter="18" class="spinner-white"></mat-spinner>
+              } @else {
+                <mat-icon>check_circle</mat-icon>
+              }
+              {{ isProcessing ? 'Creando reserva…' : 'Crear reserva' }}
             </button>
 
-            <!-- Botón Cancelar -->
+            @if (!reglasAceptadas && !isProcessing) {
+              <p class="pay-cta-hint">Acepta las reglas para continuar</p>
+            }
+
             <button
-              mat-stroked-button
-              class="btn-outline-primary w-full py-3"
+              type="button"
+              class="pay-cancel"
               [disabled]="isProcessing"
-              (click)="onCancel()">
-              <mat-icon class="mr-2">close</mat-icon>
+              (click)="onCancel()"
+            >
               Cancelar
             </button>
-            
 
-            <!-- Información de Contacto -->
-            <!-- <div class="content-card">
-              <div class="text-center">
-                <mat-icon class="text-blue-600 mb-2">phone</mat-icon>
-                <p class="text-sm text-neutral-600 mb-1">Tu teléfono de contacto</p>
-                <p class="font-bold text-neutral-800">{{ reservaData.telefono }}</p>
-                <p class="text-xs text-neutral-500 mt-2">
-                  El operador te contactará a este número
-                </p>
-              </div>
-            </div> -->
-
-            <!-- Ayuda -->
-            <div class="text-center">
-              <p class="text-sm text-neutral-500">
-                ¿Necesitas ayuda?
-                <a routerLink="/ayuda" class="text-primary-600 hover:text-primary-700 hover:underline transition-colors ml-1">
-                  Ayuda y Soporte
-                </a>
-              </p>
-            </div>
+            <p class="pay-ayuda">
+              ¿Dudas? <a routerLink="/ayuda">Ayuda y soporte</a>
+            </p>
           </div>
-        </div>
+        </aside>
 
       </div>
     }

@@ -2,24 +2,27 @@
 <app-nav-var></app-nav-var>
 
 <!-- Search Section -->
-<section class="relative py-8" style="background: url('assets/images/fondo2.png') center/cover no-repeat;">
-  <div class="hero-container mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Page Title with Filter Button (Mobile/Tablet) -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-      
-      <!-- Botón Filtros (Solo Mobile/Tablet - max 768px) -->
-      <div class="filter-toggle-container">
-        <button
-          mat-raised-button
-          class="btn-primary"
-          (click)="toggleFiltros()">
-          <mat-icon class="mr-2">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
-          {{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
-        </button>
-      </div>
+<section class="canchas-hero">
+  <div class="canchas-hero-wrap">
+    <div class="canchas-hero-head">
+      <h1>Encuentra tu cancha ideal</h1>
+      <p>Busca por ciudad, deporte y fecha, y reserva en minutos.</p>
     </div>
 
-    <!-- Search Bar Component (Oculto en mobile/tablet por defecto) -->
+    <!-- Botón filtros (solo mobile/tablet ≤768px) -->
+    <div class="filter-toggle-container">
+      <button
+        type="button"
+        class="canchas-filter-btn"
+        (click)="toggleFiltros()"
+        [attr.aria-expanded]="mostrarFiltros"
+      >
+        <mat-icon>{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+        {{ mostrarFiltros ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      </button>
+    </div>
+
+    <!-- Search bar -->
     <div class="search-bar-wrapper" [class.show-filters]="mostrarFiltros">
       <app-search-bar
         [tipoDeportes]="tipoDeportes"
@@ -34,104 +37,102 @@
   </div>
 </section>
 
-<!-- Filters and Results Section -->
-<section class="results-section py-8 bg-neutral-50">
-<div class="hero-container mx-auto px-4 sm:px-6 lg:px-8">
-<div class="max-w-7xl mx-auto">
+<!-- Results Section -->
+<section class="canchas-results">
+  <div class="canchas-wrap">
 
-  <!-- Results Header -->
-  <div
-    class="results-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8"
-    >
-    <div class="results-info">
-      <h2 class="title-main text-primary mb-2">
-        {{
-        isSearching
-        ? "Resultados de búsqueda"
-        : "Todas las canchas disponibles"
-        }}
-      </h2>
-    </div>
+    <!-- Results Header -->
+    <div class="results-top">
+      <div class="results-info">
+        <h2>
+          {{ isSearching ? 'Resultados de búsqueda' : 'Todas las canchas disponibles' }}
+        </h2>
+        <!-- @if (!isLoading) {
+          <span class="results-count">
+            <b>{{ total }}</b>
+            {{ total === 1 ? 'cancha' : 'canchas' }}
+            {{ isSearching ? 'encontradas' : 'disponibles' }}
+          </span>
+        } -->
+      </div>
 
-    <!-- Ver Mapa -->
-    <div class="flex justify-center md:justify-end">
-      <a routerLink="/cancha/mapa"
-         [state]="{ canchas: convertirCanchasAUbicacion(canchas), filtros: filterForm.value }"
-         class="text-primary-600 hover:text-primary-700 font-semibold underline underline-offset-4 cursor-pointer transition-colors">
+      <a
+        class="mapa-link"
+        routerLink="/cancha/mapa"
+        [state]="{ canchas: convertirCanchasAUbicacion(canchas), filtros: filterForm.value }"
+      >
+        <mat-icon>map</mat-icon>
         Ver mapa
       </a>
     </div>
-  </div>
 
-    
+    <!-- Loading -->
+    @if (isLoading) {
+      <div class="canchas-loading" role="status">
+        <mat-spinner diameter="44"></mat-spinner>
+        <p>Buscando canchas disponibles…</p>
+      </div>
+    }
 
     <!-- Results Grid -->
-    <div class="lg:col-span-3">
-      <!-- Results Grid -->
-      @if (!isLoading && canchas.length > 0) {
-        <div class="results-grid">
-          <div class="grid grid-medium">
-            @for (
-              cancha of canchas; track trackByCancha(i,
-              cancha); let i = $index) {
-              <div
-                class="cancha-item fade-in-up"
-                [style.animation-delay.ms]="i * 100"
-                >
-                <app-card-cancha
-                  [field]="cancha"
-                  (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
-                  [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
-                  >
-                </app-card-cancha>
-              </div>
-            }
-          </div>
-        </div>
-      }
-
-      <!-- Empty State -->
-      @if (!isLoading && canchas.length === 0) {
-        <div class="empty-state  py-16">
-          <div class="max-w-md mx-auto">
-            <mat-icon class="text-neutral-400 mb-4">search_off</mat-icon>
-            <h3 class="h3 text-neutral-600 mb-4 mx-auto">No se encontraron canchas</h3>
-            <p class="text-neutral-500 mb-6">
-              {{
-              isSearching
-              ? "Intenta ajustar tus filtros de búsqueda"
-              : "No hay canchas disponibles en este momento"
-              }}
-            </p>
-            <button
-              class="btn-outline-primary mx-auto"
-              (click)="onClear()"
-              >
-              {{ isSearching ? "Limpiar filtros" : "Recargar" }}
-            </button>
-          </div>
-        </div>
-        }
-
-        <!-- Pagination -->
-        @if (!isLoading && this.total > this.page.pageSize) {
+    @if (!isLoading && canchas.length > 0) {
+      <div class="canchas-grid">
+        @for (cancha of canchas; track trackByCancha(i, cancha); let i = $index) {
           <div
-            class="pagination-section mt-12"
+            class="cancha-item fade-in-up"
+            [style.animation-delay.ms]="i * 60"
+          >
+            <app-card-cancha
+              [field]="cancha"
+              (click)="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO && onSelectCancha(cancha)"
+              [class.cursor-pointer]="cancha.estadoCancha?.codigo === ESTADO_CANCHA.APROBADO"
             >
-            <mat-paginator
-              [length]="this.total"
-              [pageSize]="this.page.pageSize"
-              [pageSizeOptions]="[12, 24, 48]"
-              [pageIndex]="this.page.page"
-              (page)="onPageChange($event)"
-              showFirstLastButtons
-              class="custom-paginator"
-              >
-            </mat-paginator>
+            </app-card-cancha>
           </div>
         }
       </div>
-    </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && canchas.length === 0) {
+      <div class="canchas-empty">
+        <span class="canchas-empty-ic"><mat-icon>search_off</mat-icon></span>
+        <h3>
+          {{ isSearching ? 'No encontramos canchas' : 'Aún no hay canchas disponibles' }}
+        </h3>
+        <p>
+          {{
+            isSearching
+            ? 'Prueba ajustando la ciudad, el deporte o la fecha.'
+            : 'Se están sumando nuevos complejos. Vuelve a intentarlo en unos minutos.'
+          }}
+        </p>
+        <button
+          type="button"
+          [class]="isSearching ? 'btn-outline-primary' : 'btn-primary'"
+          (click)="onClear()"
+        >
+          {{ isSearching ? 'Limpiar filtros' : 'Reintentar' }}
+        </button>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (!isLoading && this.total > this.page.pageSize) {
+      <div class="pagination-section">
+        <mat-paginator
+          [length]="this.total"
+          [pageSize]="this.page.pageSize"
+          [pageSizeOptions]="[12, 24, 48]"
+          [pageIndex]="this.page.page"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          class="custom-paginator"
+        >
+        </mat-paginator>
+      </div>
+    }
+
   </div>
 </section>
 

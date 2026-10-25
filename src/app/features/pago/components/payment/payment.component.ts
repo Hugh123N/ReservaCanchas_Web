@@ -1,8 +1,5 @@
 import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseComponent } from '@base/components/base-component/base.component';
@@ -15,6 +12,7 @@ import { ReservaService } from 'app/features/reserva/core/services/reserva.servi
 import { CreateReserva } from 'app/features/reserva/core/model/createReserva.model';
 import { ReservaConPagoDto } from 'app/features/reserva/core/model/reservaConPago.model';
 import { ReservaData } from '../../core/types/reserva-data.interface';
+import { REGLAS_CANCHA_GENERALES, ReglaCancha } from '../../core/constants/reglas-cancha.constants';
 import { desagruparHorasPorMediaHora } from '@shared/utils/horario.utils';
 import Swal from 'sweetalert2';
 
@@ -22,12 +20,9 @@ import Swal from 'sweetalert2';
   selector: 'app-payment',
   standalone: true,
   imports: [
-    CommonModule,
-    MatButtonModule,
+    FormsModule,
     MatIconModule,
-    MatCardModule,
     MatProgressSpinnerModule,
-    MatDividerModule,
     RouterModule
   ],
   templateUrl: './payment.component.html',
@@ -41,6 +36,11 @@ export class PaymentComponent extends BaseComponent implements OnInit {
   // States
   isLoading: boolean = false;
   isProcessing: boolean = false;
+  reglasExpandidas: boolean = false;
+  reglasAceptadas: boolean = false;
+
+  readonly reglas: ReglaCancha[] = REGLAS_CANCHA_GENERALES;
+  private readonly reglasVisiblesColapsadas = 3;
 
   private unsubscribe = new Subject<void>();
 
@@ -58,6 +58,20 @@ export class PaymentComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadReservationData();
+  }
+
+  get reglasAMostrar(): ReglaCancha[] {
+    return this.reglasExpandidas
+      ? this.reglas
+      : this.reglas.slice(0, this.reglasVisiblesColapsadas);
+  }
+
+  get hayMasReglas(): boolean {
+    return this.reglas.length > this.reglasVisiblesColapsadas;
+  }
+
+  toggleReglas(): void {
+    this.reglasExpandidas = !this.reglasExpandidas;
   }
 
   private loadReservationData(): void {
@@ -349,14 +363,6 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       minute: '2-digit'
     };
     return date.toLocaleDateString('es-PE', options);
-  }
-
-  /**
-   * Calcular subtotal
-   */
-  calculateSubtotal(): number {
-    if (!this.reservaData) return 0;
-    return this.reservaData.precioHora * this.reservaData.duracion;
   }
 
   override ngOnDestroy(): void {

@@ -1,75 +1,78 @@
-<mat-card class="field-card flex flex-col gap-3">
+<article class="field-card" [class.unavailable]="!disponible">
   <!-- Imagen -->
-  <div
-    class="image-container relative h-44 overflow-hidden rounded-t-xl"
-    [class.unavailable]="!disponible"
-    >
+  <div class="image-container">
     <img
       [src]="mainImage"
-      alt="{{ field.nombre }}"
-      class="w-full h-full object-cover"
-      />
-      @if (estadoTexto) {
-        <span
-          class="status-badge absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium"
-          >
-          {{ estadoTexto }}
-        </span>
+      [alt]="field.nombre"
+      class="card-img"
+      loading="lazy"
+    />
+
+    @if (estadoTexto) {
+      <span class="status-badge" [class.status-mantto]="esMantenimiento">
+        {{ estadoTexto }}
+      </span>
+    }
+
+    @if (calificacion > 0) {
+      <span class="rating-chip">
+        <mat-icon>star</mat-icon>
+        {{ calificacion }}
+      </span>
+    }
+
+    <button
+      type="button"
+      class="heart-button"
+      [class.is-fav]="esFavorito()"
+      (click)="onToggleFavorito($event)"
+      [attr.aria-label]="esFavorito() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+    >
+      <mat-icon>{{ esFavorito() ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Contenido -->
+  <div class="card-body">
+    <h3 class="card-title">{{ field.nombre }}</h3>
+
+    <p class="card-loc">
+      <mat-icon>location_on</mat-icon>
+      <span>{{ ubicacion }}</span>
+    </p>
+
+    <div class="card-chips">
+      @for (tipo of mostrarDeportes; track tipo) {
+        <span class="sport-chip">{{ tipo.nombre }}</span>
+      }
+      @if (tieneDeportesAdicionales) {
+        <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
       }
     </div>
 
-    <!-- Contenido -->
-    <mat-card-content class="flex flex-col gap-2">
-      <!-- Título y favorito -->
-      <div class="flex justify-between items-center">
-        <h3 class="font-semibold text-lg flex-1 mr-2">{{ field.nombre }}</h3>
-        <button
-          mat-icon-button
-          class="heart-button !w-9 !h-9 flex-shrink-0"
-          (click)="onToggleFavorito($event)"
-          [attr.aria-label]="esFavorito() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-        >
-          <mat-icon [class.!text-red-500]="esFavorito()" [class.!text-gray-400]="!esFavorito()">
-            {{ esFavorito() ? 'favorite' : 'favorite_border' }}
-          </mat-icon>
-        </button>
-      </div>
+    <div class="card-footer">
+      <span class="price">
+        <span class="price-amount">S/ {{ field.precio }}</span>
+        <span class="price-unit">/hora</span>
+      </span>
+    </div>
+  </div>
 
-      <!-- Ubicación -->
-      <div class="flex items-center text-gray-600 text-sm">
-        <mat-icon class="text-base mr-1 icon-primary">location_on</mat-icon>
-        <span>{{ ubicacion }}</span>
-      </div>
-
-      <!-- Deporte -->
-      <div class="flex flex-row flex-wrap gap-2">
-        @for (tipo of mostrarDeportes; track tipo) {
-            <span class="sport-chip">{{ tipo.nombre }}</span>
-        }
-        @if (tieneDeportesAdicionales) {
-          <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
-        }
-      </div>
-
-      <!-- Precio -->
-      <div class="price font-bold text-primary flex items-baseline gap-1">
-        <span class="amount text-xl">S/ {{ field.precio }}</span>
-        <span class="text-sm">/hora</span>
-      </div>
-    </mat-card-content>
-
-    <!-- Botón -->
-    <mat-card-actions>
-      @if (disponible) {
-        <button
-          mat-raised-button
-          class="w-full btn-white-primary"
-          (click)="verDetalle(field.idCancha!)"
-          >
-          Reservar Ahora
-        </button>
-      } @else {
-        <button mat-raised-button disabled class="w-full !rounded-lg">No Disponible</button>
-      }
-    </mat-card-actions>
-  </mat-card>
+  <!-- CTA -->
+  <div class="card-actions">
+    @if (disponible) {
+      <button
+        type="button"
+        class="card-cta"
+        (click)="verDetalle(field.idCancha!)"
+      >
+        Reservar ahora
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    } @else {
+      <button type="button" class="card-cta card-cta-off" disabled>
+        No disponible
+      </button>
+    }
+  </div>
+</article>
