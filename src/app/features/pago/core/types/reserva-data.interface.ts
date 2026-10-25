@@ -7,7 +7,8 @@ export interface ReservaData {
   fecha: string;
   selectedTime: TimeOption[];
   duracion: number;
-  telefono: string;
+  /** Legacy: el teléfono ahora se toma del perfil y se edita en la vista de pago */
+  telefono?: string;
   precioHora: number;
   total: number;
   idTipoDeporte: number;

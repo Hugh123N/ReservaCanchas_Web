@@ -41,6 +41,51 @@
         <!-- Columna principal -->
         <div class="pay-main">
 
+          <!-- Información de contacto -->
+          <section class="pay-card">
+            <h3 class="pay-card-title">Información de Contacto</h3>
+
+            <div class="pay-campos">
+              <div class="pay-campo">
+                <span class="pay-campo-label">Nombre completo</span>
+                <div class="pay-campo-box pay-campo-readonly">
+                  <mat-icon>person</mat-icon>
+                  <span class="pay-campo-valor">{{ userData?.fullname || '—' }}</span>
+                </div>
+              </div>
+
+              <div class="pay-campo">
+                <label class="pay-campo-label" for="telefono-contacto">
+                  Teléfono / WhatsApp <span class="pay-campo-req">*</span>
+                </label>
+                <div class="pay-campo-box" [class.pay-campo-error]="telefonoInvalido">
+                  <mat-icon>phone</mat-icon>
+                  <input
+                    id="telefono-contacto"
+                    type="tel"
+                    maxlength="15"
+                    placeholder="999 999 999"
+                    [(ngModel)]="telefonoContacto"
+                    (input)="onTelefonoInput()"
+                    (blur)="onTelefonoBlur()"
+                  />
+                </div>
+                <p class="pay-campo-msg" [class.pay-campo-msg-error]="telefonoInvalido">
+                  @if (telefonoInvalido) {
+                    Ingresa un teléfono válido (8 a 15 dígitos).
+                  } @else {
+                    {{ mensajeTelefono }}
+                  }
+                </p>
+              </div>
+            </div>
+
+            <p class="pay-contacto-nota">
+              <mat-icon>chat</mat-icon>
+              <span>Recibirás recordatorio por WhatsApp 1 hora antes de tu reserva.</span>
+            </p>
+          </section>
+
           <!-- Resumen de la reserva -->
           <section class="pay-card">
             <div class="pay-cancha">

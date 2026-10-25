@@ -98,6 +98,133 @@
   color: #0f172a;
 }
 
+/* Información de contacto */
+.pay-campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .pay-campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pay-campo-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.pay-campo-req {
+  color: #ef4444;
+}
+
+.pay-campo-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pay-campo-box mat-icon {
+  flex: none;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #94a3b8;
+}
+
+.pay-campo-box input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pay-campo-box input::placeholder {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.pay-campo-box:focus-within {
+  border-color: #0d9488;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.pay-campo-readonly {
+  background: #f1f5f9;
+}
+
+.pay-campo-readonly mat-icon {
+  color: #64748b;
+}
+
+.pay-campo-valor {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #64748b;
+  overflow-wrap: break-word;
+}
+
+.pay-campo-error {
+  border-color: #f87171;
+  background: #fef2f2;
+}
+
+.pay-campo-error mat-icon {
+  color: #dc2626;
+}
+
+.pay-campo-msg {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #94a3b8;
+}
+
+.pay-campo-msg-error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.pay-contacto-nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding-top: 13px;
+  border-top: 1px dashed #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.pay-contacto-nota mat-icon {
+  flex: none;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: #0d9488;
+}
+
 /* Cancha */
 .pay-cancha {
   display: flex;
@@ -524,7 +651,8 @@
 @media (prefers-reduced-motion: reduce) {
   .pay-back,
   .pay-cta,
-  .pay-cancel {
+  .pay-cancel,
+  .pay-campo-box {
     transition: none;
   }
 

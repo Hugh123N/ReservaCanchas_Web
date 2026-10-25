@@ -39,6 +39,11 @@ export class PaymentComponent extends BaseComponent implements OnInit {
   reglasExpandidas: boolean = false;
   reglasAceptadas: boolean = false;
 
+  // Información de contacto (solo el teléfono es editable)
+  telefonoContacto: string = '';
+  telefonoInvalido: boolean = false;
+  telefonoEstado: 'inicial' | 'guardando' | 'guardado' | 'error' = 'inicial';
+
   readonly reglas: ReglaCancha[] = REGLAS_CANCHA_GENERALES;
   private readonly reglasVisiblesColapsadas = 3;
 
@@ -72,6 +77,78 @@ export class PaymentComponent extends BaseComponent implements OnInit {
 
   toggleReglas(): void {
     this.reglasExpandidas = !this.reglasExpandidas;
+  }
+
+  get mensajeTelefono(): string {
+    switch (this.telefonoEstado) {
+      case 'guardando':
+        return 'Guardando número en tu perfil…';
+      case 'guardado':
+        return 'Número actualizado en tu perfil.';
+      case 'error':
+        return 'No se pudo guardar el número. Verifícalo e inténtalo de nuevo.';
+      default:
+        return 'Te contactaremos por este número. Se guarda en tu perfil al salir del campo.';
+    }
+  }
+
+  onTelefonoInput(): void {
+    this.telefonoInvalido = false;
+    if (this.telefonoEstado !== 'guardando') {
+      this.telefonoEstado = 'inicial';
+    }
+  }
+
+  onTelefonoBlur(): void {
+    const telefono = this.normalizarTelefono(this.telefonoContacto);
+    this.telefonoContacto = telefono;
+    this.telefonoInvalido = !this.esTelefonoValido(telefono);
+
+    if (this.telefonoInvalido || !this.userData) {
+      this.telefonoEstado = 'inicial';
+      return;
+    }
+
+    if (telefono === this.normalizarTelefono(this.userData.telefono)) {
+      this.telefonoEstado = 'inicial';
+      return;
+    }
+
+    this.guardarTelefono(telefono);
+  }
+
+  private guardarTelefono(telefono: string): void {
+    this.telefonoEstado = 'guardando';
+    this.cdr.markForCheck();
+
+    const subscription = this.usersService
+      .updateTelefono({ idUsuario: this.userData!.id, telefono })
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe({
+        next: (response) => {
+          if (response.isValid) {
+            this.userData!.telefono = telefono;
+            this.telefonoEstado = 'guardado';
+          } else {
+            this.telefonoEstado = 'error';
+          }
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.telefonoEstado = 'error';
+          this.cdr.markForCheck();
+        }
+      });
+
+    this.subscriptions.push(subscription);
+  }
+
+  private normalizarTelefono(telefono: string | null | undefined): string {
+    return (telefono ?? '').replace(/\D/g, '');
+  }
+
+  private esTelefonoValido(telefono: string): boolean {
+    return /^\d{8,15}$/.test(telefono);
   }
 
   private loadReservationData(): void {
@@ -126,34 +203,10 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       return;
     }
     this.userData = user;
-    this.checkAndUpdatePhone();
+    this.telefonoContacto = user.telefono || this.reservaData?.telefono || '';
 
     this.isLoading = false;
     this.cdr.markForCheck();
-  }
-
-  private checkAndUpdatePhone(): void {
-    if (!this.reservaData || !this.userData) return;
-
-    const reservaTelefono = this.reservaData.telefono?.replace(/\D/g, '');
-    const userTelefono = this.userData.telefono?.replace(/\D/g, '');
-
-    if (reservaTelefono !== userTelefono) {
-      const subscription = this.usersService
-        .updateTelefono({ idUsuario: this.userData.id, telefono: reservaTelefono })
-        .pipe(
-          tap((response) => {
-            if (response.isValid) {
-              this.userData!.telefono = reservaTelefono;
-              console.log('Teléfono actualizado:', reservaTelefono);
-            }
-          }),
-          takeUntil(this.unsubscribe)
-        ).subscribe();
-      this.subscriptions.push(subscription);
-
-      this.userData!.telefono = reservaTelefono;
-    }
   }
 
   private findLatestReservation(): number | null {
@@ -176,6 +229,14 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       this.openWarningAlert('No se encontraron datos de la reserva o del usuario');
       return;
     }
+
+    const telefono = this.normalizarTelefono(this.telefonoContacto);
+    if (!this.esTelefonoValido(telefono)) {
+      this.telefonoInvalido = true;
+      this.openWarningAlert('Ingresa un teléfono de contacto válido');
+      return;
+    }
+    this.telefonoContacto = telefono;
 
     this.isProcessing = true;
 
@@ -261,7 +322,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
             <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">Próximos Pasos</h4>
             <p style="margin: 0.25rem 0;">El operador de la cancha se contactará contigo al:</p>
             <p style="margin: 0.25rem 0; font-size: 1.2rem; font-weight: bold; color: #047857;">
-              📱 ${this.reservaData?.telefono || this.userData?.telefono || 'N/A'}
+              📱 ${this.telefonoContacto || this.userData?.telefono || 'N/A'}
             </p>
             ${data.telefonoCancha ? `
               <p style="margin: 0.5rem 0 0 0; padding-top: 0.5rem; border-top: 1px solid #d1fae5;">

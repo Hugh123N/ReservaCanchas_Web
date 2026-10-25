@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -7,7 +7,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 // Components
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
-import { FormErrorComponent } from '@shared/components/form-error/form-error.component';
 
 // Material Modules
 import { MatTabsModule } from '@angular/material/tabs';
@@ -32,6 +31,7 @@ import { TimeOption } from '../../core/types/time-option.interface';
 
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
 import { HorarioCanchaService } from '../../core/services/horarioCancha.service';
+import { ReservaData } from 'app/features/pago/core/types/reserva-data.interface';
 
 @Component({
   selector: 'app-detalle-cancha',
@@ -43,7 +43,6 @@ import { HorarioCanchaService } from '../../core/services/horarioCancha.service'
     RouterLink,
     NavVarComponent,
     FooterComponent,
-    FormErrorComponent,
     MatTabsModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -90,7 +89,6 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     super('CANCHAS', viewContainerRef);
     this.canchaData = {} as GetCancha;
     this.reservaForm = this.fb.group({
-      telefono: ['', [Validators.required, Validators.pattern(/^\d{8,15}$/)]],
       duracion: [1]
     });
   }
@@ -102,8 +100,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     });
     // Generate available dates
     this.generateAvailableDates();
-    var telefono = this.authService.loadUserProfile()?.telefono ?? null;
-    this.reservaForm.patchValue({ telefono: telefono });
+    this.restaurarBorrador();
   }
 
   getServiceIconClass(index: number): string {
@@ -115,12 +112,48 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       next: (response) => {
         if (response.isValid) {
           this.canchaData = response.data;
+          // Si volvimos desde el pago con una fecha ya elegida, cargar su disponibilidad
+          if (this.selectedDate) {
+            this.cargarHorariosDisponibles(this.selectedDate);
+          }
         }
       },
       error: (err) => {
         this.openAlert(err);
       },
     });
+  }
+
+  /**
+   * Al volver desde el pago (?reserva=true) se restaura fecha/horario desde el
+   * borrador para no perder la selección que ya hizo el usuario.
+   */
+  private restaurarBorrador(): void {
+    if (typeof document === 'undefined' || typeof localStorage === 'undefined') return;
+    if (this.route.snapshot.queryParams['reserva'] !== 'true') return;
+
+    const key = `reserva_draft_${this.canchaId}`;
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+
+    let draft: ReservaData;
+    try {
+      draft = JSON.parse(raw);
+    } catch {
+      localStorage.removeItem(key);
+      return;
+    }
+
+    if (!draft?.fecha || !draft.selectedTime?.length) return;
+
+    const fecha = this.fechasDisponibles.find((f) => f.fecha === draft.fecha);
+    if (!fecha) return;
+
+    this.selectedDate = fecha;
+    this.selectedTime = draft.selectedTime;
+    this.reservaForm.patchValue({ duracion: draft.duracion || draft.selectedTime.length });
+
+    this.scrollToHorarios(350);
   }
 
   generateAvailableDates() {
@@ -194,11 +227,11 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     this.selectedDate = fecha;
     this.selectedTime = null; // Reset selected time
 
-    // Scroll a la sección de horarios
-    setTimeout(() => {
-      document.querySelector('.time-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    this.scrollToHorarios();
+    this.cargarHorariosDisponibles(fecha);
+  }
 
+  private cargarHorariosDisponibles(fecha: DateOption) {
     const body: RequestDisponibilidad = {
       idCancha: this.canchaData.idCancha!,
       fecha: fecha.fecha
@@ -226,6 +259,13 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     });
   }
 
+  private scrollToHorarios(delay: number = 100) {
+    if (typeof document === 'undefined') return;
+    setTimeout(() => {
+      document.querySelector('.time-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, delay);
+  }
+
   selectTime(time: TimeOption) {
     if (!this.selectedTime) {
       this.selectedTime = [];
@@ -241,9 +281,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     this.reservaForm.patchValue({ duracion: this.selectedTime.length });
 
     // Scroll al inicio del formulario de reserva
-    setTimeout(() => {
-      document.querySelector('.time-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
+    this.scrollToHorarios(50);
   }
 
   getFormattedSelectedDate(): string {
@@ -298,14 +336,13 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   onReservar() {
-    if (this.reservaForm.valid && this.selectedDate && this.selectedTime) {
+    if (this.selectedDate && this.selectedTime) {
       const reservaData = {
         canchaId: this.canchaData.idCancha,
         cancha: this.canchaData,
         fecha: this.selectedDate.fecha,
         selectedTime: this.selectedTime,
         duracion: this.reservaForm.value.duracion,
-        telefono: this.reservaForm.value.telefono,
         precioHora: this.canchaData.precio,
         idTipoDeporte: 1, // TODO: Reemplazar con el ID real del tipo de deporte
         total: this.calculateTotal()
@@ -322,7 +359,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         state: { reservaData }
       });
     } else {
-      this.openWarningAlert('Por favor completa todos los campos requeridos');
+      this.openWarningAlert('Selecciona una fecha y al menos un horario para continuar');
     }
   }
 
