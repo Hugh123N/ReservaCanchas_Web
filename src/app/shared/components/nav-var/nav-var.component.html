@@ -1,171 +1,151 @@
-<div class="header-wrap">
-  <mat-toolbar class="header-toolbar !bg-white-600 text-white">
-    <div class="flex justify-between items-center w-full max-w-[1200px] mx-auto px-4 gap-4">
-      <!-- Logo (izquierda) -->
-      <a [routerLink]="['/']" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition no-underline">
-        <img src="assets/images/logo.svg" alt="Logo" class="logo-icon" />
-        <span class="logo-text title-main">
-          {{ TITULO_LOGO1 }}<span class="text-primary-500">{{ TITULO_LOGO2 }}</span>
-        </span>
-      </a>
-
-      <!-- Links de navegación (desktop >=1024px) -->
-      <nav class="hidden lg:flex items-center gap-7">
-        <a [routerLink]="['/cancha/mapa']" class="nav-link">Canchas en mapa</a>
-        <a (click)="onComoFunciona($event)" class="nav-link">Cómo funciona</a>
-        <a [routerLink]="['/publica-tu-cancha']" class="nav-link">Publica tu cancha</a>
-        <a href="https://gestion.reservafast.com/auth/login"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="nav-link">
-          Panel Proveedor
-        </a>
-      </nav>
-
-      <!-- Acciones (derecha) -->
-      <div class="flex items-center gap-4">
-        <!-- Desktop - Usuario NO autenticado -->
-        @if (!isAuthenticated) {
-        <div class="hidden lg:flex items-center gap-4">
-          <button
-            mat-button
-            class="btn-clean-primary"
-            (click)="onIniciarSesion()"
-          >
-            <mat-icon>login</mat-icon>
-            Iniciar Sesión
-          </button>
-
-          <button
-            class="btn-primary"
-            mat-button
-            (click)="onRegistrarse()"
-          >
-            Registrarse
-          </button>
-        </div>
-        }
-
-        <!-- Desktop - Usuario autenticado -->
-        @if (isAuthenticated) {
-        <div class="hidden lg:flex items-center gap-4">
-          <button mat-button class="btn-clean-primary" (click)="onMisReservas()">
-            <mat-icon>event_available</mat-icon>
-            Mis Reservas
-          </button>
-
-          <button
-            mat-icon-button
-            [matMenuTriggerFor]="userMenu"
-            class="text-primary-600!"
-          >
-            <mat-icon>account_circle</mat-icon>
-          </button>
-        </div>
-        }
-
-        <!-- Hamburguesa (tablet y móvil <1024px) -->
-        <button
-          mat-icon-button
-          class="lg:hidden! text-neutral-800! hover:text-neutral-600!"
-          (click)="toggleMenu()"
-          [attr.aria-expanded]="isMenuOpen"
-          aria-controls="nav-panel"
-          [attr.aria-label]="isMenuOpen ? 'Cerrar menú' : 'Abrir menú'"
-        >
-          <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
-        </button>
-      </div>
+@if (showOwnerNotice && !ownerNoticeDismissed) {
+  <div class="owner-notice">
+    <div class="navbar-container owner-notice-inner">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#building" /></svg>
+      <span><b>¿Eres dueño de cancha?</b><span class="owner-notice-description"> Publica tu complejo y empieza a recibir reservas.</span></span>
+      <a routerLink="/publica-tu-cancha" class="owner-notice-link">Soy dueño <span aria-hidden="true">→</span></a>
+      <button type="button" class="owner-notice-close" aria-label="Cerrar aviso para dueños" (click)="ownerNoticeDismissed = true">
+        <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#close" /></svg>
+      </button>
     </div>
-  </mat-toolbar>
+  </div>
+}
 
-  <!-- Panel desplegable full-width (tablet y móvil) -->
-  @if (isMenuOpen) {
-  <div id="nav-panel" class="nav-panel">
-    <div class="max-w-[1200px] mx-auto px-4 py-2">
-      <nav class="flex flex-col">
-        <a [routerLink]="['/cancha/mapa']" class="nav-panel-link" (click)="closeMenu()">
-          <mat-icon class="icon-md">map</mat-icon>
-          <span>Canchas en mapa</span>
-        </a>
-        <a (click)="onComoFunciona($event)" class="nav-panel-link">
-          <mat-icon class="icon-md">help_outline</mat-icon>
-          <span>Cómo funciona</span>
-        </a>
-        <a [routerLink]="['/publica-tu-cancha']" class="nav-panel-link" (click)="closeMenu()">
-          <mat-icon class="icon-md">business</mat-icon>
-          <span>Publica tu cancha</span>
-        </a>
-        <a href="https://gestion.reservafast.com/auth/login"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="nav-panel-link"
-          (click)="closeMenu()">
-          <mat-icon class="icon-md">business_center</mat-icon>
-          <span>Panel Proveedor</span>
-        </a>
-      </nav>
+<header class="rf-navbar">
+  <div class="navbar-container navbar-inner">
+    <a routerLink="/" class="navbar-brand" aria-label="ReservaFast, ir al inicio" (click)="closeMenu()">
+      <img src="assets/images/logo.svg" alt="" width="36" height="36" />
+      <span>{{ TITULO_LOGO1 }}<b>{{ TITULO_LOGO2 }}</b></span>
+    </a>
 
-      @if (!isAuthenticated) {
-      <div class="flex flex-col gap-3 pt-4 pb-2">
-        <button class="btn-clean-primary w-full justify-center" (click)="onIniciarSesion()">
-          <mat-icon>login</mat-icon>
+    <nav class="desktop-nav" aria-label="Navegación principal">
+      <a routerLink="/cancha/mapa" routerLinkActive="is-active" ariaCurrentWhenActive="page">Canchas en mapa</a>
+      <a href="/#como" (click)="onComoFunciona($event)">Cómo funciona</a>
+      <a routerLink="/publica-tu-cancha" routerLinkActive="is-active" ariaCurrentWhenActive="page">Publica tu cancha</a>
+      <a href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">Panel proveedor<span class="sr-only"> (abre en otra pestaña)</span></a>
+    </nav>
+
+    <div class="desktop-actions">
+      @if (isAuthenticated) {
+        <a routerLink="/mis-reservas" class="btn-outline-primary navbar-button" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#calendar" /></svg>
+          Mis reservas
+        </a>
+        <button type="button" class="user-trigger" [cdkMenuTriggerFor]="userMenu" [cdkMenuPosition]="userMenuPositions"
+          (cdkMenuOpened)="isUserMenuOpen = true" (cdkMenuClosed)="isUserMenuOpen = false"
+          [attr.aria-label]="'Menú de cuenta de ' + userName" [class.is-open]="isUserMenuOpen">
+          <span class="user-avatar" aria-hidden="true">{{ userInitials }}</span>
+          <span class="user-trigger-name">{{ userName }}</span>
+          <svg class="nav-icon user-chevron" aria-hidden="true"><use href="assets/images/icons/navbar.svg#chevron" /></svg>
+        </button>
+      } @else {
+        <button type="button" class="btn-outline-primary navbar-button" (click)="onIniciarSesion()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#login" /></svg>
           Iniciar sesión
         </button>
-        <button class="btn-primary w-full" (click)="onRegistrarse()">
-          <mat-icon>person_add</mat-icon>
-          Registrarse
-        </button>
+        <button type="button" class="btn-primary navbar-button" (click)="onRegistrarse()">Registrarse</button>
+      }
+    </div>
+
+    <button type="button" class="navbar-burger" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen"
+      [attr.aria-controls]="isMenuOpen ? 'mobile-navigation' : null" aria-haspopup="dialog" aria-label="Abrir menú de navegación">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#menu" /></svg>
+    </button>
+  </div>
+</header>
+
+<app-session-warning (logout)="onCerrarSesion()" />
+
+<ng-template #userMenu>
+  <div class="user-dropdown" cdkMenu aria-label="Mi cuenta">
+    <div class="user-summary">
+      <span class="user-avatar" aria-hidden="true">{{ userInitials }}</span>
+      <div class="user-identity">
+        <b>{{ userName }}</b>
+        @if (currentUser?.email) { <small>{{ currentUser?.email }}</small> }
       </div>
-      } @else {
-      <div class="mt-1 pt-3 border-t border-neutral-200">
-        <div class="px-1 pb-2">
-          <p class="font-semibold text-neutral-800 text-sm">{{ currentUser?.username || 'Usuario' }}</p>
-          <p class="text-xs text-neutral-500">{{ currentUser?.email }}</p>
+    </div>
+    <a cdkMenuItem routerLink="/perfil" class="user-menu-item">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#user" /></svg>Mi perfil
+    </a>
+    <a cdkMenuItem routerLink="/mis-reservas" class="user-menu-item">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#calendar" /></svg>Mis reservas
+    </a>
+    <a cdkMenuItem href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer" class="user-menu-item">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#case" /></svg>
+      Panel proveedor<span class="sr-only"> (abre en otra pestaña)</span>
+    </a>
+    <div class="menu-separator" role="separator"></div>
+    <button type="button" cdkMenuItem [cdkMenuItemDisabled]="isLoggingOut" class="user-menu-item user-menu-logout" (cdkMenuItemTriggered)="onCerrarSesion()">
+      <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#logout" /></svg>
+      {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #mobileMenu>
+  <div id="mobile-navigation" class="nav-drawer">
+    <div class="drawer-header">
+      <a routerLink="/" class="navbar-brand" aria-label="ReservaFast, ir al inicio" (click)="closeMenu()">
+        <img src="assets/images/logo.svg" alt="" width="32" height="32" />
+        <span>{{ TITULO_LOGO1 }}<b>{{ TITULO_LOGO2 }}</b></span>
+      </a>
+      <button type="button" class="drawer-close" aria-label="Cerrar menú de navegación" (click)="closeMenu()">
+        <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#close" /></svg>
+      </button>
+    </div>
+
+    <div class="drawer-body scrollbar-thin">
+      @if (isAuthenticated) {
+        <div class="drawer-user">
+          <span class="user-avatar" aria-hidden="true">{{ userInitials }}</span>
+          <div class="user-identity">
+            <b>{{ userName }}</b>
+            @if (currentUser?.email) { <small>{{ currentUser?.email }}</small> }
+          </div>
         </div>
-        <button class="nav-panel-link" (click)="onMisReservas()">
-          <mat-icon class="icon-md">event_available</mat-icon>
-          <span>Ver mis reservas</span>
+      }
+      <nav aria-labelledby="drawer-explore-heading">
+        <h2 id="drawer-explore-heading" class="drawer-section-heading">Explorar</h2>
+        <a routerLink="/cancha/mapa" routerLinkActive="is-active" ariaCurrentWhenActive="page" class="drawer-link" (click)="closeMenu()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#map" /></svg>Canchas en mapa
+        </a>
+        <a href="/#como" class="drawer-link" (click)="onComoFunciona($event)">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#help" /></svg>Cómo funciona
+        </a>
+        <a routerLink="/publica-tu-cancha" routerLinkActive="is-active" ariaCurrentWhenActive="page" class="drawer-link" (click)="closeMenu()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#building" /></svg>Publica tu cancha
+        </a>
+        <a href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer" class="drawer-link" (click)="closeMenu()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#case" /></svg>
+          Panel proveedor<span class="sr-only"> (abre en otra pestaña)</span>
+        </a>
+      </nav>
+      @if (isAuthenticated) {
+        <nav aria-labelledby="drawer-account-heading">
+          <h2 id="drawer-account-heading" class="drawer-section-heading">Mi cuenta</h2>
+          <a routerLink="/mis-reservas" routerLinkActive="is-active" ariaCurrentWhenActive="page" class="drawer-link" (click)="closeMenu()">
+            <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#calendar" /></svg>Mis reservas
+          </a>
+          <a routerLink="/perfil" routerLinkActive="is-active" ariaCurrentWhenActive="page" class="drawer-link" (click)="closeMenu()">
+            <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#user" /></svg>Mi perfil
+          </a>
+        </nav>
+      }
+    </div>
+
+    <div class="drawer-footer">
+      @if (isAuthenticated) {
+        <button type="button" class="drawer-logout" [disabled]="isLoggingOut" (click)="onCerrarSesion()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#logout" /></svg>
+          {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
         </button>
-        <button class="nav-panel-link" (click)="onPerfil()">
-          <mat-icon class="icon-md">person</mat-icon>
-          <span>Ver perfil</span>
+      } @else {
+        <button type="button" class="btn-primary navbar-button" (click)="onRegistrarse()">Registrarse</button>
+        <button type="button" class="btn-outline-primary navbar-button" (click)="onIniciarSesion()">
+          <svg class="nav-icon" aria-hidden="true"><use href="assets/images/icons/navbar.svg#login" /></svg>Iniciar sesión
         </button>
-        <button class="nav-panel-logout" (click)="onCerrarSesion()">
-          <mat-icon class="icon-md">logout</mat-icon>
-          <span>Cerrar sesión</span>
-        </button>
-      </div>
       }
     </div>
   </div>
-  }
-</div>
-
-<!-- Session Warning Banner -->
-<app-session-warning (logout)="onCerrarSesion()"></app-session-warning>
-
-<!-- User Menu - Desktop -->
-<mat-menu #userMenu="matMenu">
-  <div class="px-4 py-2 border-b">
-    <p class="font-semibold text-neutral-800">
-      {{ currentUser?.username || "Usuario" }}
-    </p>
-    <p class="text-xs text-neutral-500">{{ currentUser?.email }}</p>
-  </div>
-  <button mat-menu-item (click)="onPerfil()">
-    <mat-icon>person</mat-icon>
-    <span>Mi Perfil</span>
-  </button>
-  <button mat-menu-item (click)="onMisReservas()">
-    <mat-icon>event_available</mat-icon>
-    <span>Mis Reservas</span>
-  </button>
-  <a mat-menu-item href="https://gestion.reservafast.com/auth/login" target="_blank" rel="noopener noreferrer">
-    <span>Panel Proveedor</span>
-  </a>
-  <button mat-menu-item (click)="onCerrarSesion()">
-    <mat-icon>logout</mat-icon>
-    <span>Cerrar Sesión</span>
-  </button>
-</mat-menu>
+</ng-template>

@@ -206,49 +206,6 @@
 }
 
 
-/* ========== FRANJA DUEÑOS (TOP) ========== */
-
-.owner-strip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #052e33, #0b4a52);
-  color: #d7f3ef;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: filter 0.2s ease;
-}
-
-.owner-strip:hover {
-  filter: brightness(1.15);
-}
-
-.owner-strip b {
-  color: #fff;
-}
-
-.owner-strip-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: #5eead4;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.owner-strip-cta mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  transition: transform 0.15s ease;
-}
-
-.owner-strip:hover .owner-strip-cta mat-icon {
-  transform: translateX(3px);
-}
-
 /* ========== TEASER DUEÑOS (FIN HOME) ========== */
 
 .owner-teaser {
@@ -373,27 +330,12 @@
   }
 }
 
-@media (max-width: 640px) {
-  .owner-strip {
-    font-size: 0.85rem;
-    gap: 8px;
-    padding: 9px 14px;
-  }
-
-  .owner-strip-desc {
-    display: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .owner-strip,
-  .owner-strip-cta mat-icon,
   .owner-teaser-btn,
   .owner-teaser-btn mat-icon {
     transition: none;
   }
 
-  .owner-strip:hover .owner-strip-cta mat-icon,
   .owner-teaser-btn:hover,
   .owner-teaser-btn:hover mat-icon {
     transform: none;

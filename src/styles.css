@@ -56,6 +56,9 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* El backdrop de CDK vive fuera del árbol del navbar. */
+.rf-navbar-backdrop { background: rgb(5 25 30 / 55%); }
+
 /* ============================== BOTONES ================================= */
 .btn-primary {
   @apply !flex !items-center !justify-center !bg-primary-500 !text-white !px-4 !py-2 

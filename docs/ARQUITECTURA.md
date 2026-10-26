@@ -546,6 +546,14 @@ user$ = this.userSubject.asObservable();
 - **Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px)
 - **Componente ResponsiveService**: Detección de dispositivo via BreakpointObserver
 
+### 7.4 Navbar y navegación de cuenta
+
+- `NavVarComponent` adapta el diseño de `reservafast-navbar.html`, conservando el logo y las rutas de la aplicación.
+- En escritorio, la cuenta se abre con `CdkMenu`: avatar con iniciales, nombre, correo y acciones de perfil, reservas, panel proveedor y cierre de sesión.
+- Hasta **980px**, la navegación utiliza un panel lateral con `Dialog` de Angular CDK. Incluye backdrop, bloqueo del scroll, foco contenido y restaurado al cerrar, cierre con Escape y limpieza al navegar o cambiar a escritorio.
+- Los estilos visuales son propios del navbar, con los tokens del proyecto y los botones globales; los iconos lineales se encuentran en `assets/images/icons/navbar.svg`.
+- Home activa `[showOwnerNotice]="true"` para mostrar la franja descartable para dueños encima del header. El navbar se mantiene fijo al desplazarse y respeta la preferencia de movimiento reducido.
+
 ---
 
 ## 8. Despliegue

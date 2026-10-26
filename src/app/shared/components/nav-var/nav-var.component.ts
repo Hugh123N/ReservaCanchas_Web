@@ -1,11 +1,10 @@
-import { Component, HostListener, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, HostListener, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
+import { CdkMenuModule, CdkMenuTrigger } from '@angular/cdk/menu';
+import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
+import { ConnectedPosition, Overlay } from '@angular/cdk/overlay';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, finalize } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { User } from 'app/features/auth/models/user';
 import { BaseComponent } from '@base/components/base-component/base.component';
@@ -14,93 +13,127 @@ import { SessionWarningComponent } from '../session-warning/session-warning.comp
 @Component({
   selector: 'app-nav-var',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatButtonModule,
-    SessionWarningComponent
-  ],
+  imports: [CommonModule, RouterModule, CdkMenuModule, DialogModule, SessionWarningComponent],
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'
 })
-export class NavVarComponent extends BaseComponent implements OnInit {
+export class NavVarComponent extends BaseComponent implements OnInit, OnDestroy {
+  @Input() showOwnerNotice = false;
+  @ViewChild('mobileMenu', { static: true }) private mobileMenu!: TemplateRef<unknown>;
+  @ViewChild(CdkMenuTrigger) private userMenuTrigger?: CdkMenuTrigger;
 
-  isAuthenticated: boolean = false;
+  isAuthenticated = false;
   currentUser: User | null = null;
-  isMenuOpen: boolean = false;
+  isMenuOpen = false;
+  isUserMenuOpen = false;
+  isLoggingOut = false;
+  ownerNoticeDismissed = false;
+
+  readonly userMenuPositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 10 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -10 }
+  ];
+  private drawerRef?: DialogRef<unknown>;
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private dialog: Dialog,
+    private overlay: Overlay,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
     super('NAV-BAR', viewContainerRef);
   }
 
+  get userName(): string {
+    return this.currentUser?.fullname?.trim() || this.currentUser?.username?.trim() || 'Usuario';
+  }
+
+  get userInitials(): string {
+    const parts = this.userName.split(/\s+/);
+    return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : this.userName.slice(0, 2)).toUpperCase();
+  }
+
   ngOnInit(): void {
     this.checkAuthentication();
-
     this.subscriptions.push(
-      this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => this.closeMenu())
+      this.authService.user$.subscribe(user => {
+        this.currentUser = user;
+        this.isAuthenticated = this.authService.isAuthenticated();
+      }),
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+        this.closeMenu();
+        this.checkAuthentication();
+      })
     );
   }
 
+  override ngOnDestroy(): void {
+    this.closeMenu();
+    super.ngOnDestroy();
+  }
+
   private checkAuthentication(): void {
-    // Proteger contra SSR (localStorage no disponible en server)
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      this.isAuthenticated = this.authService.isAuthenticated();
-      if (this.isAuthenticated) {
-        this.currentUser = this.authService.loadUserProfile();
-      }
-    }
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    this.isAuthenticated = this.authService.isAuthenticated();
+    this.currentUser = this.isAuthenticated ? this.authService.loadUserProfile() : null;
   }
 
   toggleMenu(): void {
-    this.isMenuOpen = !this.isMenuOpen;
+    if (this.isMenuOpen) {
+      this.closeMenu();
+      return;
+    }
+    this.userMenuTrigger?.close();
+    this.isMenuOpen = true;
+    // CDK mantiene el foco dentro del panel y restaura el scroll al cerrarlo.
+    const ref = this.dialog.open(this.mobileMenu, {
+      width: 'min(340px, 88vw)',
+      maxWidth: '100vw',
+      height: '100dvh',
+      positionStrategy: this.overlay.position().global().top('0').right('0'),
+      ariaLabel: 'Menú de navegación',
+      autoFocus: '.drawer-close',
+      restoreFocus: true,
+      backdropClass: 'rf-navbar-backdrop',
+      scrollStrategy: this.overlay.scrollStrategies.block(),
+      viewContainerRef: this.viewContainerRef
+    });
+    this.drawerRef = ref;
+    this.subscriptions.push(ref.closed.subscribe(() => {
+      if (this.drawerRef === ref) {
+        this.isMenuOpen = false;
+        this.drawerRef = undefined;
+      }
+    }));
   }
 
   closeMenu(): void {
+    this.userMenuTrigger?.close();
+    this.drawerRef?.close();
     this.isMenuOpen = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.isMenuOpen || typeof document === 'undefined') return;
-    const target = event.target as HTMLElement | null;
-    if (target && !target.closest('.header-wrap')) {
-      this.closeMenu();
-    }
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscapeKey(): void {
-    this.closeMenu();
   }
 
   @HostListener('window:resize')
   onWindowResize(): void {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-      this.closeMenu();
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth > 980) {
+      this.drawerRef?.close();
+    } else {
+      this.userMenuTrigger?.close();
     }
   }
 
-  onComoFunciona(event?: Event): void {
+  onComoFunciona(event?: MouseEvent): void {
+    if (event && (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)) return;
     event?.preventDefault();
     this.closeMenu();
-
     if (typeof window === 'undefined') return;
 
-    // Si ya estamos en home, scroll directo; si no, navegar y esperar el render
-    if (this.router.url.split('#')[0] === '/') {
+    if (this.router.url.split(/[?#]/)[0] === '/') {
       this.scrollToComo();
       return;
     }
-
     this.router.navigate(['/'], { fragment: 'como' }).then(() => {
       setTimeout(() => this.scrollToComo());
     });
@@ -109,8 +142,10 @@ export class NavVarComponent extends BaseComponent implements OnInit {
   private scrollToComo(): void {
     const element = document.getElementById('como');
     if (!element) return;
-    const offset = element.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: offset, behavior: 'smooth' });
+    const headerHeight = document.querySelector('.rf-navbar')?.getBoundingClientRect().height ?? 72;
+    const offset = element.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    window.scrollTo({ top: offset, behavior });
   }
 
   onIniciarSesion(): void {
@@ -123,28 +158,25 @@ export class NavVarComponent extends BaseComponent implements OnInit {
     this.router.navigate(['/auth/register']);
   }
 
-  onPerfil(): void {
-    this.router.navigate(['/perfil']);
-  }
-
-  onMisReservas(): void {
-    this.router.navigate(['/mis-reservas']);
-  }
-
   onCerrarSesion(): void {
+    if (this.isLoggingOut) return;
     this.closeMenu();
-    this.authService.logOut().subscribe({
-      next: (response) => {
+    this.isLoggingOut = true;
+    this.subscriptions.push(this.authService.logOut().pipe(
+      finalize(() => { this.isLoggingOut = false; })
+    ).subscribe({
+      next: response => {
         if (response.isValid) {
           this.isAuthenticated = false;
           this.currentUser = null;
+        } else {
+          this.openAlert(response);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al cerrar sesión:', err);
-        this.isAuthenticated = false;
-        this.currentUser = null;
+        this.openAlert(err);
       }
-    });
+    }));
   }
 }

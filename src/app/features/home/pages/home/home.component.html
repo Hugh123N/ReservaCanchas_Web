@@ -1,14 +1,4 @@
-<app-nav-var></app-nav-var>
-
-<!-- Franja dueños (top) -->
-<a routerLink="/publica-tu-cancha" class="owner-strip">
-  <span aria-hidden="true">🏟️</span>
-  <span class="owner-strip-txt">
-    <b>¿Eres dueño de cancha?</b>
-    <span class="owner-strip-desc"> Publica tu complejo y empieza a recibir reservas.</span>
-  </span>
-  <span class="owner-strip-cta">Soy dueño <mat-icon>arrow_forward</mat-icon></span>
-</a>
+<app-nav-var [showOwnerNotice]="true"></app-nav-var>
 
 <!-- Hero Section - Carrusel de banners -->
 <section class="hero-section">
