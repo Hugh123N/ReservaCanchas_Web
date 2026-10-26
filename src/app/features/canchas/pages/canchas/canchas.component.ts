@@ -30,8 +30,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TypedFormGroup } from '@shared/types/types-form';
 import { CommonModule } from '@angular/common';
-import { CanchaEstadoService } from 'app/features/cancha-estado/core/services/cancha-estado.service';
-import { GetEstadoCancha } from 'app/features/cancha-estado/core/model/getEstadoCancha.model';
 import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 import { UbigeoService } from '../../core/services/ubigeo.service';
 import { UbicacionCancha } from '@shared/interfaces/location.interface';
@@ -63,7 +61,6 @@ export class CanchasComponent extends BaseSearchComponent {
   // Date
   minDate = new Date();
 
-  estados: GetEstadoCancha[] = [];
   tipoDeportes: GetTipoDeporte[] = [];
   ubigeos: Ubigeo[] = [];
 
@@ -74,7 +71,6 @@ export class CanchasComponent extends BaseSearchComponent {
 
   constructor(
     private canchaService: CanchaService,
-    private canchaEstadoService: CanchaEstadoService,
     private tipoDeporteService: TipoDeporteService,
     private ubigeoService: UbigeoService,
     private fb: FormBuilder,
@@ -103,13 +99,12 @@ export class CanchasComponent extends BaseSearchComponent {
       idEstadoCancha: [null]
     }) as TypedFormGroup<CanchasFilter>;
 
-    this.cargarCanchaEstados();
     this.cargarTipoDeporte();
     this.cargarUbigeos();
 
     this.setupCityControlSync();
 
-    this.route.queryParams.subscribe(params => {
+    const routeSubscription = this.route.queryParams.subscribe(params => {
       const fecha = params['fecha'] || null;
       const hora = params['hora'] || null;
       const idTipoDeporteParam = params['idTipoDeporte'] || null;
@@ -145,11 +140,12 @@ export class CanchasComponent extends BaseSearchComponent {
         hora
       });
     });
+    this.subscriptions.push(routeSubscription);
   }
 
 
   override ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    super.ngOnDestroy();
   }
 
   onSearch(filter = null, page = 1) {
@@ -220,7 +216,7 @@ export class CanchasComponent extends BaseSearchComponent {
 
   setupCityControlSync() {
 
-    this.cityControl.valueChanges.subscribe(value => {
+    const subscription = this.cityControl.valueChanges.subscribe(value => {
       let ubigeoObj: Ubigeo | null = null;
       if (typeof value === 'string') {
         this.filterForm.patchValue({ codigoUbigeo: null });
@@ -229,6 +225,7 @@ export class CanchasComponent extends BaseSearchComponent {
         this.filterForm.patchValue({ codigoUbigeo: ubigeoObj.codigoUbigeo });
       }
     });
+    this.subscriptions.push(subscription);
   }
 
   onSelectCancha(cancha: SearchCancha) {
@@ -254,18 +251,8 @@ export class CanchasComponent extends BaseSearchComponent {
       ? ubigeo
       : `${ubigeo.distrito}, ${ubigeo.departamento}`;
   }
-  private cargarCanchaEstados(): void {
-    this.canchaEstadoService.SelectCombo().subscribe({
-      next: (response) => {
-        if (response.isValid) {
-          this.estados = response.data;
-        }
-      },
-      error: (err) => this.openAlert(err),
-    });
-  }
   private cargarTipoDeporte(): void {
-    this.tipoDeporteService.SelectCombo().subscribe({
+    const subscription = this.tipoDeporteService.SelectCombo().subscribe({
       next: (response) => {
         if (response.isValid) {
           this.tipoDeportes = response.data;
@@ -273,29 +260,20 @@ export class CanchasComponent extends BaseSearchComponent {
       },
       error: (err) => this.openAlert(err),
     });
+    this.subscriptions.push(subscription);
   }
   private cargarUbigeos(): void {
-    this.ubigeoService.listAll().subscribe({
+    const subscription = this.ubigeoService.listAll().subscribe({
       next: (response) => {
         if (response.isValid) {
           this.ubigeos = response.data;
 
-          const codigoUbigeo = this.route.snapshot.queryParamMap.get('codigoUbigeo');
-          if (codigoUbigeo) {
-            const ubigeoObj = this.ubigeos.find(u => u.codigoUbigeo === codigoUbigeo);
-            if (ubigeoObj) {
-              this.cityControl.setValue(ubigeoObj, { emitEvent: false });
-              this.filterForm.patchValue({ codigoUbigeo });
-              this.initialSearchData = {
-                ...this.initialSearchData,
-                ciudad: ubigeoObj
-              };
-            }
-          }
+          this.syncInitialCity(this.filterForm.controls.codigoUbigeo.value);
         }
       },
       error: (err) => this.openAlert(err),
     });
+    this.subscriptions.push(subscription);
   }
 
   private _buildInitialSearchData(raw: { codigoUbigeo: string | null; idTipoDeporte: string | null; fecha: string | null; hora: string | null }): void {
@@ -305,6 +283,13 @@ export class CanchasComponent extends BaseSearchComponent {
       fecha: raw.fecha ? new Date(raw.fecha + 'T00:00:00') : null,
       hora: raw.hora ?? undefined
     };
+    this.syncInitialCity(raw.codigoUbigeo);
+  }
+
+  private syncInitialCity(codigoUbigeo: string | null): void {
+    const ciudad = this.ubigeos.find(u => u.codigoUbigeo === codigoUbigeo) ?? null;
+    this.cityControl.setValue(ciudad, { emitEvent: false });
+    this.initialSearchData = { ...this.initialSearchData, ciudad };
   }
 
   get fechaDate(): Date | null {

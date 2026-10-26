@@ -478,6 +478,15 @@ user$ = this.userSubject.asObservable();
 | `redirect_after_login` | sessionStorage | URL de redirección post-login |
 | `language` | localStorage | Idioma seleccionado |
 
+### 6.4 Caché de consultas maestras
+
+- `UbigeoService.listAll()` y `TipoDeporteService.SelectCombo()` conservan sus respuestas en memoria mediante `CachedResponse<T>` (`base/services/cached-response.ts`).
+- La primera suscripción inicia la petición; las suscripciones simultáneas y posteriores comparten el mismo observable con `shareReplay({ bufferSize: 1, refCount: false })`.
+- Solo se conservan respuestas con `isValid: true` y datos no nulos. Los errores HTTP y las respuestas inválidas permiten una nueva consulta en la siguiente llamada.
+- La caché pertenece a cada instancia del servicio, sin persistencia en storage ni caducidad automática. En el navegador se pierde al recargar la aplicación.
+- Ambos servicios exponen `clearCache()` para que la siguiente llamada vuelva a cargar el catálogo. La invalidación no cancela peticiones en curso ni actualiza automáticamente las vistas que ya recibieron los datos.
+- Home, listado, mapa y resolución SEO reutilizan los mismos servicios. El listado sincroniza la ciudad de la URL tanto con respuestas HTTP diferidas como con respuestas inmediatas desde caché.
+
 ---
 
 ## 7. Estilos y Diseño
