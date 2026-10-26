@@ -160,138 +160,171 @@
       <mat-tab-group class="enhanced-tabs" [(selectedIndex)]="selectedTabIndex">
         <!-- Reservar Tab -->
         <mat-tab label="Reservar">
-          <div class="tab-content p-6">
+          <div class="tab-content p-4 sm:p-6">
             <form
               [formGroup]="reservaForm"
               (ngSubmit)="onReservar()"
-              class="space-y-8"
+              class="rf-lay"
             >
-              <!-- Date Selection -->
-              <div class="date-section">
-                <h3
-                  class="title-main text-primary mb-4 flex items-center"
-                >
-                  <mat-icon class="icon-lg mr-2">event</mat-icon>
-                  Selecciona tu fecha
-                </h3>
-                <div class="date-picker-container">
-                  <div class="flex overflow-x-auto gap-3 pb-4">
-                    @for (f of fechasDisponibles; track f) {
-                    <div
-                      class="date-card min-w-[85px] sm:min-w-[90px] flex flex-col items-center justify-center rounded-xl p-3 sm:p-4 cursor-pointer transition-all duration-300 border-2"
-                      [ngClass]="getDateCardClass(f)"
-                      (click)="selectDate(f)"
-                    >
-                      <span
-                        class="font-semibold text-xs sm:text-sm uppercase"
-                        >{{ f.dia }}</span
-                      >
-                      <span class="text-base sm:text-lg font-bold">{{
-                        f.numero
-                      }}</span>
-                      <span class="text-xs">{{ f.mes }}</span>
+              <div class="rf-steps">
+                <!-- Paso 1: Día -->
+                <section class="rf-card date-section">
+                  <header class="rf-head">
+                    <span class="rf-num">1</span>
+                    <div class="rf-head-txt">
+                      <h2>Elige el día</h2>
                     </div>
-                    }
-                  </div>
-                </div>
-              </div>
+                    <span class="rf-head-end">{{ mesAnio }}</span>
+                  </header>
 
-              <!-- Time Selection -->
-              @if (selectedDate) {
-                <div class="time-section">
-                  <h3 class="title-main text-primary mb-4 flex items-center">
-                    <mat-icon class="icon-lg mr-2">schedule</mat-icon>
-                    Horarios disponibles para {{ selectedDate.dia }}
-                    {{ selectedDate.numero }}
-                  </h3>
-                  <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1 sm:gap-2">
-                    @for (h of getAvailableHours(); track h.hora) {
+                  <div class="rf-days">
+                    @for (f of fechasDisponibles; track f.fecha) {
                     <button
                       type="button"
-                      class="h-10 sm:h-14 min-w-50 md:h-16 rounded-lg sm:rounded-xl py-1 sm:py-2 transition-all duration-300"
-                      [ngClass]="getTimeButtonClass(h)"
-                      (click)="selectTime(h)"
+                      class="rf-day"
+                      [class.is-sel]="selectedDate?.fecha === f.fecha"
+                      [attr.aria-pressed]="selectedDate?.fecha === f.fecha"
+                      (click)="selectDate(f)"
                     >
-                      <div class="flex flex-col items-center gap-0 sm:gap-1">
-                        <span class="text-xs sm:text-sm md:text-base font-semibold">{{ h.hora }}</span>
-                        @if (h.precio) {
-                          <span class="text-xs opacity-75">S/. {{ h.precio }}</span>
-                        }
-                      </div>
-                    </button>   
+                      <small>{{ f.dia }}</small>
+                      <strong>{{ f.numero }}</strong>
+                      <small>{{ f.mes }}</small>
+                    </button>
                     }
                   </div>
-                </div>
-              }
+                </section>
 
-              <!-- Reservation Summary -->
-              @if (selectedTime) {
-              <div class="summary-section">
-                <div
-                  class="content-card"
-                >
-                  <h3 class="h3 text-primary mb-6 flex items-center">
-                    <mat-icon class="icon-primary icon-lg">receipt</mat-icon>
-                    Resumen de tu Reserva
-                  </h3>
-                  <div class="summary-details space-y-2 md:space-y-4">
-                    <div
-                      class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
-                    >
-                      <span class="text-base text-neutral-600">Cancha</span>
-                      <span class="text-base font-semibold text-neutral-800">{{
-                        canchaData.nombre || "DeporPlaza Matamula"
-                      }}</span>
+                <!-- Paso 2: Horario -->
+                @if (selectedDate) {
+                  <section class="rf-card time-section">
+                    <header class="rf-head">
+                      <span class="rf-num">2</span>
+                      <div class="rf-head-txt">
+                        <h2>Selecciona tu horario</h2>
+                        <small>{{ subtituloHorario }}</small>
+                      </div>
+                    </header>
+
+                    <div class="rf-legend">
+                      <span><i class="rf-sw"></i>Disponible</span>
+                      <span class="is-sel"><i class="rf-sw"></i>Tu selección</span>
                     </div>
-                    <div
-                      class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
-                    >
-                      <span class="text-base text-neutral-600">Fecha</span>
-                      <span class="text-base font-semibold text-neutral-800">{{
-                        getFormattedSelectedDate()
-                      }}</span>
-                    </div>
-                    <div
-                      class="summary-row flex justify-between items-start py-3 border-b border-neutral-200"
-                    >
-                      <span class="text-base text-neutral-600">Hora</span>
-                      <div class="flex flex-wrap gap-1 justify-end max-w-[80%]">
-                        @for (f of selectedTime; track f; let isLast = $last) {
-                        <span class="text-base font-semibold text-neutral-800">
-                          {{ f.hora || "-" }}@if (!isLast) {<span>,</span>}
-                        </span>
+
+                    @for (franja of gruposHorario; track franja.nombre) {
+                      <div class="rf-gt">
+                        <mat-icon>{{ franja.icono }}</mat-icon>
+                        <span>{{ franja.nombre }}</span>
+                        <small>{{ franja.rango }}</small>
+                      </div>
+                      <div class="rf-grid">
+                        @for (h of franja.horas; track h.hora) {
+                          <button
+                            type="button"
+                            class="time-btn"
+                            [class.is-sel]="esHoraSeleccionada(h)"
+                            [attr.aria-pressed]="esHoraSeleccionada(h)"
+                            [attr.aria-label]="esHoraSeleccionada(h) ? 'Quitar ' + h.hora : 'Seleccionar ' + h.hora"
+                            (click)="selectTime(h)"
+                          >
+                            <strong>{{ h.hora }}</strong>
+                            <span>S/ {{ h.precio }}</span>
+                          </button>
                         }
                       </div>
+                    }
+
+                    @if (!hayHorariosDisponibles) {
+                      <p class="rf-empty">No hay horarios disponibles para este día.</p>
+                    }
+                  </section>
+                }
+              </div>
+
+              <!-- Resumen -->
+              <aside class="resumen-section">
+                <div class="rf-card rf-sum">
+                  <header class="rf-sum-head">
+                    <h2>Resumen de tu reserva</h2>
+                    <p>Revisa los datos antes de confirmar</p>
+                  </header>
+
+                  <div class="rf-sum-body">
+                    <div class="rf-row">
+                      <span>Cancha</span>
+                      <b>{{ canchaData.nombre || "Cancha Deportiva" }}</b>
                     </div>
-                    <div
-                      class="summary-row flex justify-between items-center py-3 border-b border-neutral-200"
-                    >
-                      <span class="text-base text-neutral-600">Duración</span>
-                      <span class="text-base font-semibold text-neutral-800"
-                        >{{ reservaForm.value.duracion || 1 }} hora(s)</span
-                      >
+
+                    <div class="rf-row">
+                      <span>Fecha</span>
+                      <b>{{ getFormattedSelectedDate() }}</b>
                     </div>
-                    <div
-                      class="total-row flex justify-between items-center pt-4"
-                    >
-                      <span class="title-section">Total a pagar</span>
-                      <span class="title-main text-primary"
-                        >S/ {{ calculateTotal() }}</span
-                      >
-                    </div>
-                  </div>
-                  <div class="mt-8 space-y-3">
+
+                    @if (selectedTime?.length; as totalHoras) {
+                      <div class="rf-chips">
+                        @for (rango of rangosSeleccionados; track rango.inicio) {
+                          <span class="rf-chip">
+                            {{ rango.inicio }} – {{ rango.fin }} · {{ rango.horas }} h
+                            <button
+                              type="button"
+                              [attr.aria-label]="'Quitar bloque ' + rango.inicio"
+                              (click)="quitarRango(rango)"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        }
+                      </div>
+
+                      @if (rangosSeleccionados.length > 1) {
+                        <p class="rf-note">
+                          Tienes {{ rangosSeleccionados.length }} bloques separados.
+                          Revisa que sea lo que quieres.
+                        </p>
+                      }
+
+                      <div class="rf-row">
+                        <span>Duración</span>
+                        <b>{{ totalHoras }} {{ totalHoras === 1 ? 'hora' : 'horas' }}</b>
+                      </div>
+
+                      <div class="rf-tot">
+                        <div class="rf-tot-l">
+                          <span>{{ totalHoras }} h × S/ {{ canchaData.precio }}</span>
+                          <span>S/ {{ calculateTotal() }}</span>
+                        </div>
+                        <div class="rf-tot-t">
+                          <span>Total a pagar</span>
+                          <b>S/ {{ calculateTotal() }}</b>
+                        </div>
+                        <small>Pago en efectivo al operador</small>
+                      </div>
+                    } @else {
+                      <p class="rf-empty">Aún no eliges ningún horario.</p>
+
+                      <div class="rf-tot">
+                        <div class="rf-tot-t">
+                          <span>Total a pagar</span>
+                          <b>S/ {{ calculateTotal() }}</b>
+                        </div>
+                        <small>Pago en efectivo al operador</small>
+                      </div>
+                    }
+
                     <button
-                      class="btn-primary w-full !py-4 !text-lg !font-bold shadow-lg"
+                      class="btn-primary rf-cta"
                       type="submit"
+                      [disabled]="!selectedDate || !selectedTime?.length"
                     >
-                      <mat-icon class="icon-lg">payment</mat-icon>
+                      <mat-icon>arrow_forward</mat-icon>
                       Continuar al Pago
                     </button>
+                    <p class="rf-fine">
+                      Pago en efectivo al operador. Te contactarán por WhatsApp para
+                      confirmar tu reserva.
+                    </p>
                   </div>
                 </div>
-              </div>
-              }
+              </aside>
             </form>
           </div>
         </mat-tab>

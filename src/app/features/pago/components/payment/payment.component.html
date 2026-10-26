@@ -112,11 +112,7 @@
                 <mat-icon>schedule</mat-icon>
                 <span>
                   <small>Horario</small>
-                  <b>
-                    @for (time of reservaData.selectedTime; track time.hora) {
-                      {{ time.hora }}@if (!$last) { · }
-                    }
-                  </b>
+                  <b>{{ horarioAgrupado }}</b>
                 </span>
               </span>
 

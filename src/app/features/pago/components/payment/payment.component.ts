@@ -13,7 +13,7 @@ import { CreateReserva } from 'app/features/reserva/core/model/createReserva.mod
 import { ReservaConPagoDto } from 'app/features/reserva/core/model/reservaConPago.model';
 import { ReservaData } from '../../core/types/reserva-data.interface';
 import { REGLAS_CANCHA_GENERALES, ReglaCancha } from '../../core/constants/reglas-cancha.constants';
-import { desagruparHorasPorMediaHora } from '@shared/utils/horario.utils';
+import { desagruparHorasPorMediaHora, formatHorasConsecutivas } from '@shared/utils/horario.utils';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -73,6 +73,12 @@ export class PaymentComponent extends BaseComponent implements OnInit {
 
   get hayMasReglas(): boolean {
     return this.reglas.length > this.reglasVisiblesColapsadas;
+  }
+
+  /** Horas seleccionadas unificadas en rangos: "07:00 - 09:00, 11:00 - 13:00" */
+  get horarioAgrupado(): string {
+    const horas = this.reservaData?.selectedTime?.map((t) => t.hora) ?? [];
+    return formatHorasConsecutivas(horas);
   }
 
   toggleReglas(): void {
@@ -288,10 +294,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     // Calcular horas restantes
     const horasRestantes = data.duracionPreReservaHoras || 24;
 
-    // Formatear horarios
-    const horarios = this.reservaData?.selectedTime
-      .map((t: any) => t.hora)
-      .join(', ');
+    const fechaReserva = this.formatDate(this.reservaData?.fecha ?? '');
 
     Swal.fire({
       icon: 'success',
@@ -304,6 +307,16 @@ export class PaymentComponent extends BaseComponent implements OnInit {
             </h4>
             <p style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #0c4a6e;">
               ${data.codigoReserva || 'N/A'}
+            </p>
+          </div>
+
+          <div style="background: #ecfeff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #06b6d4;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #0e7490;">Tu reserva</h4>
+            <p style="margin: 0.25rem 0;">
+              <strong>Fecha:</strong> ${fechaReserva}
+            </p>
+            <p style="margin: 0.25rem 0;">
+              <strong>Horario:</strong> ${this.horarioAgrupado}
             </p>
           </div>
 

@@ -13,6 +13,7 @@ import { DetalleReservaComponent } from '../detalle-reserva/detalle-reserva.comp
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { formatFechaLocal, calcularHorasRestantes } from '@shared/utils/date.utils';
+import { formatRangosHorarios } from '@shared/utils/horario.utils';
 import { EstadoReservaCodigo, getEstadoReservaMeta } from '@shared/enums/estado-reserva.enum';
 import { getEstadoPagoMeta } from '@shared/enums/estado-pago.enum';
 
@@ -149,15 +150,7 @@ export class ListaReservasComponent extends BaseComponent implements OnInit {
   }
 
   formatHorarios(reserva: ReservaClienteDto): string {
-    if (!reserva.horarios || reserva.horarios.length === 0) return '-';
-
-    const horarios = reserva.horarios.map(h => {
-      const inicio = h.horaInicio.substring(0, 5);
-      const fin = h.horaFin.substring(0, 5);
-      return `${inicio}-${fin}`;
-    });
-
-    return horarios.join(', ');
+    return formatRangosHorarios(reserva.horarios);
   }
 
   isProximaExpirar(reserva: ReservaClienteDto): boolean {

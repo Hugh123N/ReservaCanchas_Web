@@ -27,48 +27,392 @@
   @apply min-h-[400px];
 }
 
-/* Date Selection - Específico de reservas */
-.date-picker-container {
-  @apply bg-white rounded-xl p-4 shadow-sm border border-neutral-100;
+/* ===== Reserva: layout pasos + resumen ===== */
+.rf-lay {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 1.25rem;
+  align-items: start;
 }
 
-.date-card {
-  @apply bg-white hover:bg-primary-50 border-neutral-200 text-center transition-all duration-300;
+.rf-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
 }
 
-.date-card.selected {
-  @apply bg-primary-500 text-white border-primary-500 transform scale-105 shadow-lg;
+.rf-card {
+  background: #fff;
+  border: 1px solid var(--color-neutral-200, #e5e7eb);
+  border-radius: 20px;
+  padding: 1.375rem;
 }
 
-.date-card.unavailable {
-  @apply bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed;
-  opacity: 0.6;
+/* Encabezado de cada paso */
+.rf-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.date-card:hover:not(.unavailable):not(.selected) {
-  @apply border-primary-300 shadow-md transform -translate-y-1;
+.rf-num {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-primary-500, #14b8a6);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
-/* Time Selection - Específico de reservas */
+.rf-head-txt h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-neutral-900, #0f172a);
+}
+
+.rf-head-txt small {
+  display: block;
+  color: var(--color-neutral-500, #64748b);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.rf-head-end {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--color-primary-600, #0d9488);
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+/* Selección de días */
+.rf-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rf-day {
+  border: 1.5px solid var(--color-neutral-200, #e5e7eb);
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 4px;
+  cursor: pointer;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+  transition: 0.15s;
+}
+
+.rf-day:hover {
+  border-color: var(--color-primary-500, #14b8a6);
+}
+
+.rf-day small {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-neutral-500, #64748b);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rf-day strong {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.rf-day.is-sel {
+  background: var(--color-primary-500, #14b8a6);
+  border-color: var(--color-primary-500, #14b8a6);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.35);
+}
+
+.rf-day.is-sel small {
+  color: #d1fbf5;
+}
+
+/* Leyenda de horarios */
+.rf-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.82rem;
+  color: var(--color-neutral-500, #64748b);
+  margin-bottom: 6px;
+}
+
+.rf-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-sw {
+  width: 14px;
+  height: 14px;
+  border-radius: 5px;
+  border: 1.5px solid #99e6dc;
+  background: #fff;
+  display: inline-block;
+}
+
+.rf-legend .is-sel .rf-sw {
+  background: var(--color-primary-500, #14b8a6);
+  border-color: var(--color-primary-500, #14b8a6);
+}
+
+/* Franjas del día (Mañana / Tarde / Noche) */
+.rf-gt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.rf-gt mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--color-primary-500, #14b8a6);
+}
+
+.rf-gt small {
+  color: var(--color-neutral-500, #64748b);
+  font-weight: 400;
+}
+
+/* Slots de horario */
+.rf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 10px;
+}
+
 .time-btn {
-  @apply h-10 sm:h-14 md:h-16 min-w-10;
+  position: relative;
+  border: 1.5px solid #99e6dc;
+  background: #fff;
+  border-radius: 14px;
+  padding: 11px 6px;
+  cursor: pointer;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+  transition: 0.15s;
 }
 
-.time-btn.available {
-  @apply bg-white border-2 border-primary-200 text-primary-600 hover:bg-primary-50 hover:border-primary-400;
+.time-btn strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--color-primary-600, #0d9488);
 }
 
-.time-btn.selected {
-  @apply bg-primary-500 text-white border-primary-500 transform scale-100 shadow-md;
+.time-btn span {
+  font-size: 0.8rem;
+  color: var(--color-neutral-500, #64748b);
 }
 
-.time-btn:hover:not([disabled]) {
-  @apply shadow-md transform -translate-y-1;
+.time-btn:hover {
+  background: #f0fdfa;
+  transform: translateY(-1px);
 }
 
-/* Total Row */
-.total-row {
-  @apply bg-primary-50 rounded-xl p-4;
+.time-btn.is-sel {
+  background: var(--color-primary-500, #14b8a6);
+  border-color: var(--color-primary-500, #14b8a6);
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.3);
+}
+
+.time-btn.is-sel strong,
+.time-btn.is-sel span {
+  color: #fff;
+}
+
+.time-btn.is-sel::after {
+  content: "\2713";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+/* ===== Resumen de tu reserva ===== */
+.resumen-section {
+  position: sticky;
+  top: 5rem;
+  min-width: 0;
+}
+
+.rf-sum {
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.rf-sum-head {
+  padding: 18px 22px;
+  background: linear-gradient(120deg, var(--color-primary-500, #14b8a6), var(--color-primary-700, #0f766e));
+  color: #fff;
+}
+
+.rf-sum-head h2 {
+  font-size: 1.1rem;
+}
+
+.rf-sum-head p {
+  font-size: 0.85rem;
+  color: #d1fbf5;
+}
+
+.rf-sum-body {
+  padding: 20px 22px;
+}
+
+.rf-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-neutral-200, #e2e8f0);
+  font-size: 0.95rem;
+}
+
+.rf-row span {
+  color: var(--color-neutral-500, #64748b);
+}
+
+.rf-row b {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.rf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.rf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 999px;
+  background: #e6f8f5;
+  color: var(--color-neutral-900, #052e33);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.rf-chip button {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  cursor: pointer;
+  color: var(--color-primary-600, #0d9488);
+  font-weight: 900;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.rf-chip button:hover {
+  background: var(--color-neutral-100, #f1f5f9);
+}
+
+.rf-note {
+  font-size: 0.82rem;
+  color: #92660a;
+  background: #fef9e7;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+.rf-empty {
+  color: var(--color-neutral-500, #64748b);
+  font-size: 0.9rem;
+  padding: 14px 0;
+}
+
+.rf-tot {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #e6f8f5;
+}
+
+.rf-tot-l {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: var(--color-neutral-500, #64748b);
+}
+
+.rf-tot-t {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rf-tot-t span {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.rf-tot-t b {
+  font-size: 1.9rem;
+  color: var(--color-primary-600, #0d9488);
+  letter-spacing: -0.5px;
+}
+
+.rf-tot small {
+  display: block;
+  color: var(--color-neutral-500, #64748b);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.rf-cta {
+  box-sizing: border-box;
+  width: 100% !important;
+  margin-top: 6px;
+  padding: 16px !important;
+  border-radius: 14px !important;
+  font-size: 1.05rem !important;
+  font-weight: 900;
+  gap: 8px;
+}
+
+.rf-cta:disabled {
+  background-color: #cbd5e1 !important;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.rf-fine {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-neutral-500, #64748b);
 }
 
 /* Services Grid */
@@ -121,18 +465,50 @@
   transition: color 0.3s ease;
 }
 
+/* Responsive: resumen debajo de los pasos */
+@media (max-width: 1024px) {
+  .rf-lay {
+    grid-template-columns: 1fr;
+  }
+
+  .resumen-section {
+    position: static;
+  }
+}
+
+/* Responsive: días en scroll horizontal y grid más angosto */
+@media (max-width: 620px) {
+  .rf-days {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rf-day {
+    flex: none;
+    width: 68px;
+  }
+
+  .rf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .rf-card {
+    padding: 18px 16px;
+  }
+
+  .rf-sum-body {
+    padding: 18px 16px;
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .cancha-hero .container {
     @apply px-2;
-  }
-
-  .date-card {
-    min-width: 80px;
-  }
-
-  .time-btn {
-    @apply text-sm px-2;
   }
 
   /* Fix para iconos en cards con poco padding */

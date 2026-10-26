@@ -25,7 +25,7 @@ import { BaseComponent } from '@base/components/base-component/base.component';
 import { RequestDisponibilidad } from '../../core/model/disponibilidad/requestDisponibilidad.model';
 import { AuthService } from '@core/auth/services/auth.service';
 import { generateFutureDates, getNombreDia, getNombreMes, formatParaInput } from '@shared/utils/date.utils';
-import { agruparHorariosPorHora } from '@shared/utils/horario.utils';
+import { agruparHorariosPorHora, agruparHorasConsecutivas, RangoHorario } from '@shared/utils/horario.utils';
 import { DateOption } from '../../core/types/date-option';
 import { TimeOption } from '../../core/types/time-option.interface';
 
@@ -207,20 +207,8 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     return 'status-ocupado';
   }
 
-  getDateCardClass(fecha: DateOption): string {
-    let classes = 'date-card';
-    if (this.selectedDate?.fecha === fecha.fecha) classes += ' selected';
-    return classes;
-  }
-
-  getTimeButtonClass(time: TimeOption): string {
-    let classes = 'time-btn';
-    if (this.selectedTime?.some(t => t.hora === time.hora)) {
-      classes += ' selected';
-    } else {
-      classes += ' available';
-    }
-    return classes;
+  esHoraSeleccionada(time: TimeOption): boolean {
+    return !!this.selectedTime?.some(t => t.hora === time.hora);
   }
 
   selectDate(fecha: DateOption) {
@@ -289,11 +277,79 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     return `${this.selectedDate.dia} ${this.selectedDate.numero} de ${this.selectedDate.mes}`;
   }
 
+  /** Mes y año mostrado en el encabezado de selección de días */
+  get mesAnio(): string {
+    const fecha = this.selectedDate?.fecha ?? this.fechasDisponibles[0]?.fecha;
+    if (!fecha) return '';
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    return new Date(anio, (mes || 1) - 1, dia || 1).toLocaleDateString('es-PE', {
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  get subtituloHorario(): string {
+    if (!this.selectedDate) return 'Puedes marcar varias horas';
+    const cuando =
+      this.selectedDate.dia === 'Hoy'
+        ? 'hoy'
+        : this.selectedDate.dia === 'Mañana'
+          ? 'mañana'
+          : `${this.selectedDate.dia} ${this.selectedDate.numero}`;
+    return `Disponibles para ${cuando} · Puedes marcar varias horas`;
+  }
+
+  get hayHorariosDisponibles(): boolean {
+    return this.getAvailableHours().length > 0;
+  }
+
+  /** Horas disponibles agrupadas por franja del día (Mañana/Tarde/Noche) */
+  get gruposHorario(): { nombre: string; icono: string; rango: string; horas: TimeOption[] }[] {
+    const esManana = (h: string) => +h.substring(0, 2) < 12;
+    const esTarde = (h: string) => +h.substring(0, 2) >= 12 && +h.substring(0, 2) < 18;
+    const esNoche = (h: string) => +h.substring(0, 2) >= 18;
+    const franjas = [
+      { nombre: 'Mañana', icono: 'wb_twilight', test: esManana },
+      { nombre: 'Tarde', icono: 'wb_sunny', test: esTarde },
+      { nombre: 'Noche', icono: 'nights_stay', test: esNoche }
+    ];
+    const disponibles = this.getAvailableHours();
+
+    return franjas
+      .map(franja => {
+        const horas = disponibles.filter(h => franja.test(h.hora));
+        return { nombre: franja.nombre, icono: franja.icono, horas, rango: this.rangoDeHoras(horas) };
+      })
+      .filter(franja => franja.horas.length > 0);
+  }
+
+  /** Bloques seleccionados consecutivos con su cantidad de horas */
+  get rangosSeleccionados(): (RangoHorario & { horas: number })[] {
+    const horas = (this.selectedTime ?? []).map(t => t.hora);
+    return agruparHorasConsecutivas(horas).map(rango => ({
+      ...rango,
+      horas: horas.filter(h => h >= rango.inicio && h < rango.fin).length
+    }));
+  }
+
+  quitarRango(rango: RangoHorario): void {
+    if (!this.selectedTime) return;
+    this.selectedTime = this.selectedTime.filter(t => t.hora < rango.inicio || t.hora >= rango.fin);
+    this.reservaForm.patchValue({ duracion: this.selectedTime.length });
+  }
+
+  private rangoDeHoras(horas: TimeOption[]): string {
+    if (!horas.length) return '';
+    const primera = horas[0].hora;
+    const [hh, mm] = horas[horas.length - 1].hora.split(':');
+    const fin = String((Number(hh) + 1) % 24).padStart(2, '0');
+    return `${primera} – ${fin}:${mm}`;
+  }
+
   calculateTotal(): number {
-    if (!this.selectedTime) return 0;
-    const duration = this.selectedTime.length || 1;
+    if (!this.selectedTime?.length) return 0;
     const precio = this.canchaData.precio;
-    return (precio ?? 0) * duration;
+    return (precio ?? 0) * this.selectedTime.length;
   }
 
   getMapUrl(): SafeResourceUrl {
@@ -336,7 +392,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   onReservar() {
-    if (this.selectedDate && this.selectedTime) {
+    if (this.selectedDate && this.selectedTime?.length) {
       const reservaData = {
         canchaId: this.canchaData.idCancha,
         cancha: this.canchaData,

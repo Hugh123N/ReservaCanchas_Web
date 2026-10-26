@@ -63,19 +63,6 @@
   background: rgba(255, 255, 255, 0.18);
 }
 
-.planes-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(94, 234, 212, 0.12);
-  border: 1px solid rgba(94, 234, 212, 0.35);
-  color: #5eead4;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
 .planes-hero h1 {
   margin: 18px 0 14px;
   font-size: clamp(2.1rem, 5vw, 3.4rem);
@@ -164,7 +151,7 @@
 
 @media (min-width: 1024px) {
   .planes-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 26px;
   }
 }
@@ -446,6 +433,7 @@
 
 .planes-help-cta {
   flex: none;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -478,10 +466,6 @@
     padding: 44px 16px 84px;
   }
 
-  .planes-back {
-    position: static;
-    margin-bottom: 16px;
-  }
 
   .planes-wrap {
     margin-top: -48px;
