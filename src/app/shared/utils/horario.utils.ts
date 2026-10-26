@@ -18,36 +18,34 @@ export function agruparHorariosPorHora(horarios: GetHorarioCancha[]): TimeOption
     return [];
   }
 
-  // Agrupar por hora exacta (HH:00)
-  const gruposMap = new Map<string, { idHorarioCancha: number; precio: number }>();
+  const porInicio = new Map(horarios.map(h => [h.horaInicio.substring(0, 5), h]));
+  const resultado: TimeOption[] = [];
 
-  horarios.forEach(horario => {
-    // Extraer la hora del formato HH:mm
-    const horaExacta = horario.horaInicio.substring(0, 5); // "10:00" de "10:00:00"
-    const horaBase = `${horaExacta.substring(0, 2)}:00`; // "10:00"
+  for (const [hora, primera] of porInicio) {
+    if (!/^\d{2}:00$/.test(hora)) continue;
+    const segunda = porInicio.get(`${hora.substring(0, 2)}:30`);
+    // Se reserva por horas completas: ambas medias horas deben seguir libres.
+    if (!segunda || !primera.idHorarioCancha || !segunda.idHorarioCancha) continue;
 
-    // Sumar precios
-    const precioActual = gruposMap.get(horaBase) || { idHorarioCancha: 0, precio: 0 };
-    gruposMap.set(horaBase, { idHorarioCancha: horario.idHorarioCancha ?? 0, precio: precioActual.precio + (horario.precio ?? 0) });
-  });
+    resultado.push({
+      idHorarioCancha: primera.idHorarioCancha,
+      idsHorarioCancha: [primera.idHorarioCancha, segunda.idHorarioCancha],
+      hora,
+      precio: primera.precio == null || segunda.precio == null
+        ? undefined
+        : primera.precio + segunda.precio
+    });
+  }
 
-  // Convertir Map a array y ordenar por hora
-  const resultado: TimeOption[] = Array.from(gruposMap, ([hora, { idHorarioCancha, precio }]) => ({
-    idHorarioCancha, 
-    hora,
-    precio
-  })).sort((a, b) => a.hora.localeCompare(b.hora));
-
-  return resultado;
+  return resultado.sort((a, b) => a.hora.localeCompare(b.hora));
 }
 
 /**
- * Desagrupa horarios de vuelta a medias horas con IDs consecutivos
- * Ejemplo: Si viene [10:00 (id: 12, precio: 100), 11:00 (id: 13, precio: 100)]
- * Retorna: [10:00 (id: 12, precio: 50), 10:30 (id: 13, precio: 50), 11:00 (id: 14, precio: 50), 11:30 (id: 15, precio: 50)]
+ * Recupera las medias horas con los IDs devueltos por disponibilidad.
+ * El fallback consecutivo mantiene compatibilidad con borradores anteriores.
  * 
  * @param horariosAgrupados - Array de TimeOption agrupados por hora
- * @returns Array desagrupado con medias horas y IDs consecutivos
+ * @returns Array desagrupado con los IDs de cada media hora
  */
 export function desagruparHorasPorMediaHora(horariosAgrupados: TimeOption[]): TimeOption[] {
   if (!horariosAgrupados || horariosAgrupados.length === 0) {
@@ -58,11 +56,11 @@ export function desagruparHorasPorMediaHora(horariosAgrupados: TimeOption[]): Ti
 
   horariosAgrupados.forEach(horario => {
     const precioMediaHora = horario.precio ? horario.precio / 2 : 0;
-    const id = horario.idHorarioCancha;
+    const ids = horario.idsHorarioCancha ?? [horario.idHorarioCancha, horario.idHorarioCancha + 1];
 
     // Primera media hora (HH:00)
     resultado.push({
-      idHorarioCancha: id,
+      idHorarioCancha: ids[0],
       hora: horario.hora,
       precio: precioMediaHora
     });
@@ -70,7 +68,7 @@ export function desagruparHorasPorMediaHora(horariosAgrupados: TimeOption[]): Ti
     // Segunda media hora (HH:30)
     const [hh, mm] = horario.hora.split(':');
     resultado.push({
-      idHorarioCancha: id + 1,
+      idHorarioCancha: ids[1],
       hora: `${hh}:30`,
       precio: precioMediaHora
     });

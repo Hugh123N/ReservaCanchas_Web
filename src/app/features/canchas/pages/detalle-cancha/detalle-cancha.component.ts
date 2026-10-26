@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -56,7 +57,7 @@ import { ReservaData } from 'app/features/pago/core/types/reserva-data.interface
   styleUrl: './detalle-cancha.component.css'
 })
 
-export class DetalleCanchaComponent extends BaseComponent implements OnInit {
+export class DetalleCanchaComponent extends BaseComponent implements OnInit, OnDestroy {
   reservaForm: FormGroup;
   canchaId: number = 0;
   selectedTabIndex: number = 0;
@@ -67,6 +68,13 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
 
   // Data
   canchaData: GetCancha;
+  horariosDisponibles: TimeOption[] = [];
+  loadingHorarios = false;
+  horariosVerificados = false;
+  errorHorarios: string | null = null;
+  avisoHorarios: string | null = null;
+  private detalleSubscription?: Subscription;
+  private horariosSubscription?: Subscription;
 
   // Available dates (next 7 days)
   fechasDisponibles: DateOption[] = [];
@@ -94,13 +102,38 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.generateAvailableDates();
+    const subscription = this.route.params.subscribe(params => {
+      this.detalleSubscription?.unsubscribe();
+      this.horariosSubscription?.unsubscribe();
       this.canchaId = +params['id'];
+      this.canchaData = {} as GetCancha;
+      this.selectedDate = null;
+      this.selectedTime = null;
+      this.horariosDisponibles = [];
+      this.horariosVerificados = false;
+      this.loadingHorarios = false;
+      this.errorHorarios = null;
+      this.avisoHorarios = null;
+      this.reservaForm.patchValue({ duracion: 0 });
+
+      if (!Number.isSafeInteger(this.canchaId) || this.canchaId <= 0) {
+        this.openErrorAlert('El ID de la cancha no es válido.');
+        return;
+      }
+
+      // Restaurar antes del GET: una respuesta desde caché puede ser inmediata.
+      this.restaurarBorrador();
+      this.loadingHorarios = this.selectedDate !== null;
       this.loadCanchaData();
     });
-    // Generate available dates
-    this.generateAvailableDates();
-    this.restaurarBorrador();
+    this.subscriptions.push(subscription);
+  }
+
+  override ngOnDestroy(): void {
+    this.detalleSubscription?.unsubscribe();
+    this.horariosSubscription?.unsubscribe();
+    super.ngOnDestroy();
   }
 
   getServiceIconClass(index: number): string {
@@ -108,35 +141,44 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   loadCanchaData() {
-    this.canchasService.get(this.canchaId).subscribe({
+    this.detalleSubscription?.unsubscribe();
+    this.detalleSubscription = this.canchasService.get(this.canchaId).subscribe({
       next: (response) => {
-        if (response.isValid) {
+        if (response.isValid && response.data) {
           this.canchaData = response.data;
           // Si volvimos desde el pago con una fecha ya elegida, cargar su disponibilidad
           if (this.selectedDate) {
             this.cargarHorariosDisponibles(this.selectedDate);
           }
+        } else {
+          this.loadingHorarios = false;
+          this.openAlert(response);
         }
+        this.cdr.markForCheck();
       },
       error: (err) => {
+        this.loadingHorarios = false;
         this.openAlert(err);
+        this.cdr.markForCheck();
       },
     });
   }
 
   /**
-   * Al volver desde el pago (?reserva=true) se restaura fecha/horario desde el
+   * Al volver desde el pago o el historial se restaura fecha/horario desde el
    * borrador para no perder la selección que ya hizo el usuario.
    */
   private restaurarBorrador(): void {
     if (typeof document === 'undefined' || typeof localStorage === 'undefined') return;
-    if (this.route.snapshot.queryParams['reserva'] !== 'true') return;
+    const navigation = this.router.getCurrentNavigation() ?? this.router.lastSuccessfulNavigation;
+    const vuelvePorHistorial = navigation?.trigger === 'popstate';
+    if (this.route.snapshot.queryParams['reserva'] !== 'true' && !vuelvePorHistorial) return;
 
     const key = `reserva_draft_${this.canchaId}`;
     const raw = localStorage.getItem(key);
     if (!raw) return;
 
-    let draft: ReservaData;
+    let draft: Partial<ReservaData>;
     try {
       draft = JSON.parse(raw);
     } catch {
@@ -144,14 +186,16 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
       return;
     }
 
-    if (!draft?.fecha || !draft.selectedTime?.length) return;
+    if (draft?.canchaId !== this.canchaId || typeof draft.fecha !== 'string' ||
+        !Array.isArray(draft.selectedTime) || !draft.selectedTime.length ||
+        !draft.selectedTime.every(t => t && typeof t.hora === 'string' && /^\d{2}:00$/.test(t.hora))) return;
 
     const fecha = this.fechasDisponibles.find((f) => f.fecha === draft.fecha);
     if (!fecha) return;
 
     this.selectedDate = fecha;
     this.selectedTime = draft.selectedTime;
-    this.reservaForm.patchValue({ duracion: draft.duracion || draft.selectedTime.length });
+    this.reservaForm.patchValue({ duracion: draft.selectedTime.length });
 
     this.scrollToHorarios(350);
   }
@@ -178,11 +222,12 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   getAvailableHours(): TimeOption[] {
-    if (!this.selectedDate || !this.canchaData.horariosDisponibles) {
-      return [];
-    }
+    return this.selectedDate && this.horariosVerificados ? this.horariosDisponibles : [];
+  }
 
-    return agruparHorariosPorHora(this.canchaData.horariosDisponibles);
+  get puedeContinuar(): boolean {
+    return !!this.canchaData.idCancha && !!this.selectedDate && !!this.selectedTime?.length &&
+      this.horariosVerificados && !this.loadingHorarios && !this.errorHorarios;
   }
 
   getMainImage(): string {
@@ -214,37 +259,67 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   selectDate(fecha: DateOption) {
     this.selectedDate = fecha;
     this.selectedTime = null; // Reset selected time
+    this.reservaForm.patchValue({ duracion: 0 });
 
     this.scrollToHorarios();
     this.cargarHorariosDisponibles(fecha);
   }
 
   private cargarHorariosDisponibles(fecha: DateOption) {
+    if (!this.canchaData.idCancha) return;
+    this.horariosSubscription?.unsubscribe();
     const body: RequestDisponibilidad = {
       idCancha: this.canchaData.idCancha!,
       fecha: fecha.fecha
     };
 
-    //this.loadingHorarios = true;
+    this.loadingHorarios = true;
+    this.horariosVerificados = false;
+    this.horariosDisponibles = [];
+    this.errorHorarios = null;
+    this.avisoHorarios = null;
 
-    this.horarioCanchaService.horarioDisponible(body).subscribe({
+    this.horariosSubscription = this.horarioCanchaService.horarioDisponible(body).subscribe({
       next: (res) => {
-        //this.loadingHorarios = false;
-        if (res.isValid && res.data) {
-          this.canchaData.horariosDisponibles = res.data;
+        this.loadingHorarios = false;
+        if (res.isValid && Array.isArray(res.data)) {
+          this.horariosDisponibles = agruparHorariosPorHora(res.data);
+          this.horariosVerificados = true;
+          this.reconciliarSeleccion();
         } else {
-          this.canchaData.horariosDisponibles = [];
+          this.errorHorarios = 'No pudimos verificar los horarios. Intenta nuevamente.';
         }
-        // Mark for check to schedule change detection in the next cycle
         this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error al obtener disponibilidad', err);
-        //this.loadingHorarios = false;
-        this.canchaData.horariosDisponibles = [];
+        this.loadingHorarios = false;
+        this.errorHorarios = 'No pudimos verificar los horarios. Intenta nuevamente.';
         this.cdr.markForCheck();
       }
     });
+  }
+
+  reintentarHorarios(): void {
+    if (this.selectedDate) this.cargarHorariosDisponibles(this.selectedDate);
+  }
+
+  private reconciliarSeleccion(): void {
+    const anteriores = this.selectedTime ?? [];
+    const horasSeleccionadas = new Set(anteriores.map(t => t.hora));
+    this.selectedTime = this.horariosDisponibles.filter(t => horasSeleccionadas.has(t.hora));
+    this.reservaForm.patchValue({ duracion: this.selectedTime.length });
+
+    const retiradas = anteriores.filter(t => !this.selectedTime?.some(actual => actual.hora === t.hora));
+    const cambioPrecio = this.selectedTime.some(actual =>
+      anteriores.some(anterior => anterior.hora === actual.hora && anterior.precio !== actual.precio)
+    );
+    const avisos: string[] = [];
+    if (retiradas.length) {
+      avisos.push(`Estos horarios ya no están disponibles y se retiraron de tu selección: ${retiradas.map(t => t.hora).join(', ')}.`);
+    }
+    if (cambioPrecio) avisos.push('Se actualizaron los precios de tu selección. Revisa el nuevo total.');
+    this.avisoHorarios = avisos.join(' ') || null;
   }
 
   private scrollToHorarios(delay: number = 100) {
@@ -255,6 +330,9 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   selectTime(time: TimeOption) {
+    if (!this.horariosVerificados || this.loadingHorarios) return;
+    const disponible = this.horariosDisponibles.find(t => t.hora === time.hora);
+    if (!disponible) return;
     if (!this.selectedTime) {
       this.selectedTime = [];
     }
@@ -264,7 +342,7 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
     if (index >= 0) {
       this.selectedTime.splice(index, 1);
     } else {
-      this.selectedTime.push(time);
+      this.selectedTime.push(disponible);
     }
     this.reservaForm.patchValue({ duracion: this.selectedTime.length });
 
@@ -347,9 +425,8 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   calculateTotal(): number {
-    if (!this.selectedTime?.length) return 0;
-    const precio = this.canchaData.precio;
-    return (precio ?? 0) * this.selectedTime.length;
+    if (!this.horariosVerificados) return 0;
+    return (this.selectedTime ?? []).reduce((total, t) => total + (t.precio ?? this.canchaData.precio ?? 0), 0);
   }
 
   getMapUrl(): SafeResourceUrl {
@@ -392,8 +469,8 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
   }
 
   onReservar() {
-    if (this.selectedDate && this.selectedTime?.length) {
-      const reservaData = {
+    if (this.selectedDate && this.selectedTime?.length && this.puedeContinuar) {
+      const reservaData: ReservaData = {
         canchaId: this.canchaData.idCancha,
         cancha: this.canchaData,
         fecha: this.selectedDate.fecha,
@@ -415,7 +492,9 @@ export class DetalleCanchaComponent extends BaseComponent implements OnInit {
         state: { reservaData }
       });
     } else {
-      this.openWarningAlert('Selecciona una fecha y al menos un horario para continuar');
+      this.openWarningAlert(this.selectedDate && !this.horariosVerificados
+        ? 'Es necesario verificar la disponibilidad de los horarios antes de continuar.'
+        : 'Selecciona una fecha y al menos un horario para continuar');
     }
   }
 

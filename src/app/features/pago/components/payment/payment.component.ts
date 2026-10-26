@@ -81,6 +81,13 @@ export class PaymentComponent extends BaseComponent implements OnInit {
     return formatHorasConsecutivas(horas);
   }
 
+  get precioHoraUniforme(): number | null {
+    const reserva = this.reservaData;
+    if (!reserva) return null;
+    const precios = reserva.selectedTime.map(t => t.precio ?? reserva.precioHora);
+    return precios.length > 0 && precios.every(precio => precio === precios[0]) ? precios[0] : null;
+  }
+
   toggleReglas(): void {
     this.reglasExpandidas = !this.reglasExpandidas;
   }
@@ -257,7 +264,7 @@ export class PaymentComponent extends BaseComponent implements OnInit {
       montoTotal: this.reservaData.total,
       idTipoDeporte: this.reservaData.idTipoDeporte,
       codigoMetodoPago: '02', //SOLO EFECTIVO
-      idsHorarioCancha: horariosDesagrupados.map((t: any) => t.idHorarioCancha)
+      idsHorarioCancha: horariosDesagrupados.map(t => t.idHorarioCancha)
     };
 
     const subscription = this.reservaService.create(createReservaDto)

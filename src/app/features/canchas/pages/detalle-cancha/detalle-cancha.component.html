@@ -184,6 +184,7 @@
                       class="rf-day"
                       [class.is-sel]="selectedDate?.fecha === f.fecha"
                       [attr.aria-pressed]="selectedDate?.fecha === f.fecha"
+                      [disabled]="!canchaData.idCancha"
                       (click)="selectDate(f)"
                     >
                       <small>{{ f.dia }}</small>
@@ -204,6 +205,17 @@
                         <small>{{ subtituloHorario }}</small>
                       </div>
                     </header>
+
+                    @if (loadingHorarios) {
+                      <p class="rf-note" role="status">Verificando horarios disponibles…</p>
+                    }
+                    @if (errorHorarios) {
+                      <p class="rf-note" role="alert">{{ errorHorarios }}</p>
+                      <button type="button" class="btn-outline-primary" (click)="reintentarHorarios()">Reintentar</button>
+                    }
+                    @if (avisoHorarios) {
+                      <p class="rf-note" role="status">{{ avisoHorarios }}</p>
+                    }
 
                     <div class="rf-legend">
                       <span><i class="rf-sw"></i>Disponible</span>
@@ -227,13 +239,13 @@
                             (click)="selectTime(h)"
                           >
                             <strong>{{ h.hora }}</strong>
-                            <span>S/ {{ h.precio }}</span>
+                            <span>S/ {{ h.precio ?? canchaData.precio }}</span>
                           </button>
                         }
                       </div>
                     }
 
-                    @if (!hayHorariosDisponibles) {
+                    @if (horariosVerificados && !loadingHorarios && !hayHorariosDisponibles) {
                       <p class="rf-empty">No hay horarios disponibles para este día.</p>
                     }
                   </section>
@@ -287,17 +299,23 @@
                         <b>{{ totalHoras }} {{ totalHoras === 1 ? 'hora' : 'horas' }}</b>
                       </div>
 
-                      <div class="rf-tot">
-                        <div class="rf-tot-l">
-                          <span>{{ totalHoras }} h × S/ {{ canchaData.precio }}</span>
-                          <span>S/ {{ calculateTotal() }}</span>
+                      @if (horariosVerificados) {
+                        <div class="rf-tot">
+                          @for (hora of selectedTime; track hora.hora) {
+                            <div class="rf-tot-l">
+                              <span>{{ hora.hora }} · 1 h</span>
+                              <span>S/ {{ hora.precio ?? canchaData.precio }}</span>
+                            </div>
+                          }
+                          <div class="rf-tot-t">
+                            <span>Total a pagar</span>
+                            <b>S/ {{ calculateTotal() }}</b>
+                          </div>
+                          <small>Pago en efectivo al operador</small>
                         </div>
-                        <div class="rf-tot-t">
-                          <span>Total a pagar</span>
-                          <b>S/ {{ calculateTotal() }}</b>
-                        </div>
-                        <small>Pago en efectivo al operador</small>
-                      </div>
+                      } @else {
+                        <p class="rf-note">La selección y el total se actualizarán al verificar la disponibilidad.</p>
+                      }
                     } @else {
                       <p class="rf-empty">Aún no eliges ningún horario.</p>
 
@@ -313,7 +331,7 @@
                     <button
                       class="btn-primary rf-cta"
                       type="submit"
-                      [disabled]="!selectedDate || !selectedTime?.length"
+                      [disabled]="!puedeContinuar"
                     >
                       <mat-icon>arrow_forward</mat-icon>
                       Continuar al Pago

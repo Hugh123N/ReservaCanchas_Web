@@ -128,7 +128,11 @@
                 <mat-icon>payments</mat-icon>
                 <span>
                   <small>Precio</small>
-                  <b>S/ {{ reservaData.precioHora }} /hora</b>
+                  @if (precioHoraUniforme !== null) {
+                    <b>S/ {{ precioHoraUniforme }} /hora</b>
+                  } @else {
+                    <b>Según el horario seleccionado</b>
+                  }
                 </span>
               </span>
             </div>
@@ -178,8 +182,12 @@
             <p class="pay-total-label">Total a pagar</p>
             <p class="pay-total-amount">S/ {{ reservaData.total }}</p>
             <p class="pay-total-calc">
-              {{ reservaData.duracion }} {{ reservaData.duracion === 1 ? 'hora' : 'horas' }}
-              × S/ {{ reservaData.precioHora }} /hora
+              @if (precioHoraUniforme !== null) {
+                {{ reservaData.duracion }} {{ reservaData.duracion === 1 ? 'hora' : 'horas' }}
+                × S/ {{ precioHoraUniforme }} /hora
+              } @else {
+                Tarifas actualizadas según los horarios seleccionados
+              }
             </p>
 
             <div class="pay-pago">

@@ -487,6 +487,18 @@ user$ = this.userSubject.asObservable();
 - Ambos servicios exponen `clearCache()` para que la siguiente llamada vuelva a cargar el catálogo. La invalidación no cancela peticiones en curso ni actualiza automáticamente las vistas que ya recibieron los datos.
 - Home, listado, mapa y resolución SEO reutilizan los mismos servicios. El listado sincroniza la ciudad de la URL tanto con respuestas HTTP diferidas como con respuestas inmediatas desde caché.
 
+### 6.5 Detalle de cancha y retorno desde pago
+
+- `CanchaService.get(id)` mantiene una caché en memoria por ID, con vigencia de **2 minutos desde la respuesta válida**. Se retienen hasta 20 detalles recientes y cada consumidor recibe una copia independiente.
+- `CachedResponse<T>` admite un TTL opcional; los catálogos maestros conservan su comportamiento sin caducidad automática.
+- `CanchaService.clearCache(id?)` permite invalidar un detalle o toda la caché. Las actualizaciones y eliminaciones exitosas invalidan el ID afectado.
+- El detalle restaura el borrador antes de cargar la cancha, para funcionar con respuestas HTTP y con respuestas inmediatas desde caché. Se contempla el retorno desde pago (`?reserva=true`) y mediante el historial del navegador.
+- La disponibilidad se guarda en estado local independiente y se consulta al restaurar una fecha o elegir otra. Al cambiar de fecha/cancha se cancelan las suscripciones anteriores para evitar respuestas obsoletas.
+- Tras la consulta se conservan solo las horas seleccionadas que siguen disponibles, se renuevan sus precios e IDs y se recalculan duración y total. Los cambios se muestran en un aviso dentro del detalle.
+- El botón de continuar permanece deshabilitado mientras la disponibilidad no esté verificada. Los errores ofrecen reintento.
+- Como la UI reserva horas completas, se requieren ambas medias horas disponibles. `TimeOption.idsHorarioCancha` conserva los IDs reales de esas medias horas para enviarlos al crear la reserva, sin asumir que son consecutivos en las selecciones nuevas.
+- El total se calcula a partir de las tarifas actuales de los horarios seleccionados, usando el precio base como fallback si no se proporciona una tarifa. Pago refleja la tarifa uniforme o indica que varía según el horario.
+
 ---
 
 ## 7. Estilos y Diseño
