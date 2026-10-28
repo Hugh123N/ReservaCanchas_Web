@@ -675,6 +675,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .marcador-personalizado:focus-visible { outline: 3px solid var(--color-accent-500); outline-offset: 3px; border-radius: 12px; }
 .marcador-inner.marcador-seleccionado { transform: scale(1.2); filter: drop-shadow(0 2px 5px rgb(15 23 42 / 35%)); }
+.marcador-inner.marcador-seleccionado svg > path { fill: var(--color-primary-800); }
 
 /* Wrapper interno para efecto hover ( separado del contenedor que Mapbox posiciona con transform) */
 .marcador-inner {

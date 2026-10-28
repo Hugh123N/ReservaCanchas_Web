@@ -116,11 +116,12 @@
 
     @if (!esVistaCompacta()) {
       <aside class="venues-sidebar" aria-label="Canchas encontradas" [class.is-refreshing]="estaCargando()" [attr.aria-busy]="estaCargando() || cargandoMas()">
-        <div class="sidebar-header"><span>Tu próxima reserva</span><h1>Canchas para ti</h1><p>Elige una tarjeta para ubicarla en el mapa.</p></div>
+        <div class="sidebar-header"><span>Tu próxima reserva</span><h1>Canchas para ti</h1><p>Haz clic en una tarjeta para centrarla en el mapa.</p></div>
         <div class="venue-list scrollbar-thin" #venueList>
           @for (cancha of canchas(); track cancha.id) {
-            <app-venue-map-card [venue]="cancha" [isHighlighted]="canchaResaltadaId() === cancha.id"
-              (cardHover)="resaltarDesdeLista(cancha, $event)" (cardClick)="seleccionarCancha(cancha)" />
+            <app-venue-map-card [venue]="cancha" [attr.data-cancha-id]="cancha.id"
+              [isHighlighted]="canchaResaltadaId() === cancha.id" [isSelected]="canchaSeleccionada()?.id === cancha.id"
+              (cardHover)="resaltarDesdeLista(cancha, $event)" (cardClick)="seleccionarDesdeLista(cancha)" />
           } @empty {
             <p class="sidebar-empty">{{ estaCargando() ? 'Buscando tu próxima cancha…' : 'Ajusta los filtros para encontrar canchas.' }}</p>
           }

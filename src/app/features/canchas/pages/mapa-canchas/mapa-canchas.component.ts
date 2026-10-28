@@ -58,6 +58,7 @@ export class MapaCanchasComponent extends BaseComponent implements OnInit, After
   private readonly busquedas$ = new Subject<BusquedaMapa>();
   private resizeObserver?: ResizeObserver;
   private focoTimer?: ReturnType<typeof setTimeout>;
+  private seleccionFrame?: number;
   private movimientoUsuario = false;
   private ajustarAlInicializar = true;
   private listaElement?: HTMLElement;
@@ -168,7 +169,7 @@ export class MapaCanchasComponent extends BaseComponent implements OnInit, After
     this.resizeObserver?.disconnect();
     this.loadMoreObserver?.disconnect();
     this.cancelarComprobacionCarga();
-    if (this.focoTimer) clearTimeout(this.focoTimer);
+    this.cancelarSeleccionPendiente();
     this.mapboxService.destruir();
     super.ngOnDestroy();
   }
@@ -329,28 +330,79 @@ export class MapaCanchasComponent extends BaseComponent implements OnInit, After
   private agregarMarcadores(canchas: UbicacionCancha[]): void {
     if (!canchas.length) return;
     this.mapboxService.agregarMarcadoresCanchas(canchas,
-      (cancha, event) => this.seleccionarCancha(cancha, true, event?.detail === 0),
-      (cancha, hover) => { if (hover) this.seleccionarCancha(cancha, false); }
+      (cancha, event) => this.seleccionarDesdeMapa(cancha, event?.detail === 0),
+      (cancha, hover) => this.resaltarDesdeMapa(cancha, hover)
     );
   }
 
-  seleccionarCancha(cancha: UbicacionCancha, centrar = true, enfocar = false): void {
-    if (this.estaCargando()) return;
-    if (!centrar && this.canchaSeleccionada()?.id === cancha.id) return;
+  private activarSeleccion(cancha: UbicacionCancha): boolean {
+    if (this.destruido || this.estaCargando()) return false;
+    this.cancelarSeleccionPendiente();
     this.canchaSeleccionada.set(cancha);
     this.canchaResaltadaId.set(cancha.id);
     this.mapboxService.seleccionarMarcador(cancha.id);
-    if (centrar) {
-      const zoom = Math.max(this.mapboxService.obtenerMapa()?.getZoom() ?? 13, 13);
-      this.mapboxService.volarA(cancha.lat, cancha.lng, zoom, this.esVistaCompacta() ? [0, -70] : [0, 0]);
+    return true;
+  }
+
+  seleccionarDesdeLista(cancha: UbicacionCancha): void {
+    if (!this.activarSeleccion(cancha)) return;
+    this.centrarCanchaEnMapa(cancha);
+  }
+
+  seleccionarDesdeMapa(cancha: UbicacionCancha, conTeclado = false): void {
+    if (!this.activarSeleccion(cancha)) return;
+    this.centrarCanchaEnMapa(cancha);
+    if (!this.esVistaCompacta()) {
+      this.mostrarCanchaEnLista(cancha.id, conTeclado);
+    } else if (conTeclado) {
+      this.focoTimer = setTimeout(() => {
+        this.focoTimer = undefined;
+        this.mapViewport.nativeElement.querySelector<HTMLAnchorElement>('.selected-card a')?.focus();
+      });
     }
-    if (enfocar && this.esVistaCompacta()) {
-      if (this.focoTimer) clearTimeout(this.focoTimer);
-      this.focoTimer = setTimeout(() => this.mapViewport.nativeElement.querySelector<HTMLAnchorElement>('.selected-card a')?.focus());
+  }
+
+  private centrarCanchaEnMapa(cancha: UbicacionCancha): void {
+    this.mapboxService.redimensionar();
+    const zoom = Math.max(this.mapboxService.obtenerMapa()?.getZoom() ?? 13, 13);
+    this.mapboxService.volarA(cancha.lat, cancha.lng, zoom, this.esVistaCompacta() ? [0, -70] : [0, 0]);
+  }
+
+  private mostrarCanchaEnLista(canchaId: number, conTeclado: boolean): void {
+    // Esperar el render permite medir la tarjeta ya seleccionada sin desplazar otros contenedores.
+    this.seleccionFrame = requestAnimationFrame(() => {
+      this.seleccionFrame = undefined;
+      if (this.destruido || this.esVistaCompacta() || this.canchaSeleccionada()?.id !== canchaId || !this.listaElement?.clientHeight) return;
+      const lista = this.listaElement;
+      const tarjeta = lista.querySelector<HTMLElement>(`[data-cancha-id="${canchaId}"]`);
+      if (!tarjeta) return;
+      const limiteLista = lista.getBoundingClientRect();
+      const limiteTarjeta = tarjeta.getBoundingClientRect();
+      const inicioVisible = limiteLista.top + lista.clientTop;
+      const estaVisible = limiteTarjeta.top >= inicioVisible + 12 && limiteTarjeta.bottom <= inicioVisible + lista.clientHeight - 12;
+      if (!estaVisible) {
+        const margen = Math.max(12, (lista.clientHeight - limiteTarjeta.height) / 2);
+        const destino = lista.scrollTop + limiteTarjeta.top - inicioVisible - margen;
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        lista.scrollTo({ top: Math.max(0, Math.min(destino, lista.scrollHeight - lista.clientHeight)), behavior });
+      }
+      if (conTeclado) tarjeta.querySelector<HTMLAnchorElement>('.details-link')?.focus({ preventScroll: true });
+    });
+  }
+
+  private cancelarSeleccionPendiente(): void {
+    if (this.seleccionFrame !== undefined) {
+      cancelAnimationFrame(this.seleccionFrame);
+      this.seleccionFrame = undefined;
+    }
+    if (this.focoTimer !== undefined) {
+      clearTimeout(this.focoTimer);
+      this.focoTimer = undefined;
     }
   }
 
   limpiarSeleccion(): void {
+    this.cancelarSeleccionPendiente();
     this.canchaSeleccionada.set(null);
     this.canchaResaltadaId.set(null);
     this.mapboxService.seleccionarMarcador(null);
@@ -363,9 +415,19 @@ export class MapaCanchasComponent extends BaseComponent implements OnInit, After
   }
 
   resaltarDesdeLista(cancha: UbicacionCancha, hover: boolean): void {
+    if (this.destruido || this.estaCargando()) return;
     this.canchaResaltadaId.set(hover ? cancha.id : this.canchaSeleccionada()?.id ?? null);
     if (hover) this.mapboxService.resaltarMarcador(cancha.id);
     else this.mapboxService.quitarResaltadoMarcador(cancha.id);
+  }
+
+  resaltarDesdeMapa(cancha: UbicacionCancha, hover: boolean): void {
+    if (this.destruido || this.estaCargando()) return;
+    if (this.esVistaCompacta()) {
+      if (hover && this.canchaSeleccionada()?.id !== cancha.id) this.activarSeleccion(cancha);
+    } else {
+      this.canchaResaltadaId.set(hover ? cancha.id : this.canchaSeleccionada()?.id ?? null);
+    }
   }
 
   onCambiarUbicacion(option?: UbicacionOpcion): void {

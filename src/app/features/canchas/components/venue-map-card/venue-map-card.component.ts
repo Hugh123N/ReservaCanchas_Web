@@ -18,6 +18,7 @@ import { UbicacionCancha } from '../../../../shared/interfaces/location.interfac
 export class VenueMapCardComponent {
   @Input() venue!: UbicacionCancha;
   @Input() isHighlighted: boolean = false;
+  @Input() isSelected = false;
   @Input() distance?: number; // Distancia en km desde la ubicación del usuario
 
   @Output() cardHover = new EventEmitter<boolean>();

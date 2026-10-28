@@ -95,7 +95,6 @@ export class MapboxService {
     el.type = 'button';
     el.setAttribute('aria-label', `Mostrar información de ${cancha.nombre}, desde S/ ${cancha.precioDesde} por hora`);
     el.setAttribute('aria-pressed', 'false');
-    el.setAttribute('aria-controls', 'selected-cancha-card');
     el.className = 'marcador-personalizado';
     el.style.width = '40px';
     el.style.height = '50px';
@@ -320,6 +319,8 @@ export class MapboxService {
       center: [lng, lat],
       zoom,
       offset,
+      padding: 0,
+      retainPadding: false,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450
     });
   }

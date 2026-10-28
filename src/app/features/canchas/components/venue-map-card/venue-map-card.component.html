@@ -1,8 +1,13 @@
-<article class="venue-map-card" [class.highlighted]="isHighlighted">
+<article class="venue-map-card" [class.highlighted]="isHighlighted" [class.selected]="isSelected">
+  <button type="button" class="map-select-action" [attr.aria-label]="'Ubicar ' + venue.nombre + ' en el mapa'"
+    [attr.aria-pressed]="isSelected" aria-controls="map-container" (click)="alHacerClick()"></button>
+  @if (isSelected) {
+    <span class="selection-badge" aria-hidden="true"><mat-icon>check</mat-icon></span>
+  }
   <div class="card-info">
     <img [src]="imagenCancha" [alt]="venue.nombre" width="84" height="84" loading="lazy" (error)="onImageError($event)" />
     <div class="card-text">
-      <button type="button" class="venue-title" [attr.aria-label]="'Ubicar ' + venue.nombre + ' en el mapa'" (click)="alHacerClick()">{{ venue.nombre }}</button>
+      <h2 class="venue-title">{{ venue.nombre }}</h2>
       <p>{{ venue.direccion || venue.distrito + ', ' + venue.provincia }}</p>
       <div class="sports-section">
         @for (deporte of mostrarDeportes; track deporte) { <span>{{ deporte }}</span> }
@@ -12,7 +17,7 @@
   </div>
   <div class="card-actions">
     <span class="price"><small>Desde</small><b>{{ mostrarPrecio }}</b><small>/hora</small></span>
-    <a [routerLink]="['/cancha', venue.id]" class="details-link">Ver cancha<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
+    <a [routerLink]="['/cancha', venue.id]" class="details-link" [attr.aria-label]="'Ver cancha ' + venue.nombre">Ver cancha<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
   </div>
   @if (mostrarDistancia) { <span class="distance">A {{ mostrarDistancia }} de ti</span> }
 </article>
