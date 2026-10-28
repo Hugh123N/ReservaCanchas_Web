@@ -20,7 +20,7 @@ export class MapboxService {
 
   constructor() {
     if (this.configService.mapboxToken) {
-      (mapboxgl as any).accessToken = this.configService.mapboxToken;
+      mapboxgl.accessToken = this.configService.mapboxToken;
     }
   }
 
@@ -36,6 +36,7 @@ export class MapboxService {
       centro: [number, number];
       zoom: number;
       estilo?: string;
+      geolocalizacion?: boolean;
     }
   ): mapboxgl.Map {
     const opcionesMapa: mapboxgl.MapboxOptions = {
@@ -53,7 +54,7 @@ export class MapboxService {
     this.mapa.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Agregar control de geolocalización
-    this.mapa.addControl(
+    if (opciones.geolocalizacion !== false) this.mapa.addControl(
       new mapboxgl.GeolocateControl({
         positionOptions: {
           enableHighAccuracy: true
@@ -82,7 +83,7 @@ export class MapboxService {
    */
   agregarMarcadorCancha(
     cancha: UbicacionCancha,
-    alHacerClick?: (cancha: UbicacionCancha) => void,
+    alHacerClick?: (cancha: UbicacionCancha, event?: MouseEvent) => void,
     alPasarMouse?: (cancha: UbicacionCancha, estaPasandoMouse: boolean) => void
   ): mapboxgl.Marker {
     if (!this.mapa) {
@@ -90,7 +91,11 @@ export class MapboxService {
     }
 
     // Crear elemento personalizado para el marcador usando SVG
-    const el = document.createElement('div');
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.setAttribute('aria-label', `Mostrar información de ${cancha.nombre}, desde S/ ${cancha.precioDesde} por hora`);
+    el.setAttribute('aria-pressed', 'false');
+    el.setAttribute('aria-controls', 'selected-cancha-card');
     el.className = 'marcador-personalizado';
     el.style.width = '40px';
     el.style.height = '50px';
@@ -143,7 +148,10 @@ export class MapboxService {
 
     // Agregar manejador de click
     if (alHacerClick) {
-      el.addEventListener('click', () => alHacerClick(cancha));
+      el.addEventListener('click', event => {
+        event.stopPropagation();
+        alHacerClick(cancha, event);
+      });
     }
 
     // Guardar referencia del marcador
@@ -160,7 +168,7 @@ export class MapboxService {
    */
   agregarMarcadoresCanchas(
     canchas: UbicacionCancha[],
-    alHacerClick?: (cancha: UbicacionCancha) => void,
+    alHacerClick?: (cancha: UbicacionCancha, event?: MouseEvent) => void,
     alPasarMouse?: (cancha: UbicacionCancha, estaPasandoMouse: boolean) => void
   ): void {
     canchas.forEach(cancha => {
@@ -216,6 +224,19 @@ export class MapboxService {
         inner.classList.remove('marcador-hover');
       }
     }
+  }
+
+  seleccionarMarcador(canchaId: number | null): void {
+    this.marcadores.forEach((marcador, id) => {
+      const el = marcador.getElement();
+      el.setAttribute('aria-pressed', String(id === canchaId));
+      el.style.zIndex = id === canchaId ? '3' : '1';
+      el.querySelector('.marcador-inner')?.classList.toggle('marcador-seleccionado', id === canchaId);
+    });
+  }
+
+  enfocarMarcador(canchaId: number): void {
+    this.marcadores.get(canchaId)?.getElement().focus({ preventScroll: true });
   }
 
   /**
@@ -278,9 +299,11 @@ export class MapboxService {
       limites.extend([cancha.lng, cancha.lat]);
     });
 
+    const container = this.mapa.getContainer();
     this.mapa.fitBounds(limites, {
-      padding: relleno,
-      maxZoom: 15
+      padding: Math.min(relleno, (container.clientWidth || 400) / 4, (container.clientHeight || 400) / 4),
+      maxZoom: 15,
+      duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500
     });
   }
 
@@ -290,13 +313,14 @@ export class MapboxService {
    * @param lng Longitud
    * @param zoom Nivel de zoom
    */
-  volarA(lat: number, lng: number, zoom: number = 15): void {
+  volarA(lat: number, lng: number, zoom: number = 15, offset: [number, number] = [0, 0]): void {
     if (!this.mapa) return;
 
     this.mapa.flyTo({
       center: [lng, lat],
       zoom,
-      essential: true
+      offset,
+      duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450
     });
   }
 

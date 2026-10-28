@@ -1,76 +1,71 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
+import { UbicacionAutocompleteComponent } from '@shared/components/ubicacion-autocomplete/ubicacion-autocomplete.component';
+import { UbicacionOpcion } from '@shared/utils/ubicacion-options.utils';
+import { formatParaInput } from '@shared/utils/date.utils';
+import { FormErrorComponent } from '@shared/components/form-error/form-error.component';
 import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
+import { SearchCanchaFilter } from '../../core/model/searchCanchaFilter.model';
+
+export interface FiltrosMapaResultado {
+  nombre: string | null;
+  idTipoDeporte: number | null;
+  codigoUbigeo: string | null;
+  fecha: string | null;
+  soloFavoritos: boolean;
+  limpiarTodo?: boolean;
+}
 
 export interface FiltrosModalData {
   tipoDeportes: GetTipoDeporte[];
-  ubigeos: Ubigeo[];
+  ubicaciones: UbicacionOpcion[];
   cantidadFavoritos: number;
-  filtrosActuales: {
-    idTipoCancha?: number;
-    codigoUbigeo?: string;
-    fecha?: string;
-    soloFavoritos?: boolean;
-  };
+  isAuthenticated: boolean;
+  filtrosActuales: SearchCanchaFilter;
 }
 
 @Component({
-  selector: 'app-mapa-filtros-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSlideToggleModule
-  ],
+  selector: 'app-mapa-filtros-modal', standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, MatDialogModule, MatIconModule, UbicacionAutocompleteComponent, FormErrorComponent],
   templateUrl: './mapa-filtros-modal.component.html',
   styleUrl: './mapa-filtros-modal.component.css'
 })
-export class MapaFiltrosModalComponent implements OnInit {
-  filtrosForm!: FormGroup;
+export class MapaFiltrosModalComponent {
+  readonly fechaMinima = formatParaInput(new Date());
+  readonly filtrosForm;
+  reiniciarBusqueda = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: FiltrosModalData,
-    private dialogRef: MatDialogRef<MapaFiltrosModalComponent>,
-    private fb: FormBuilder
-  ) { }
-
-  ngOnInit(): void {
-    this.filtrosForm = this.fb.group({
-      idTipoCancha: [this.data.filtrosActuales?.idTipoCancha ?? null],
-      codigoUbigeo: [this.data.filtrosActuales?.codigoUbigeo ?? null],
-      fecha: [this.data.filtrosActuales?.fecha ?? null],
-      soloFavoritos: [this.data.filtrosActuales?.soloFavoritos || false]
+    private dialogRef: MatDialogRef<MapaFiltrosModalComponent, FiltrosMapaResultado>,
+    fb: FormBuilder
+  ) {
+    this.filtrosForm = fb.group({
+      nombre: [data.filtrosActuales.nombre ?? '', Validators.maxLength(120)],
+      idTipoDeporte: [data.filtrosActuales.idTipoDeporte ?? null],
+      codigoUbigeo: [data.filtrosActuales.codigoUbigeo ?? null],
+      fecha: [data.filtrosActuales.fecha ?? null],
+      soloFavoritos: [{ value: data.filtrosActuales.soloFavoritos ?? false, disabled: !data.isAuthenticated }]
     });
- 
   }
 
   aplicarFiltros(): void {
-    this.dialogRef.close(this.filtrosForm.value);
+    if (this.filtrosForm.invalid) {
+      this.filtrosForm.markAllAsTouched();
+      return;
+    }
+    const values = this.filtrosForm.getRawValue();
+    this.dialogRef.close({ ...values, nombre: values.nombre?.trim() || null,
+      soloFavoritos: this.data.isAuthenticated && !!values.soloFavoritos, limpiarTodo: this.reiniciarBusqueda });
   }
 
   limpiarFiltros(): void {
-    this.filtrosForm.reset({
-      idTipoCancha: null,
-      codigoUbigeo: null,
-      fecha: null,
-      soloFavoritos: false
-    });
+    this.reiniciarBusqueda = true;
+    this.filtrosForm.reset({ nombre: '', idTipoDeporte: null, codigoUbigeo: null, fecha: null, soloFavoritos: false });
   }
 
-  cerrar(): void {
-    this.dialogRef.close();
-  }
-
-  formatLabel(value: number): string {
-    return `S/ ${value}`;
-  }
+  cerrar(): void { this.dialogRef.close(); }
 }

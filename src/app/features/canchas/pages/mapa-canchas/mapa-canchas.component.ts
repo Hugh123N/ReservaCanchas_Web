@@ -1,536 +1,492 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild, ViewContainerRef, computed, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
-
-import { ResponsiveService } from '../../../../core/services/responsive.service';
-import { MapboxService } from '../../../../core/services/mapbox.service';
-import { GeolocationService, ErrorGeolocalizacion } from '../../../../core/services/geolocation.service';
-import { UbicacionCancha } from '../../../../shared/interfaces/location.interface';
+import { EMPTY, Subject, catchError, finalize, switchMap, takeUntil, tap, timer } from 'rxjs';
+import { BaseComponent } from '@base/components/base-component/base.component';
+import { QueryParamsModel } from '@base/models/query/query-params.model';
+import { QueryResultsModel } from '@base/models/query/query-results.model';
+import { ResponsiveService } from '@core/services/responsive.service';
+import { MapboxService } from '@core/services/mapbox.service';
+import { GeolocationService, ErrorGeolocalizacion } from '@core/services/geolocation.service';
+import { AuthService } from '@core/auth/services/auth.service';
+import { UbicacionCancha } from '@shared/interfaces/location.interface';
+import { UbicacionAutocompleteComponent } from '@shared/components/ubicacion-autocomplete/ubicacion-autocomplete.component';
+import { crearOpcionesUbicacion, UbicacionOpcion } from '@shared/utils/ubicacion-options.utils';
+import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
+import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 import { VenueMapCardComponent } from '../../components/venue-map-card/venue-map-card.component';
+import { FiltrosMapaResultado, MapaFiltrosModalComponent } from '../../components/mapa-filtros-modal/mapa-filtros-modal.component';
 import { CanchaService } from '../../core/services/cancha.service';
 import { UbigeoService } from '../../core/services/ubigeo.service';
 import { CanchaFavoritaService } from '../../core/services/cancha-favorita.service';
-import { AuthService } from '@core/auth/services/auth.service';
-import { QueryParamsModel } from '@base/models/query/query-params.model';
 import { SearchCanchaFilter } from '../../core/model/searchCanchaFilter.model';
-import { AreaGeografica } from '../../core/model/areaGeografica.model';
 import { SearchCancha } from '../../core/model/searchCancha.model';
-import { GetTipoDeporte } from '../../../cancha-tipo/core/model/getTipoDeporte.model';
-import { Ubigeo } from '../../core/model/ubigeo/ubigeo.model';
 import { canchasSort } from '../../helper/canchas-sort';
-import { MapaFiltrosModalComponent } from '../../components/mapa-filtros-modal/mapa-filtros-modal.component';
-import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
 
-/**
- * Componente de página del contenedor de mapa
- * Muestra un mapa interactivo con marcadores de canchas y lista en sidebar/bottom sheet
- */
+interface BusquedaMapa {
+  params: QueryParamsModel;
+  ajustarCamara: boolean;
+  espera: number;
+  acumular: boolean;
+}
+
 @Component({
   selector: 'app-mapa-canchas',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatPaginatorModule,
-    MatDialogModule,
-    MatSlideToggleModule,
-    FormsModule,
-    VenueMapCardComponent
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule,
+    MatDialogModule, VenueMapCardComponent, UbicacionAutocompleteComponent],
   templateUrl: './mapa-canchas.component.html',
   styleUrl: './mapa-canchas.component.css'
 })
-export class MapaCanchasComponent implements OnInit, AfterViewInit, OnDestroy {
-  // Signals de estado
-  estaCargando = signal(true);
-  estaCargandoUbicacion = signal(false);
-  canchas = signal<UbicacionCancha[]>([]);
-  canchasFiltradas = signal<UbicacionCancha[]>([]);
-  canchaResaltadaId = signal<number | null>(null);
-  consultaBusqueda = signal('');
-  mensajeError = signal<string | null>(null);
-  mostrarBuscarEnArea = signal(false);
-
-  // Detección mobile
-  isMobile$: Observable<boolean>;
-
-  // Signals para filtros y paginación
-  filtroActual = signal<SearchCanchaFilter>({});
-  paginaActual = signal(1);
-  totalCanchas = signal(0);
-  tamanioPagina = 20;
-  tiposDeporte = signal<GetTipoDeporte[]>([]);
-  ubigeos = signal<Ubigeo[]>([]);
-
-  // Ubicación del usuario
-  ubicacionUsuario: { lat: number; lng: number } | null = null;
-
-  // Centro del mapa (por defecto: Lima, Perú)
-  private readonly CENTRO_DEFECTO: [number, number] = [-77.0428, -12.0464];
-  private readonly ZOOM_DEFECTO = 12;
-
-  // Contador de filtros activos
-  get cantidadFiltrosActivos(): number {
-    let count = 0;
-    const filtro = this.filtroActual();
-    if (filtro.idTipoDeporte) count++;
-    if (filtro.codigoUbigeo) count++;
-    if (filtro.fecha) count++;
-    if (filtro.soloFavoritos) count++;
-    return count;
+export class MapaCanchasComponent extends BaseComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('mapViewport') private mapViewport!: ElementRef<HTMLElement>;
+  @ViewChild('venueList') private set venueList(element: ElementRef<HTMLElement> | undefined) {
+    this.listaElement = element?.nativeElement;
+    this.configurarCargaAutomatica();
   }
+  @ViewChild('loadMoreTrigger') private set loadMoreTrigger(element: ElementRef<HTMLElement> | undefined) {
+    this.loadMoreElement = element?.nativeElement;
+    this.configurarCargaAutomatica();
+  }
+  private readonly fb = inject(FormBuilder);
+  private readonly esBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly destroy$ = new Subject<void>();
+  private readonly busquedas$ = new Subject<BusquedaMapa>();
+  private resizeObserver?: ResizeObserver;
+  private focoTimer?: ReturnType<typeof setTimeout>;
+  private movimientoUsuario = false;
+  private ajustarAlInicializar = true;
+  private listaElement?: HTMLElement;
+  private loadMoreElement?: HTMLElement;
+  private loadMoreObserver?: IntersectionObserver;
+  private comprobarCargaFrame?: number;
+  private paginaSolicitada = 1;
+  private destruido = false;
+  private readonly ultimaPaginaCompleta = signal(false);
+
+  readonly filtrosForm = this.fb.group({
+    nombre: ['', Validators.maxLength(120)],
+    idTipoDeporte: [null as number | null]
+  });
+  readonly estaCargando = signal(true);
+  readonly cargandoMas = signal(false);
+  readonly errorCargaMas = signal<string | null>(null);
+  readonly estaCargandoUbicacion = signal(false);
+  readonly esVistaCompacta = signal(false);
+  readonly canchas = signal<UbicacionCancha[]>([]);
+  readonly canchaSeleccionada = signal<UbicacionCancha | null>(null);
+  readonly canchaResaltadaId = signal<number | null>(null);
+  readonly mensajeError = signal<string | null>(null);
+  readonly errorCatalogos = signal<string | null>(null);
+  readonly avisoError = computed(() => this.mensajeError() ?? this.errorCatalogos());
+  readonly errorMapa = signal(false);
+  readonly mostrarBuscarEnArea = signal(false);
+  readonly filtroActual = signal<SearchCanchaFilter>({});
+  readonly paginaActual = signal(1);
+  readonly totalCanchas = signal(0);
+  readonly resultadosSinCoordenadas = signal(0);
+  readonly tiposDeporte = signal<GetTipoDeporte[]>([]);
+  readonly ubicaciones = signal<UbicacionOpcion[]>([]);
+  readonly totalPaginas = computed(() => Math.max(1, Math.ceil(this.totalCanchas() / this.tamanioPagina)));
+  readonly hayMasCanchas = computed(() => !this.esVistaCompacta() && this.ultimaPaginaCompleta() && this.paginaActual() < this.totalPaginas());
+  readonly zonaSeleccionada = computed(() => this.ubicaciones().find(o => o.codigo === this.filtroActual().codigoUbigeo));
+  readonly deporteSeleccionado = computed(() => this.tiposDeporte().find(d => d.idTipoDeporte === this.filtroActual().idTipoDeporte));
+  readonly resumenBusqueda = computed(() => {
+    const filtros = this.filtroActual();
+    const deporte = this.deporteSeleccionado()?.nombre ?? (filtros.idTipoDeporte ? 'Deporte seleccionado' : 'Todos los deportes');
+    const zona = this.zonaSeleccionada()?.nombre ?? (filtros.codigoUbigeo ? 'Ubicación seleccionada' : filtros.area ? 'Zona visible del mapa' : 'Todas las ubicaciones');
+    return `${deporte} • ${zona}`;
+  });
+  readonly cantidadFiltrosActivos = computed(() => {
+    const f = this.filtroActual();
+    return [f.nombre, f.codigoUbigeo, f.idTipoDeporte, f.fecha, f.hora, f.soloFavoritos, f.area].filter(Boolean).length;
+  });
+  readonly tamanioPagina = 20;
+  readonly imagenDefecto = 'assets/images/default-field.png';
+  ubicacionUsuario: { lat: number; lng: number } | null = null;
 
   constructor(
     private mapboxService: MapboxService,
     private geolocationService: GeolocationService,
     private canchaService: CanchaService,
     private ubigeoService: UbigeoService,
-    private TipoDeporteService: TipoDeporteService,
+    private tipoDeporteService: TipoDeporteService,
     public canchaFavoritaService: CanchaFavoritaService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    public responsiveService: ResponsiveService,
-    private dialog: MatDialog
-  ) {
-    this.isMobile$ = this.responsiveService.observe('(max-width: 980px)');
-  }
+    private responsiveService: ResponsiveService,
+    private dialog: MatDialog,
+    @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
+  ) { super('CANCHAS', viewContainerRef); }
 
   ngOnInit(): void {
-    // Cargar favoritos del usuario si está autenticado
-    if (this.authService.isAuthenticated()) {
-      this.canchaFavoritaService.cargarFavoritosUsuario();
-    }
-
-    // Cargar tipos de deporte y ubigeos
-    this.cargarTiposDeporte();
-    this.cargarUbigeos();
-
-    // Verificar si se pasaron canchas vía state de la ruta
-    const navigation = this.router.getCurrentNavigation();
-    const stateCanchas = navigation?.extras?.state?.['canchas'];
-    const stateFiltros = navigation?.extras?.state?.['filtros'];
-
-    if (stateCanchas && Array.isArray(stateCanchas)) {
-      // Usar canchas del state
-      this.canchas.set(stateCanchas);
-      this.canchasFiltradas.set(stateCanchas);
-      if (stateFiltros) {
-        this.filtroActual.set(stateFiltros);
-      }
-    } else {
-      // Cargar canchas iniciales del backend
-      this.cargarCanchasIniciales();
-    }
-
-    // Verificar si se debe solicitar geolocalización (modo cercanas)
-    const solicitarUbicacion = this.route.snapshot.queryParamMap.get('cercanas') === 'true';
-    if (solicitarUbicacion) {
-      this.solicitarUbicacionUsuario();
-    }
+    if (!this.esBrowser) return;
+    this.restaurarFiltros();
+    this.configurarBusquedas();
+    this.cargarCatalogos();
+    this.subscriptions.push(
+      this.responsiveService.observe('(max-width: 1024px)').subscribe(compacta => {
+        const cambiaModo = compacta !== this.esVistaCompacta();
+        this.esVistaCompacta.set(compacta);
+        this.configurarCargaAutomatica();
+        // La lista acumulada y el mapa paginado parten de la primera página al cambiar de modo.
+        if (cambiaModo && (this.paginaActual() > 1 || this.paginaSolicitada > 1)) this.buscarCanchas();
+      }),
+      this.filtrosForm.controls.nombre.valueChanges.subscribe(nombre => {
+        if (this.filtrosForm.controls.nombre.invalid) return;
+        this.filtroActual.update(f => ({ ...f, nombre: nombre?.trim() || undefined }));
+        this.buscarCanchas(350);
+      }),
+      this.filtrosForm.controls.idTipoDeporte.valueChanges.subscribe(id => {
+        this.filtroActual.update(f => ({ ...f, idTipoDeporte: id ?? undefined }));
+        this.buscarCanchas();
+      })
+    );
+    this.buscarCanchas();
+    if (this.route.snapshot.queryParamMap.get('cercanas') === 'true') this.solicitarUbicacionUsuario();
   }
 
   ngAfterViewInit(): void {
-    // Inicializar mapa después de que la vista esté lista
-    setTimeout(() => {
-      this.inicializarMapa();
-    }, 100);
+    if (!this.esBrowser) return;
+    this.inicializarMapa();
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.mapboxService.redimensionar());
+      this.resizeObserver.observe(this.mapViewport.nativeElement);
+    }
   }
 
-  ngOnDestroy(): void {
-    // Limpiar recursos del mapa
+  override ngOnDestroy(): void {
+    this.destruido = true;
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.busquedas$.complete();
+    this.resizeObserver?.disconnect();
+    this.loadMoreObserver?.disconnect();
+    this.cancelarComprobacionCarga();
+    if (this.focoTimer) clearTimeout(this.focoTimer);
     this.mapboxService.destruir();
+    super.ngOnDestroy();
+  }
+
+  private restaurarFiltros(): void {
+    const state = this.router.getCurrentNavigation()?.extras.state ?? window.history.state;
+    const raw: SearchCanchaFilter = state?.['filtros'] ?? {};
+    const codigo = raw.codigoUbigeo ?? this.route.snapshot.queryParamMap.get('codigoUbigeo');
+    const filtros: SearchCanchaFilter = {
+      nombre: typeof raw.nombre === 'string' ? raw.nombre.trim().slice(0, 120) || undefined : undefined,
+      codigoUbigeo: typeof codigo === 'string' && /^\d{4}(\d{2})?$/.test(codigo) ? codigo : undefined,
+      idTipoDeporte: Number.isSafeInteger(raw.idTipoDeporte) && Number(raw.idTipoDeporte) > 0 ? raw.idTipoDeporte : undefined,
+      fecha: typeof raw.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.fecha) ? raw.fecha : undefined,
+      hora: typeof raw.hora === 'string' ? raw.hora : undefined
+    };
+    this.filtroActual.set(filtros);
+    this.filtrosForm.patchValue({ nombre: filtros.nombre ?? '', idTipoDeporte: filtros.idTipoDeporte ?? null }, { emitEvent: false });
+  }
+
+  private configurarBusquedas(): void {
+    this.busquedas$.pipe(
+      // El switchMap exterior cancela inmediatamente la petición previa, incluso durante el debounce.
+      switchMap(busqueda => {
+        this.cancelarComprobacionCarga();
+        this.paginaSolicitada = busqueda.params.page?.page ?? 1;
+        this.estaCargando.set(!busqueda.acumular);
+        this.cargandoMas.set(busqueda.acumular);
+        this.mensajeError.set(null);
+        this.errorCargaMas.set(null);
+        if (!busqueda.acumular) {
+          this.limpiarSeleccion();
+          if (this.paginaSolicitada === 1) {
+            this.paginaActual.set(1);
+            this.ultimaPaginaCompleta.set(false);
+            if (this.listaElement) this.listaElement.scrollTop = 0;
+          }
+        }
+        let hayNuevosElementos = false;
+        return timer(busqueda.espera).pipe(
+          switchMap(() => this.canchaService.search(busqueda.params)),
+          tap(response => {
+            if (!response.isValid || !response.data || !Array.isArray(response.data.items)) {
+              this.fallarBusqueda(busqueda.acumular);
+              return;
+            }
+            hayNuevosElementos = this.mostrarResultados(response.data, busqueda) > 0;
+          }),
+          catchError(() => { this.fallarBusqueda(busqueda.acumular); return EMPTY; }),
+          finalize(() => {
+            this.estaCargando.set(false);
+            this.cargandoMas.set(false);
+            // Si una página no añade tarjetas, el botón permite continuar sin encadenar cargas vacías.
+            if (hayNuevosElementos) this.programarComprobacionCarga();
+          })
+        );
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe();
+  }
+
+  private buscarCanchas(espera = 0, ajustarCamara = !this.filtroActual().area,
+    opciones: { pagina: number; acumular?: boolean } = { pagina: 1 }): void {
+    this.busquedas$.next({
+      espera, ajustarCamara, acumular: opciones.acumular ?? false,
+      params: { page: { page: opciones.pagina, pageSize: this.tamanioPagina }, sort: canchasSort(), filter: { ...this.filtroActual() } }
+    });
+  }
+
+  private mostrarResultados(resultados: QueryResultsModel<SearchCancha>, busqueda: BusquedaMapa): number {
+    const validas = resultados.items.filter(c => Number.isSafeInteger(c.idCancha) && c.idCancha > 0 && Number.isFinite(c.latitud) && Number.isFinite(c.longitud) &&
+      Math.abs(c.latitud!) <= 90 && Math.abs(c.longitud!) <= 180);
+    const sinCoordenadas = resultados.items.length - validas.length;
+    this.resultadosSinCoordenadas.update(total => busqueda.acumular ? total + sinCoordenadas : sinCoordenadas);
+    const ubicadas: UbicacionCancha[] = validas.map(c => ({
+      id: c.idCancha, nombre: c.nombre, direccion: c.direccion ?? '',
+      distrito: c.ubigeo?.distrito ?? '', provincia: c.ubigeo?.provincia ?? '',
+      lat: c.latitud!, lng: c.longitud!, precioDesde: c.precio ?? 0,
+      deportes: c.tipoDeportes?.map(d => d.nombre) ?? [], imagenUrl: c.urlImagen || this.imagenDefecto
+    }));
+    const unicas = [...new Map(ubicadas.map(c => [c.id, c])).values()];
+    const existentes = new Set(busqueda.acumular ? this.canchas().map(c => c.id) : []);
+    const nuevas = unicas.filter(c => !existentes.has(c.id));
+    this.canchas.update(actuales => busqueda.acumular ? [...actuales, ...nuevas] : nuevas);
+    this.totalCanchas.set(resultados.total);
+    this.paginaActual.set(busqueda.params.page?.page ?? 1);
+    this.ultimaPaginaCompleta.set(resultados.items.length >= this.tamanioPagina);
+    if (busqueda.acumular) {
+      if (this.mapboxService.obtenerMapa()) this.agregarMarcadores(nuevas);
+    } else {
+      this.ajustarAlInicializar = busqueda.ajustarCamara;
+      this.sincronizarMapa(busqueda.ajustarCamara);
+    }
+    return nuevas.length;
+  }
+
+  private fallarBusqueda(acumular: boolean): void {
+    if (acumular) {
+      this.errorCargaMas.set('No pudimos cargar más canchas. Puedes reintentar sin perder tu lista.');
+      return;
+    }
+    this.mensajeError.set('No pudimos cargar las canchas. Vuelve a intentarlo.');
+    this.canchas.set([]);
+    this.totalCanchas.set(0);
+    this.resultadosSinCoordenadas.set(0);
+    this.ultimaPaginaCompleta.set(false);
+    this.mapboxService.eliminarTodosMarcadoresCanchas();
+  }
+
+  private cargarCatalogos(): void {
+    this.errorCatalogos.set(null);
+    this.ubigeoService.listAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: r => {
+        if (r.isValid && Array.isArray(r.data)) this.ubicaciones.set(crearOpcionesUbicacion(r.data));
+        else this.errorCatalogos.set('No pudimos cargar las ubicaciones. Intenta nuevamente.');
+      },
+      error: () => this.errorCatalogos.set('No pudimos cargar las ubicaciones. Intenta nuevamente.')
+    });
+    this.tipoDeporteService.SelectCombo().pipe(takeUntil(this.destroy$)).subscribe({
+      next: r => {
+        if (r.isValid && Array.isArray(r.data)) this.tiposDeporte.set(r.data);
+        else this.errorCatalogos.set('No pudimos cargar los deportes. Intenta nuevamente.');
+      },
+      error: () => this.errorCatalogos.set('No pudimos cargar los deportes. Intenta nuevamente.')
+    });
   }
 
   private inicializarMapa(): void {
     try {
-      const centro = this.ubicacionUsuario
-        ? [this.ubicacionUsuario.lng, this.ubicacionUsuario.lat] as [number, number]
-        : this.CENTRO_DEFECTO;
-
-      this.mapboxService.inicializarMapa('map-container', {
-        centro,
-        zoom: this.ZOOM_DEFECTO
+      const centro: [number, number] = this.ubicacionUsuario ? [this.ubicacionUsuario.lng, this.ubicacionUsuario.lat] : [-77.0428, -12.0464];
+      const mapa = this.mapboxService.inicializarMapa('map-container', { centro, zoom: 12, geolocalizacion: false });
+      mapa.on('movestart', event => {
+        // Mapbox también informa resize como originalEvent; no representa explorar otra zona.
+        const original = event.originalEvent;
+        this.movimientoUsuario = !!original && /^(mouse|touch|pointer|wheel|key|click)/.test(original.type);
       });
-
-      // Limpiar marcadores existentes antes de agregar nuevos
-      this.mapboxService.eliminarTodosMarcadoresCanchas();
-
-      // Agregar marcadores de canchas (tanto si vienen del state como del backend)
-      this.agregarMarcadoresCanchas();
-
-      // Ajustar límites para mostrar todas las canchas
-      if (this.canchasFiltradas().length > 0) {
-        this.mapboxService.ajustarLimitesACanchas(this.canchasFiltradas(), 80);
-      }
-
-      // Agregar marcador de ubicación del usuario si está disponible
-      if (this.ubicacionUsuario) {
-        this.mapboxService.establecerUbicacionUsuario(this.ubicacionUsuario.lat, this.ubicacionUsuario.lng);
-      }
-
-      // Escuchar eventos de movimiento del mapa
-      this.mapboxService.enEventoMapa('moveend', () => {
-        this.mostrarBuscarEnArea.set(true);
+      mapa.on('moveend', () => {
+        if (this.movimientoUsuario) this.mostrarBuscarEnArea.set(true);
+        this.movimientoUsuario = false;
       });
-
-      this.estaCargando.set(false);
-    } catch (error) {
-      console.error('Error al inicializar mapa:', error);
-      this.mensajeError.set('Error al cargar el mapa. Por favor, verifica que la configuración de Mapbox sea correcta.');
-      this.estaCargando.set(false);
+      mapa.on('click', () => this.limpiarSeleccion());
+      mapa.on('error', () => { if (!mapa.isStyleLoaded()) this.errorMapa.set(true); });
+      mapa.on('load', () => this.errorMapa.set(false));
+      this.sincronizarMapa(this.ajustarAlInicializar);
+      if (this.ubicacionUsuario) this.mapboxService.establecerUbicacionUsuario(this.ubicacionUsuario.lat, this.ubicacionUsuario.lng);
+    } catch {
+      this.errorMapa.set(true);
     }
   }
 
-  private agregarMarcadoresCanchas(): void {
-    this.mapboxService.agregarMarcadoresCanchas(
-      this.canchasFiltradas(),
-      (cancha) => this.alClickMarcador(cancha),
-      (cancha, estaPasandoMouse) => this.alPasarMouseMarcador(cancha, estaPasandoMouse)
+  private sincronizarMapa(ajustarCamara: boolean): void {
+    if (!this.mapboxService.obtenerMapa()) return;
+    this.mapboxService.eliminarTodosMarcadoresCanchas();
+    this.agregarMarcadores(this.canchas());
+    this.mapboxService.seleccionarMarcador(this.canchaSeleccionada()?.id ?? null);
+    if (ajustarCamara && this.canchas().length) this.mapboxService.ajustarLimitesACanchas(this.canchas(), 60);
+  }
+
+  private agregarMarcadores(canchas: UbicacionCancha[]): void {
+    if (!canchas.length) return;
+    this.mapboxService.agregarMarcadoresCanchas(canchas,
+      (cancha, event) => this.seleccionarCancha(cancha, true, event?.detail === 0),
+      (cancha, hover) => { if (hover) this.seleccionarCancha(cancha, false); }
     );
+  }
+
+  seleccionarCancha(cancha: UbicacionCancha, centrar = true, enfocar = false): void {
+    if (this.estaCargando()) return;
+    if (!centrar && this.canchaSeleccionada()?.id === cancha.id) return;
+    this.canchaSeleccionada.set(cancha);
+    this.canchaResaltadaId.set(cancha.id);
+    this.mapboxService.seleccionarMarcador(cancha.id);
+    if (centrar) {
+      const zoom = Math.max(this.mapboxService.obtenerMapa()?.getZoom() ?? 13, 13);
+      this.mapboxService.volarA(cancha.lat, cancha.lng, zoom, this.esVistaCompacta() ? [0, -70] : [0, 0]);
+    }
+    if (enfocar && this.esVistaCompacta()) {
+      if (this.focoTimer) clearTimeout(this.focoTimer);
+      this.focoTimer = setTimeout(() => this.mapViewport.nativeElement.querySelector<HTMLAnchorElement>('.selected-card a')?.focus());
+    }
+  }
+
+  limpiarSeleccion(): void {
+    this.canchaSeleccionada.set(null);
+    this.canchaResaltadaId.set(null);
+    this.mapboxService.seleccionarMarcador(null);
+  }
+
+  cerrarSeleccion(): void {
+    const id = this.canchaSeleccionada()?.id;
+    this.limpiarSeleccion();
+    if (id) this.mapboxService.enfocarMarcador(id);
+  }
+
+  resaltarDesdeLista(cancha: UbicacionCancha, hover: boolean): void {
+    this.canchaResaltadaId.set(hover ? cancha.id : this.canchaSeleccionada()?.id ?? null);
+    if (hover) this.mapboxService.resaltarMarcador(cancha.id);
+    else this.mapboxService.quitarResaltadoMarcador(cancha.id);
+  }
+
+  onCambiarUbicacion(option?: UbicacionOpcion): void {
+    this.filtroActual.update(f => ({ ...f, codigoUbigeo: option?.codigo, area: undefined }));
+    this.mostrarBuscarEnArea.set(false);
+    this.buscarCanchas();
+  }
+
+  limpiarFiltros(): void {
+    this.filtroActual.set({});
+    this.filtrosForm.reset({ nombre: '', idTipoDeporte: null }, { emitEvent: false });
+    this.mostrarBuscarEnArea.set(false);
+    this.buscarCanchas();
+  }
+
+  cambiarPagina(pagina: number): void {
+    if (!this.esVistaCompacta() || !Number.isInteger(pagina) || pagina < 1 || pagina > this.totalPaginas() || this.estaCargando()) return;
+    this.buscarCanchas(0, !this.filtroActual().area, { pagina });
+  }
+
+  cargarMasCanchas(reintentar = false): void {
+    if (this.destruido || !this.hayMasCanchas() || this.estaCargando() || this.cargandoMas() || (this.errorCargaMas() && !reintentar)) return;
+    this.buscarCanchas(0, false, { pagina: this.paginaActual() + 1, acumular: true });
+  }
+
+  private configurarCargaAutomatica(): void {
+    this.loadMoreObserver?.disconnect();
+    this.loadMoreObserver = undefined;
+    if (!this.esBrowser || this.destruido || this.esVistaCompacta() || !this.listaElement || !this.loadMoreElement ||
+      !this.listaElement.contains(this.loadMoreElement) || typeof IntersectionObserver === 'undefined') return;
+    this.loadMoreObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) this.cargarMasCanchas();
+    }, { root: this.listaElement, rootMargin: '0px 0px 180px 0px', threshold: 0 });
+    this.loadMoreObserver.observe(this.loadMoreElement);
+  }
+
+  private programarComprobacionCarga(): void {
+    this.cancelarComprobacionCarga();
+    if (!this.esBrowser || this.destruido || this.esVistaCompacta()) return;
+    this.comprobarCargaFrame = requestAnimationFrame(() => {
+      this.comprobarCargaFrame = undefined;
+      if (!this.listaElement?.clientHeight || !this.loadMoreElement) return;
+      const lista = this.listaElement.getBoundingClientRect();
+      const trigger = this.loadMoreElement.getBoundingClientRect();
+      if (trigger.top <= lista.bottom + 180 && trigger.bottom >= lista.top) this.cargarMasCanchas();
+    });
+  }
+
+  private cancelarComprobacionCarga(): void {
+    if (this.comprobarCargaFrame !== undefined) {
+      cancelAnimationFrame(this.comprobarCargaFrame);
+      this.comprobarCargaFrame = undefined;
+    }
+  }
+
+  reintentarBusqueda(): void {
+    if (this.errorCatalogos()) this.cargarCatalogos();
+    this.buscarCanchas();
+  }
+
+  reintentarMapa(): void {
+    this.limpiarSeleccion();
+    this.mapboxService.destruir();
+    this.errorMapa.set(false);
+    this.inicializarMapa();
+  }
+
+  cerrarAviso(): void { this.mensajeError.set(null); this.errorCatalogos.set(null); }
+
+  buscarEnEstaArea(): void {
+    const limites = this.mapboxService.obtenerLimitesActuales();
+    if (!limites) return;
+    this.filtroActual.update(f => ({ ...f, codigoUbigeo: undefined, area: { ...limites } }));
+    this.mostrarBuscarEnArea.set(false);
+    this.buscarCanchas(0, false);
   }
 
   solicitarUbicacionUsuario(): void {
+    if (this.estaCargandoUbicacion()) return;
     if (!this.geolocationService.esGeolocalizacionSoportada()) {
-      this.mensajeError.set('Tu navegador no soporta geolocalización.');
-      return;
+      this.mensajeError.set('Tu navegador no soporta geolocalización.'); return;
     }
-
     this.estaCargandoUbicacion.set(true);
-    this.mensajeError.set(null);
-
-    this.geolocationService.obtenerPosicionActual().subscribe({
-      next: (ubicacion) => {
+    this.geolocationService.obtenerPosicionActual().pipe(takeUntil(this.destroy$),
+      finalize(() => this.estaCargandoUbicacion.set(false))).subscribe({
+      next: ubicacion => {
         this.ubicacionUsuario = ubicacion;
-        this.estaCargandoUbicacion.set(false);
-
-        // Actualizar mapa
-        if (this.mapboxService.obtenerMapa()) {
-          this.mapboxService.volarA(ubicacion.lat, ubicacion.lng, 13);
-          this.mapboxService.establecerUbicacionUsuario(ubicacion.lat, ubicacion.lng);
-
-          // Ordenar canchas por distancia
-          const canchasConDistancia = this.geolocationService.ordenarPorDistancia(
-            this.canchasFiltradas(),
-            ubicacion.lat,
-            ubicacion.lng
-          );
-          this.canchasFiltradas.set(canchasConDistancia);
-        }
+        this.mapboxService.volarA(ubicacion.lat, ubicacion.lng, 13);
+        this.mapboxService.establecerUbicacionUsuario(ubicacion.lat, ubicacion.lng);
+        this.mostrarBuscarEnArea.set(true);
       },
-      error: (error: ErrorGeolocalizacion) => {
-        this.estaCargandoUbicacion.set(false);
-        this.mensajeError.set(error.mensajeAmigable);
-      }
+      error: (error: ErrorGeolocalizacion) => this.mensajeError.set(error.mensajeAmigable)
     });
   }
 
-  /**
-   * Maneja el click en un marcador
-   */
-  alClickMarcador(cancha: UbicacionCancha): void {
-    this.router.navigate(['/cancha', cancha.id]);
-  }
-
-  /**
-   * Maneja el hover en un marcador
-   */
-  alPasarMouseMarcador(cancha: UbicacionCancha, estaPasandoMouse: boolean): void {
-    if (estaPasandoMouse) {
-      this.canchaResaltadaId.set(cancha.id);
-    } else {
-      this.canchaResaltadaId.set(null);
-    }
-  }
-
-  /**
-   * Maneja el hover en una tarjeta
-   */
-  alPasarMouseTarjeta(cancha: UbicacionCancha, estaPasandoMouse: boolean): void {
-    if (estaPasandoMouse) {
-      this.canchaResaltadaId.set(cancha.id);
-      this.mapboxService.resaltarMarcador(cancha.id);
-    } else {
-      this.canchaResaltadaId.set(null);
-      this.mapboxService.quitarResaltadoMarcador(cancha.id);
-    }
-  }
-
-  alClickTarjeta(cancha: UbicacionCancha): void {
-    this.mapboxService.volarA(cancha.lat, cancha.lng, 15);
-    this.canchaResaltadaId.set(cancha.id);
-  }
-
-  /**
-   * Busca canchas en el área actual del mapa
-   */
-  buscarEnEstaArea(): void {
-    this.mostrarBuscarEnArea.set(false);
-    this.estaCargando.set(true);
-
-    // Obtener límites actuales del mapa
-    const limites = this.mapboxService.obtenerLimitesActuales();
-
-    if (!limites) {
-      this.mensajeError.set('No se pudo obtener el área del mapa.');
-      this.estaCargando.set(false);
-      return;
-    }
-
-    // Crear filtro con área geográfica
-    const filtroConArea: SearchCanchaFilter = {
-      ...this.filtroActual(),
-      codigoUbigeo: undefined, // Limpiar ubicación específica
-      area: {
-        norte: limites.norte,
-        sur: limites.sur,
-        este: limites.este,
-        oeste: limites.oeste
-      }
-    };
-
-    this.filtroActual.set(filtroConArea);
-    this.paginaActual.set(1); // Resetear a página 1
-
-    this.buscarCanchas();
-  }
-
-  /**
-   * Filtra canchas por consulta de búsqueda
-   */
-  alCambiarBusqueda(): void {
-    const consulta = this.consultaBusqueda().toLowerCase().trim();
-
-    if (!consulta) {
-      this.canchasFiltradas.set(this.canchas());
-    } else {
-      const filtradas = this.canchas().filter(cancha =>
-        cancha.nombre.toLowerCase().includes(consulta) ||
-        cancha.distrito.toLowerCase().includes(consulta) ||
-        cancha.deportes.some(d => d.toLowerCase().includes(consulta))
-      );
-      this.canchasFiltradas.set(filtradas);
-    }
-
-    // Actualizar marcadores del mapa
-    this.mapboxService.eliminarTodosMarcadoresCanchas();
-    this.agregarMarcadoresCanchas();
-
-    // Ajustar límites a canchas filtradas
-    if (this.canchasFiltradas().length > 0) {
-      this.mapboxService.ajustarLimitesACanchas(this.canchasFiltradas(), 80);
-    }
-  }
-
-  limpiarBusqueda(): void {
-    this.consultaBusqueda.set('');
-    this.alCambiarBusqueda();
-  }
-
-  cerrarMapa(): void {
-    this.router.navigate(['/cancha/canchas']);
-  }
-
-  obtenerDistanciaCancha(cancha: UbicacionCancha): number | undefined {
-    if (!this.ubicacionUsuario) return undefined;
-
-    return this.geolocationService.calcularDistancia(
-      this.ubicacionUsuario.lat,
-      this.ubicacionUsuario.lng,
-      cancha.lat,
-      cancha.lng
-    );
-  }
-
-  onCambiarPagina(event: PageEvent): void {
-    this.paginaActual.set(event.pageIndex + 1);
-    this.tamanioPagina = event.pageSize;
-    this.buscarCanchas();
-  }
-
-  onCambiarFiltroTipo(idTipoCancha: number | undefined): void {
-    this.filtroActual.update(f => ({ ...f, idTipoDeporte: idTipoCancha }));
-    this.paginaActual.set(1);
-    this.buscarCanchas();
-  }
-
-  onCambiarFiltroUbigeo(codigoUbigeo: string | undefined): void {
-    this.filtroActual.update(f => ({ ...f, codigoUbigeo, area: undefined })); // Limpiar área al seleccionar ubicación
-    this.paginaActual.set(1);
-    this.buscarCanchas();
-  }
-
-  onCambiarFiltroFavoritos(soloFavoritos: boolean): void {
-    const user = this.authService.loadUserProfile();
-    if (!user?.id) {
-      this.mensajeError.set('Debes iniciar sesión para ver tus favoritos');
-      return;
-    }
-
-    this.filtroActual.update(f => ({
-      ...f,
-      soloFavoritos: soloFavoritos,
-      idUsuario: soloFavoritos ? user.id : undefined,
-      codigoUbigeo: soloFavoritos ? undefined : f.codigoUbigeo // Limpiar ubicación si filtra favoritos
-    }));
-
-    this.paginaActual.set(1);
-    this.buscarCanchas();
-  }
-
-  private cargarCanchasIniciales(): void {
-    this.estaCargando.set(true);
-
-    const queryParams: QueryParamsModel = {
-      page: { page: 1, pageSize: this.tamanioPagina },
-      sort: canchasSort(),
-      filter: this.filtroActual()
-    };
-
-    this.canchaService.search(queryParams).subscribe({
-      next: (response) => {
-        if (response.isValid && response.data) {
-          const canchasUbicacion = this.convertirSearchCanchaAUbicacion(response.data.items);
-          this.canchas.set(canchasUbicacion);
-          this.canchasFiltradas.set(canchasUbicacion);
-          this.totalCanchas.set(response.data.total);
-          this.paginaActual.set(1);
-
-          // Actualizar marcadores si el mapa ya está inicializado
-          if (this.mapboxService.obtenerMapa()) {
-            this.mapboxService.eliminarTodosMarcadoresCanchas();
-            this.agregarMarcadoresCanchas();
-            if (canchasUbicacion.length > 0) {
-              this.mapboxService.ajustarLimitesACanchas(canchasUbicacion, 80);
-            }
-          }
-        }
-        this.estaCargando.set(false);
-      },
-      error: (err) => {
-        console.error('Error al cargar canchas:', err);
-        this.mensajeError.set('Error al cargar las canchas. Por favor, intenta nuevamente.');
-        this.estaCargando.set(false);
-      }
-    });
-  }
-
-  private buscarCanchas(): void {
-    const queryParams: QueryParamsModel = {
-      page: {
-        page: this.paginaActual(),
-        pageSize: this.tamanioPagina
-      },
-      sort: canchasSort(),
-      filter: this.filtroActual()
-    };
-
-    this.canchaService.search(queryParams).subscribe({
-      next: (response) => {
-        if (response.isValid && response.data) {
-          const canchasUbicacion = this.convertirSearchCanchaAUbicacion(response.data.items);
-          this.canchas.set(canchasUbicacion);
-          this.canchasFiltradas.set(canchasUbicacion);
-          this.totalCanchas.set(response.data.total);
-          // Actualizar marcadores en el mapa
-          this.mapboxService.eliminarTodosMarcadoresCanchas();
-          this.agregarMarcadoresCanchas();
-        }
-        this.estaCargando.set(false);
-      },
-      error: (err) => {
-        console.error('Error en búsqueda de canchas:', err);
-        this.mensajeError.set('Error al buscar canchas. Por favor, intenta nuevamente.');
-        this.estaCargando.set(false);
-      }
-    });
-  }
-
-  private convertirSearchCanchaAUbicacion(canchas: SearchCancha[]): UbicacionCancha[] {
-    return canchas.map(c => ({
-      id: c.idCancha!,
-      nombre: c.nombre,
-      direccion: c.direccion || '',
-      distrito: c.ubigeo?.distrito || '',
-      provincia: c.ubigeo?.provincia || '',
-      lat: c.latitud!,
-      lng: c.longitud!,
-      precioDesde: c.precio || 0,
-      deportes: c.tipoDeportes?.map(td => td.nombre) || [''],
-      imagenUrl: c.urlImagen || 'assets/images/default-field.png',
-      calificacion: c.calificacionPromedio || 0,
-      totalResenas: 0
-    }));
-  }
-
-  private cargarTiposDeporte(): void {
-    this.TipoDeporteService.SelectCombo().subscribe({
-      next: (response) => {
-        if (response.isValid && response.data) {
-          this.tiposDeporte.set(response.data);
-        }
-      },
-      error: (err) => console.error('Error al cargar tipos de deporte:', err)
-    });
-  }
-
-  private cargarUbigeos(): void {
-    this.ubigeoService.listAll().subscribe({
-      next: (response) => {
-        if (response.isValid && response.data) {
-          this.ubigeos.set(response.data);
-        }
-      },
-      error: (err) => console.error('Error al cargar ubigeos:', err)
-    });
-  }
-
-  /**
-   * Abre el modal de filtros para mobile
-   */
   abrirFiltrosModal(): void {
-    const dialogRef = this.dialog.open(MapaFiltrosModalComponent, {
-      width: '100%',
-      maxWidth: '100vw',
-      height: '100%',
-      maxHeight: '100vh',
-      panelClass: 'filtros-fullscreen-dialog',
-      data: {
-        tipoDeportes: this.tiposDeporte(),
-        ubigeos: this.ubigeos(),
-        cantidadFavoritos: this.canchaFavoritaService.cantidadFavoritos(),
-        filtrosActuales: this.filtroActual()
-      }
+    const dialogRef = this.dialog.open<MapaFiltrosModalComponent, unknown, FiltrosMapaResultado>(MapaFiltrosModalComponent, {
+      width: '480px', maxWidth: 'calc(100vw - 24px)', maxHeight: 'calc(100dvh - 24px)',
+      data: { tipoDeportes: this.tiposDeporte(), ubicaciones: this.ubicaciones(), filtrosActuales: this.filtroActual(),
+        cantidadFavoritos: this.canchaFavoritaService.cantidadFavoritos(), isAuthenticated: this.authService.isAuthenticated() }
     });
-
-    dialogRef.afterClosed().subscribe(filtros => {
-      if (filtros) {
-        const user = this.authService.loadUserProfile();
-
-        // Aplicar filtros
-        this.filtroActual.set({
-          ...this.filtroActual(),
-          idTipoDeporte: filtros.idTipoCancha,
-          codigoUbigeo: filtros.soloFavoritos ? undefined : filtros.codigoUbigeo, // Limpiar ubicación si favoritos
-          fecha: filtros.fecha,
-          soloFavoritos: filtros.soloFavoritos,
-          idUsuario: filtros.soloFavoritos ? user?.id : undefined
-        });
-        this.paginaActual.set(1);
-        this.buscarCanchas();
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(filtros => {
+      if (!filtros) return;
+      const userId = filtros.soloFavoritos ? this.authService.loadUserProfile()?.id : undefined;
+      if (filtros.soloFavoritos && !userId) {
+        this.mensajeError.set('Inicia sesión para filtrar tus favoritos.'); return;
       }
+      const nombre = filtros.nombre?.trim() || undefined;
+      const cambiaZona = (filtros.codigoUbigeo ?? undefined) !== this.filtroActual().codigoUbigeo;
+      this.filtroActual.update(f => ({ ...(filtros.limpiarTodo ? {} : f), nombre, idTipoDeporte: filtros.idTipoDeporte ?? undefined,
+        codigoUbigeo: filtros.codigoUbigeo ?? undefined, fecha: filtros.fecha || undefined,
+        soloFavoritos: filtros.soloFavoritos, idUsuario: userId, area: filtros.limpiarTodo || cambiaZona ? undefined : f.area }));
+      this.filtrosForm.patchValue({ nombre: nombre ?? '', idTipoDeporte: filtros.idTipoDeporte }, { emitEvent: false });
+      this.buscarCanchas();
     });
   }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    if (!image.src.endsWith(this.imagenDefecto)) image.src = this.imagenDefecto;
+  }
+
+  cerrarMapa(): void { this.router.navigate(['/cancha/canchas']); }
 }

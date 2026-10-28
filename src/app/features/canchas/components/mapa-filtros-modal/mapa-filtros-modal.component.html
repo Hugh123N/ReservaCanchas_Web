@@ -1,84 +1,37 @@
-<div class="filtros-modal-container">
-  <!-- Header -->
-  <div class="modal-header">
-    <h2 class="text-lg font-semibold">Filtros</h2>
-    <button mat-icon-button (click)="cerrar()">
-      <mat-icon>close</mat-icon>
-    </button>
+<form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="filters-dialog">
+  <header><div><span>Personaliza tu búsqueda</span><h2 mat-dialog-title>Encuentra tu cancha ideal</h2></div>
+    <button type="button" class="close-filter" aria-label="Cerrar filtros" (click)="cerrar()"><mat-icon>close</mat-icon></button>
+  </header>
+  <div class="filters-body" mat-dialog-content>
+    <section><label for="filter-zone">Distrito o provincia</label>
+      <app-ubicacion-autocomplete inputId="filter-zone" [options]="data.ubicaciones" [selectedCode]="filtrosForm.controls.codigoUbigeo.value ?? undefined"
+        (locationChange)="filtrosForm.controls.codigoUbigeo.setValue($event?.codigo ?? null)" />
+    </section>
+    <section><label for="filter-sport">Deporte</label>
+      <select id="filter-sport" class="select-base" formControlName="idTipoDeporte"><option [ngValue]="null">Todos los deportes</option>
+        @for (deporte of data.tipoDeportes; track deporte.idTipoDeporte) { <option [ngValue]="deporte.idTipoDeporte">{{ deporte.nombre }}</option> }
+      </select>
+    </section>
+    <section><label for="filter-name">Nombre de cancha <small>Opcional</small></label>
+      <input id="filter-name" class="input-base" type="search" formControlName="nombre" maxlength="120"
+        placeholder="Busca tu cancha favorita" autocomplete="off" aria-describedby="filter-name-error"
+        [attr.aria-invalid]="filtrosForm.controls.nombre.invalid && filtrosForm.controls.nombre.touched" />
+      <app-form-error id="filter-name-error" [control]="filtrosForm.controls.nombre" />
+    </section>
+    @if (data.filtrosActuales.area && !reiniciarBusqueda) {
+      <p class="area-note">La búsqueda está limitada a la zona visible del mapa. Elige una ubicación o pulsa “Limpiar todo” para cambiarla.</p>
+    }
+    <section><label for="filter-date">Fecha de juego <small>Opcional</small></label>
+      <input id="filter-date" class="input-base" type="date" formControlName="fecha" [min]="fechaMinima" />
+    </section>
+    <section class="favorites-filter"><label for="filter-favorites"><mat-icon aria-hidden="true">favorite_border</mat-icon>
+        <span>Solo mis favoritos<small>{{ data.cantidadFavoritos }} canchas guardadas</small></span>
+        <input id="filter-favorites" type="checkbox" formControlName="soloFavoritos" />
+      </label>
+      @if (!data.isAuthenticated) { <p><a routerLink="/auth/login" mat-dialog-close>Inicia sesión</a> para ver tus canchas favoritas.</p> }
+    </section>
   </div>
-
-  <!-- Content -->
-  <div class="modal-content">
-    <form [formGroup]="filtrosForm">
-      <!-- Tipo de Deporte -->
-      <section class="content-card">
-        <h3 class="section-title">Tipo de Deporte</h3>
-        <div class="relative">
-          <select formControlName="idTipoCancha" class="select-base">
-            <option [ngValue]="null">Todos los deportes</option>
-            @for (tipo of data.tipoDeportes; track tipo.idTipoDeporte) {
-              <option [ngValue]="tipo.idTipoDeporte">{{ tipo.nombre }}</option>
-            }
-          </select>
-          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
-        </div>
-
-        <h3 class="section-title">Ubicación</h3>
-        <div class="relative">
-          <select formControlName="codigoUbigeo" class="select-base">
-            <option [ngValue]="null">Todas las ubicaciones</option>
-            @for (ubigeo of data.ubigeos; track ubigeo.codigoUbigeo) {
-              <option [ngValue]="ubigeo.codigoUbigeo">{{ ubigeo.distrito }}, {{ ubigeo.provincia }}</option>
-            }
-          </select>
-          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
-        </div>
-     
-        <h3 class="section-title">Favoritos</h3>
-        <mat-slide-toggle
-          formControlName="soloFavoritos"
-          color="primary"
-          class="w-full!"
-        >
-          <div class="toggle-label">
-            <span>Favoritos</span>
-            @if (data.cantidadFavoritos > 0) {
-              <span class="badge-count-inline">({{ data.cantidadFavoritos }})</span>
-            }
-          </div>
-        </mat-slide-toggle>
-      </section>
-
-      <!-- Fecha (Opcional para futuro) -->
-      <!--
-      <section class="content-card">
-        <h3 class="section-title">Fecha</h3>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Selecciona una fecha</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="fecha">
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </section>
-      -->
-    </form>
-  </div>
-
-  <!-- Footer Sticky -->
-  <div class="modal-footer">
-    <button
-      mat-stroked-button
-      class="btn-outline-primary"
-      (click)="limpiarFiltros()"
-    >
-      Limpiar Todo
-    </button>
-    <button
-      mat-raised-button
-      class="btn-primary"
-      (click)="aplicarFiltros()"
-    >
-      Aplicar Filtros
-    </button>
-  </div>
-</div>
+  <footer><button type="button" class="clear-filter" (click)="limpiarFiltros()">Limpiar todo</button>
+    <button type="submit" class="btn-primary">Aplicar filtros<mat-icon aria-hidden="true">arrow_forward</mat-icon></button>
+  </footer>
+</form>

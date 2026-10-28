@@ -1,0 +1,26 @@
+<div class="location-field" cdkOverlayOrigin #origin="cdkOverlayOrigin">
+  <mat-icon aria-hidden="true">location_on</mat-icon>
+  <input #input [id]="inputId" [formControl]="control" role="combobox" autocomplete="off"
+    placeholder="Distrito o provincia" aria-label="Buscar distrito o provincia" aria-autocomplete="list"
+    [attr.aria-expanded]="abierto()" [attr.aria-controls]="abierto() ? inputId + '-options' : null"
+    [attr.aria-activedescendant]="abierto() && indiceActivo() >= 0 ? inputId + '-option-' + indiceActivo() : null"
+    (focus)="abrir()" (blur)="cerrar()" (keydown)="onKeydown($event)" />
+  @if (control.value) {
+    <button type="button" aria-label="Quitar ubicación" (click)="limpiar()"><mat-icon>close</mat-icon></button>
+  }
+</div>
+<ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="origin" [cdkConnectedOverlayOpen]="abierto()"
+  [cdkConnectedOverlayWidth]="origin.elementRef.nativeElement.getBoundingClientRect().width"
+  [cdkConnectedOverlayViewportMargin]="12" (overlayOutsideClick)="onOutsideClick($event)">
+  <div class="location-options" [id]="inputId + '-options'" role="listbox" aria-label="Distritos y provincias">
+    @for (option of coincidencias(); track option.codigo; let index = $index) {
+      <button type="button" role="option" tabindex="-1" [id]="inputId + '-option-' + index"
+        [attr.aria-selected]="selectedCode === option.codigo" [class.is-active]="indiceActivo() === index"
+        (pointerdown)="$event.preventDefault()" (click)="seleccionar(option)">
+        <b>{{ option.nombre }}</b><small>{{ option.detalle }}</small>
+      </button>
+    } @empty {
+      <p role="status">No encontramos esa ubicación.</p>
+    }
+  </div>
+</ng-template>

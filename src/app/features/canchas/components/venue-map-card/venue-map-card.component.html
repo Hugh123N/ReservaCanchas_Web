@@ -1,63 +1,18 @@
-<div
-  class="venue-map-card"
-  [class.highlighted]="isHighlighted"
-  (click)="alHacerClick()">
-
-  <!-- Sección Superior: Imagen + Contenido -->
-  <div class="card-container">
-    <!-- Sección de Imagen (Lado Izquierdo - 50%) -->
-    <div class="image-section">
-      <img [src]="imagenCancha" [alt]="venue.nombre" class="venue-image">
-    </div>
-
-    <!-- Sección de Contenido (Lado Derecho - 50%) -->
-    <div class="content-section">
-      <!-- Título -->
-      <h3 class="venue-title">{{ venue.nombre }}</h3>
-
-      <!-- Ubicación con badge de distancia -->
-    <div class="location-row">
-      <div class="location-info">
-        <mat-icon class="location-icon">location_on</mat-icon>
-        <span class="location-text">{{ venue.direccion }}</span>
-      </div>
-    </div>
-    </div>
-  </div>
-
-  <!-- Sección Inferior (Ancho Completo) -->
-  <div class="bottom-section">
-    <!-- Chips de Deportes (sin mat-chip) -->
-    <div class="location-row">
+<article class="venue-map-card" [class.highlighted]="isHighlighted">
+  <div class="card-info">
+    <img [src]="imagenCancha" [alt]="venue.nombre" width="84" height="84" loading="lazy" (error)="onImageError($event)" />
+    <div class="card-text">
+      <button type="button" class="venue-title" [attr.aria-label]="'Ubicar ' + venue.nombre + ' en el mapa'" (click)="alHacerClick()">{{ venue.nombre }}</button>
+      <p>{{ venue.direccion || venue.distrito + ', ' + venue.provincia }}</p>
       <div class="sports-section">
-        @for (deporte of mostrarDeportes; track deporte) {
-          <span class="sport-chip">{{ deporte }}</span>
-        }
-        @if (tieneDeportesAdicionales) {
-          <span class="more-chip">+{{ cantidadDeportesAdicionales }}</span>
-        }
+        @for (deporte of mostrarDeportes; track deporte) { <span>{{ deporte }}</span> }
+        @if (tieneDeportesAdicionales) { <span>+{{ cantidadDeportesAdicionales }}</span> }
       </div>
-      @if (mostrarDistancia) {
-        <div class="distance-badge">
-          <mat-icon class="distance-icon">near_me</mat-icon>
-          <span>{{ mostrarDistancia }}</span>
-        </div>
-      }
     </div>
-
-    <!-- Precio -->
-    <div class="price-section">
-      <span class="price-label">Desde</span>
-      <span class="price-value">{{ mostrarPrecio }}</span>
-      <span class="price-period">/hora</span>
-    </div>
-
-    <!-- Botón de Acción (sin mat-button) -->
-    <button
-      class="details-btn btn-primary"
-      (click)="verDetalles(); $event.stopPropagation()">
-      <span>Ver Detalles</span>
-      <mat-icon>arrow_forward</mat-icon>
-    </button>
   </div>
-</div>
+  <div class="card-actions">
+    <span class="price"><small>Desde</small><b>{{ mostrarPrecio }}</b><small>/hora</small></span>
+    <a [routerLink]="['/cancha', venue.id]" class="details-link">Ver cancha<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
+  </div>
+  @if (mostrarDistancia) { <span class="distance">A {{ mostrarDistancia }} de ti</span> }
+</article>

@@ -1,204 +1,146 @@
-<!-- Contenedor de Página del Mapa -->
-<div class="map-page-container">
-  <!-- Encabezado -->
+<main class="map-page-container" aria-label="Explorar canchas en el mapa">
   <header class="map-header">
-    <div class="header-content">
-      <!-- Botón Cerrar -->
-      <button
-        mat-icon-button
-        (click)="cerrarMapa()"
-        matTooltip="Cerrar mapa"
-      >
-        <mat-icon>close</mat-icon>
+    <div class="map-topbar">
+      <button type="button" class="icon-button" aria-label="Volver al listado de canchas" (click)="cerrarMapa()"><mat-icon>arrow_back</mat-icon></button>
+      <div class="map-brand"><b>Encuentra tu cancha</b><span>Explora, elige y juega</span></div>
+      <button type="button" class="location-button" (click)="solicitarUbicacionUsuario()" [disabled]="estaCargandoUbicacion()">
+        <mat-icon aria-hidden="true">my_location</mat-icon><span>{{ estaCargandoUbicacion() ? 'Ubicando…' : 'Mi ubicación' }}</span>
       </button>
-
-      <!-- Barra de Búsqueda -->
-      <div class="search-container">
-        <div class="relative flex-1 min-w-0">
-          <div class="relative w-full! min-w-0">
-            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 icon-md">search</mat-icon>
-            <input
-              type="text"
-              class="input-base pl-8! pr-6!"
-              placeholder="Buscar canchas por nombre, ubicación o deporte..."
-              [(ngModel)]="consultaBusqueda"
-              (ngModelChange)="alCambiarBusqueda()"
-            />
-            @if (consultaBusqueda()) {
-              <button
-                class="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-7 rounded-md p-0 text-neutral-400 border-none bg-transparent hover:bg-neutral-200 hover:text-neutral-600 transition-colors"
-                (click)="limpiarBusqueda()"
-              >
-                <mat-icon class="icon-md">close</mat-icon>
-              </button>
+    </div>
+    @if (esVistaCompacta()) {
+      <button type="button" class="compact-search-trigger" aria-haspopup="dialog"
+        [attr.aria-label]="'Abrir filtros: ' + resumenBusqueda()" [title]="resumenBusqueda()" (click)="abrirFiltrosModal()">
+        <span>{{ resumenBusqueda() }}</span><mat-icon aria-hidden="true">search</mat-icon>
+      </button>
+    } @else {
+      <form [formGroup]="filtrosForm" (ngSubmit)="reintentarBusqueda()" class="map-filters" aria-label="Filtros de búsqueda">
+        <div class="filter-field zone-field">
+          <label for="map-zone">¿Dónde quieres jugar?</label>
+          <app-ubicacion-autocomplete inputId="map-zone" [options]="ubicaciones()" [selectedCode]="filtroActual().codigoUbigeo"
+            (locationChange)="onCambiarUbicacion($event)" />
+        </div>
+        <div class="filter-field sport-field">
+          <label for="map-sport">Deporte</label>
+          <div class="select-wrap"><mat-icon aria-hidden="true">sports_soccer</mat-icon>
+            <select id="map-sport" formControlName="idTipoDeporte"><option [ngValue]="null">Todos los deportes</option>
+              @for (deporte of tiposDeporte(); track deporte.idTipoDeporte) { <option [ngValue]="deporte.idTipoDeporte">{{ deporte.nombre }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="filter-field name-field">
+          <label for="map-name">Nombre de cancha</label>
+          <div class="name-input"><mat-icon aria-hidden="true">search</mat-icon>
+            <input id="map-name" type="search" formControlName="nombre" maxlength="120" placeholder="Busca tu cancha favorita" autocomplete="off" />
+            @if (filtrosForm.controls.nombre.value) {
+              <button type="button" aria-label="Limpiar nombre de cancha" (click)="filtrosForm.controls.nombre.setValue('')"><mat-icon>close</mat-icon></button>
             }
           </div>
         </div>
-
-        <!-- Filtros Desktop -->
-        @if (!(isMobile$ | async)) {
-        <div class="relative min-w-[150px]">
-          <select
-            class="select-base"
-            [ngModel]="filtroActual().idTipoDeporte"
-            (ngModelChange)="onCambiarFiltroTipo($event)"
-          >
-            <option [ngValue]="undefined">Todos los deportes</option>
-            @for (tipo of tiposDeporte(); track tipo.idTipoDeporte) {
-            <option [ngValue]="tipo.idTipoDeporte">{{ tipo.nombre }}</option>
-            }
-          </select>
-          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
-        </div>
-
-        <div class="relative min-w-[150px]">
-          <select
-            class="select-base"
-            [ngModel]="filtroActual().codigoUbigeo"
-            (ngModelChange)="onCambiarFiltroUbigeo($event)"
-          >
-            <option [ngValue]="undefined">Todas las ubicaciones</option>
-            @for (ubigeo of ubigeos(); track ubigeo.codigoUbigeo) {
-            <option [ngValue]="ubigeo.codigoUbigeo">{{ ubigeo.distrito }}, {{ ubigeo.provincia }}</option>
-            }
-          </select>
-          <mat-icon class="select-dropdown-icon">expand_more</mat-icon>
-        </div>
-
-        <!-- Toggle Solo Favoritos -->
-        <mat-slide-toggle
-          [checked]="filtroActual().soloFavoritos || false"
-          (change)="onCambiarFiltroFavoritos($event.checked)"
-          color="primary"
-          class="favoritos-toggle"
-        >
-          Favoritos
-          @if (canchaFavoritaService.cantidadFavoritos() > 0) {
-            <span class="badge-favoritos">({{ canchaFavoritaService.cantidadFavoritos() }})</span>
-          }
-        </mat-slide-toggle>
-        }
-
-        <!-- Botón Filtros Mobile -->
-        @if (isMobile$ | async) {
-        <button
-          class="btn-outline-primary btn-filtros-mobile"
-          (click)="abrirFiltrosModal()"
-          [class.has-filters]="cantidadFiltrosActivos > 0"
-        >
-          <mat-icon>tune</mat-icon>
-          @if (cantidadFiltrosActivos > 0) {
-          <span class="badge-count">{{ cantidadFiltrosActivos }}</span>
-          }
+        <button type="button" class="filter-button" (click)="abrirFiltrosModal()" [class.is-active]="cantidadFiltrosActivos() > 0">
+          <mat-icon aria-hidden="true">tune</mat-icon><span>Filtros</span>
+          @if (cantidadFiltrosActivos()) { <b>{{ cantidadFiltrosActivos() }}</b> }
         </button>
-        }
-      </div>
-    </div>
+      </form>
+      @if (cantidadFiltrosActivos()) {
+        <div class="active-filters" aria-label="Filtros activos">
+          @if (zonaSeleccionada(); as zona) { <span><mat-icon aria-hidden="true">location_on</mat-icon>{{ zona.nombre }} · {{ zona.tipo }}</span> }
+          @if (deporteSeleccionado(); as deporte) { <span>{{ deporte.nombre }}</span> }
+          @if (filtroActual().fecha) { <span>{{ filtroActual().fecha }}</span> }
+          @if (filtroActual().hora) { <span>{{ filtroActual().hora }}</span> }
+          @if (filtroActual().soloFavoritos) { <span><mat-icon aria-hidden="true">favorite</mat-icon>Mis favoritos</span> }
+          @if (filtroActual().area) { <span>Zona visible del mapa</span> }
+          <button type="button" (click)="limpiarFiltros()">Limpiar filtros</button>
+        </div>
+      }
+    }
   </header>
 
-  <!-- Mensaje de Error -->
-  @if (mensajeError()) {
-  <div class="error-banner">
-    <mat-icon>error_outline</mat-icon>
-    <span>{{ mensajeError() }}</span>
-    <button mat-icon-button (click)="mensajeError.set(null)">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
+  @if (avisoError()) {
+    <div class="error-banner" role="alert"><mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ avisoError() }}</span><button type="button" (click)="reintentarBusqueda()">Reintentar</button>
+      <button type="button" class="icon-button" aria-label="Cerrar aviso" (click)="cerrarAviso()"><mat-icon>close</mat-icon></button>
+    </div>
   }
 
-  <!-- Contenido Principal -->
   <div class="map-content">
-    <!-- Contenedor del Mapa -->
-    <div class="map-wrapper">
-      <div id="map-container" class="map-container"></div>
+    <div class="map-wrapper" #mapViewport>
+      <div id="map-container" class="map-container" aria-label="Mapa de ubicaciones de canchas"></div>
 
-      <!-- Botón Buscar en Esta Área -->
-      @if (mostrarBuscarEnArea()) {
-      <button
-        mat-raised-button
-        color="primary"
-        class="search-area-btn btn-outline-primary"
-        (click)="buscarEnEstaArea()"
-      >
-        <mat-icon>refresh</mat-icon>
-        Buscar en esta área
-      </button>
+      <div class="map-results" aria-live="polite">
+        @if (estaCargando()) {
+          <mat-spinner diameter="18" /><span>Buscando canchas…</span>
+        } @else {
+          <div><b>{{ canchas().length }} {{ canchas().length === 1 ? 'cancha en el mapa' : 'canchas en el mapa' }}</b>
+            <small>{{ totalCanchas() }} {{ totalCanchas() === 1 ? 'resultado' : 'resultados' }} en la búsqueda</small>
+          </div>
+          @if (esVistaCompacta() && totalPaginas() > 1) {
+            <nav class="map-pagination" aria-label="Páginas de resultados">
+              <button type="button" aria-label="Página anterior" [disabled]="paginaActual() === 1" (click)="cambiarPagina(paginaActual() - 1)"><mat-icon>chevron_left</mat-icon></button>
+              <span>{{ paginaActual() }}/{{ totalPaginas() }}</span>
+              <button type="button" aria-label="Página siguiente" [disabled]="paginaActual() === totalPaginas()" (click)="cambiarPagina(paginaActual() + 1)"><mat-icon>chevron_right</mat-icon></button>
+            </nav>
+          }
+        }
+      </div>
+
+      @if (mostrarBuscarEnArea() && !estaCargando()) {
+        <button type="button" class="search-area-btn" (click)="buscarEnEstaArea()"><mat-icon aria-hidden="true">refresh</mat-icon>Buscar en esta zona</button>
       }
 
-      <!-- Overlay de Carga -->
-      @if (estaCargando()) {
-      <div class="loading-overlay">
-        <div class="loading-content">
-          <mat-spinner diameter="60"></mat-spinner>
-          <p class="loading-text">Cargando mapa...</p>
+      @if (errorMapa()) {
+        <div class="map-notice" role="alert"><mat-icon aria-hidden="true">map</mat-icon><b>No pudimos cargar el mapa</b><p>Comprueba tu conexión e inténtalo nuevamente.</p>
+          <button type="button" class="btn-outline-primary" (click)="reintentarMapa()">Reintentar mapa</button>
         </div>
-      </div>
+      } @else if (!estaCargando() && !mensajeError() && !canchas().length) {
+        <div class="map-notice" role="status"><mat-icon aria-hidden="true">search_off</mat-icon><b>No hay canchas para mostrar en esta zona</b>
+          <p>{{ resultadosSinCoordenadas() ? 'Los resultados de esta página aún no tienen una ubicación válida en el mapa.' : 'Prueba otra ubicación, cambia los filtros o explora el mapa.' }}</p>
+          @if (cantidadFiltrosActivos()) { <button type="button" class="btn-outline-primary" (click)="limpiarFiltros()">Limpiar filtros</button> }
+        </div>
+      }
+
+      @if (esVistaCompacta()) {
+        @if (canchaSeleccionada(); as cancha) {
+          <section id="selected-cancha-card" class="selected-card" aria-label="Cancha seleccionada" aria-live="polite">
+            <button type="button" class="selected-close" aria-label="Cerrar información de la cancha" (click)="cerrarSeleccion()"><mat-icon>close</mat-icon></button>
+            <div class="selected-info">
+              <img [src]="cancha.imagenUrl || imagenDefecto" [alt]="cancha.nombre" width="76" height="76" (error)="onImageError($event)" />
+              <div><h2>{{ cancha.nombre }}</h2><p>{{ cancha.direccion || cancha.distrito + ', ' + cancha.provincia }}</p>
+                <span class="selected-price">Desde <b>{{ cancha.precioDesde | currency:'PEN':'S/ ':'1.2-2' }}</b><small>/hora</small></span>
+              </div>
+            </div>
+            <a class="btn-primary selected-cta" [routerLink]="['/cancha', cancha.id]">Ver cancha<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
+          </section>
+        }
       }
     </div>
 
-    <!-- Sidebar (Desktop) / Bottom Sheet (Mobile) -->
-    <aside
-      class="venues-sidebar"
-      [class.empty]="canchasFiltradas().length === 0"
-    >
-      <!-- Encabezado de Resultados -->
-      <div class="sidebar-header">
-        <h2 class="results-title">
-          {{ canchasFiltradas().length }}
-          {{
-            canchasFiltradas().length === 1
-              ? "cancha encontrada"
-              : "canchas encontradas"
-          }}
-        </h2>
-      </div>
-
-      <!-- Lista de Canchas -->
-      @if (canchasFiltradas().length > 0) {
-      <div class="venue-list scrollbar-thin">
-        @for (cancha of canchasFiltradas(); track cancha.id) {
-        <app-venue-map-card
-          [venue]="cancha"
-          [isHighlighted]="canchaResaltadaId() === cancha.id"
-          [distance]="obtenerDistanciaCancha(cancha)"
-          (cardHover)="alPasarMouseTarjeta(cancha, $event)"
-          (cardClick)="alClickTarjeta(cancha)"
-        >
-        </app-venue-map-card>
-        }
-      </div>
-
-      <!-- Paginación -->
-      @if (totalCanchas() > tamanioPagina) {
-      <div class="pagination-container">
-        <mat-paginator
-          [length]="totalCanchas()"
-          [pageSize]="tamanioPagina"
-          [pageIndex]="paginaActual() - 1"
-          [pageSizeOptions]="[10, 20, 30, 50]"
-          (page)="onCambiarPagina($event)"
-          showFirstLastButtons
-        >
-        </mat-paginator>
-      </div>
-      } }
-
-      <!-- Estado Vacío -->
-      @if (canchasFiltradas().length === 0 && !estaCargando()) {
-      <div class="empty-state">
-        <mat-icon class="empty-state-icon">search_off</mat-icon>
-        <h3 class="empty-state-title">No se encontraron canchas</h3>
-        <p class="empty-state-description">
-          Intenta ajustar tu búsqueda o explorar otra área del mapa.
-        </p>
-        @if (consultaBusqueda()) {
-        <button mat-raised-button color="primary" (click)="limpiarBusqueda()">
-          Limpiar búsqueda
-        </button>
-        }
-      </div>
-      }
-    </aside>
+    @if (!esVistaCompacta()) {
+      <aside class="venues-sidebar" aria-label="Canchas encontradas" [class.is-refreshing]="estaCargando()" [attr.aria-busy]="estaCargando() || cargandoMas()">
+        <div class="sidebar-header"><span>Tu próxima reserva</span><h1>Canchas para ti</h1><p>Elige una tarjeta para ubicarla en el mapa.</p></div>
+        <div class="venue-list scrollbar-thin" #venueList>
+          @for (cancha of canchas(); track cancha.id) {
+            <app-venue-map-card [venue]="cancha" [isHighlighted]="canchaResaltadaId() === cancha.id"
+              (cardHover)="resaltarDesdeLista(cancha, $event)" (cardClick)="seleccionarCancha(cancha)" />
+          } @empty {
+            <p class="sidebar-empty">{{ estaCargando() ? 'Buscando tu próxima cancha…' : 'Ajusta los filtros para encontrar canchas.' }}</p>
+          }
+          <div class="load-more-status" aria-live="polite">
+            @if (cargandoMas()) {
+              <mat-spinner diameter="20" /><span>Cargando más canchas…</span>
+            } @else if (errorCargaMas()) {
+              <p>{{ errorCargaMas() }}</p>
+              <button type="button" class="btn-outline-primary" (click)="cargarMasCanchas(true)">Reintentar carga</button>
+            } @else if (hayMasCanchas() && !estaCargando()) {
+              <button type="button" class="btn-outline-primary" (click)="cargarMasCanchas()">Cargar más canchas</button>
+              <small>Se cargarán automáticamente al seguir bajando.</small>
+            } @else if (canchas().length && !estaCargando()) {
+              <span>No hay más canchas para cargar.</span>
+            }
+          </div>
+          <div class="load-more-trigger" #loadMoreTrigger aria-hidden="true"></div>
+        </div>
+        <div class="sidebar-footer">{{ canchas().length }} canchas ubicadas de {{ totalCanchas() }} resultados.</div>
+      </aside>
+    }
   </div>
-</div>
+</main>

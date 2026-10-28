@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { UbicacionCancha } from '../../../../shared/interfaces/location.interface';
 
 @Component({
@@ -10,6 +10,7 @@ import { UbicacionCancha } from '../../../../shared/interfaces/location.interfac
   imports: [
     CommonModule,
     MatIconModule,
+    RouterLink,
   ],
   templateUrl: './venue-map-card.component.html',
   styleUrl: './venue-map-card.component.css'
@@ -21,8 +22,6 @@ export class VenueMapCardComponent {
 
   @Output() cardHover = new EventEmitter<boolean>();
   @Output() cardClick = new EventEmitter<UbicacionCancha>();
-
-  constructor(private router: Router) { }
 
   /**
    * Maneja la entrada del mouse
@@ -38,10 +37,6 @@ export class VenueMapCardComponent {
   @HostListener('mouseleave')
   alSalirMouse(): void {
     this.cardHover.emit(false);
-  }
-
-  verDetalles(): void {
-    this.router.navigate(['/cancha', this.venue.id]);
   }
 
   alHacerClick(): void {
@@ -82,5 +77,10 @@ export class VenueMapCardComponent {
 
   get imagenCancha(): string {
     return this.venue.imagenUrl || this.imagenPorDefecto;
+  }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    if (!image.src.endsWith(this.imagenPorDefecto)) image.src = this.imagenPorDefecto;
   }
 }

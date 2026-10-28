@@ -554,6 +554,21 @@ user$ = this.userSubject.asObservable();
 - Los estilos visuales son propios del navbar, con los tokens del proyecto y los botones globales; los iconos lineales se encuentran en `assets/images/icons/navbar.svg`.
 - Home activa `[showOwnerNotice]="true"` para mostrar la franja descartable para dueños encima del header. El navbar se mantiene fijo al desplazarse y respeta la preferencia de movimiento reducido.
 
+### 7.5 Exploración de canchas en el mapa
+
+- Hasta **1024px**, el mapa ocupa el espacio bajo los filtros, sin lista inferior. Un marcador seleccionado muestra una ficha flotante con foto, nombre, dirección, precio y enlace al detalle. El hover también selecciona la ficha y esta permanece abierta al retirar el puntero; se cierra con su botón o al tocar el fondo del mapa.
+- En móvil/tablet, los filtros del encabezado se resumen en un único campo pulsable con deporte, ubicación y lupa a la derecha (por ejemplo, “Fútbol • Lima”). Toda su superficie abre el modal; los campos individuales y chips permanecen en escritorio.
+- En escritorio se mantiene una lista lateral compacta sincronizada con la selección de marcadores. El mapa se conserva al cambiar de tamaño y un `ResizeObserver` ajusta el canvas.
+- `UbicacionAutocompleteComponent` ofrece provincias y distritos del catálogo compartido. `crearOpcionesUbicacion()` genera códigos de 4 dígitos para provincias y 6 para distritos; `/Cancha/search` admite ambos mediante `StartsWith` de `CodigoUbigeo`.
+- El nombre se busca en el backend con debounce de 350ms. Un `switchMap` cancela la consulta previa inmediatamente al cambiar filtros, evitando resultados fuera de orden. Cambiar filtros reinicia la página y cierra la ficha anterior.
+- Los filtros combinan nombre, ubicación, deporte, fecha, favoritos y área visible. El modal incluye también el nombre de cancha, sincroniza los controles del escritorio al aplicar, usa el mismo campo `idTipoDeporte` que la API y exige sesión para aplicar favoritos. “Limpiar todo” elimina también los criterios heredados de área y hora; cancelar el modal conserva la búsqueda actual.
+- En escritorio, la lista carga automáticamente bloques de 20 resultados mediante `IntersectionObserver` sobre el final del contenedor desplazable. Las siguientes páginas se agregan sin duplicar IDs, reiniciar el scroll, perder la selección ni volver a encuadrar el mapa; solo se añaden sus nuevos marcadores.
+- La carga incremental tiene estado y error independientes. Se evita solicitar dos páginas a la vez, se permite reintentar la misma página tras un fallo y se detiene al alcanzar el total o recibir una página incompleta/vacía. El botón “Cargar más canchas” sirve también como alternativa accesible.
+- En móvil/tablet se conserva la navegación por páginas de 20 desde el contador del mapa. Al alternar entre modos después de avanzar páginas se reinicia la búsqueda en la primera página. Los filtros y la búsqueda por zona también reinician la lista y cancelan cualquier carga anterior.
+- El contador distingue las canchas ubicadas del total de la búsqueda. Los registros sin coordenadas válidas se excluyen del mapa, pero el avance de páginas se calcula usando la paginación del backend.
+- “Buscar en esta zona” se activa con desplazamientos del usuario y conserva el encuadre al consultar. Los movimientos programáticos de selección o ajuste de resultados no activan ese aviso.
+- Los marcadores son botones accesibles. Tocar o pulsar Enter abre la selección; la navegación ocurre únicamente al activar “Ver cancha”. La ficha deja espacio para los controles y atribución de Mapbox.
+
 ---
 
 ## 8. Despliegue
