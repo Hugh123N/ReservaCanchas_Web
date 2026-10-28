@@ -1,89 +1,32 @@
-<div class="content-card p-4">
+<section class="content-card filters-card" aria-labelledby="reservation-filters-title">
+  <div class="filters-heading"><div><h2 id="reservation-filters-title">Encuentra una reserva</h2><p>Combina los criterios que necesites.</p></div><mat-icon aria-hidden="true">tune</mat-icon></div>
   <form [formGroup]="filtrosForm" (ngSubmit)="onAplicarFiltros()">
-    <div class="flex items-center gap-3 mb-4">
-      <mat-icon class="text-primary-600 icon-md">filter_alt</mat-icon>
-      <h4 class="title-section text-neutral-800">Filtrar Reservas</h4>
-    </div>
-
-    <!-- Grid de Filtros -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-
-      <!-- Estado de Reserva -->
-      <div>
-        <label class="form-label">
-          Estado de Reserva
-        </label>
-        <select class="select-base" formControlName="codigoEstado">
-          <option value="">Todos</option>
-          @for (estado of estadosReserva; track estado.value) {
-            <option [value]="estado.value">{{ estado.label }}</option>
-          }
+    <div class="filters-grid">
+      <div class="filter-wide"><label for="reservation-court" class="form-label">Cancha</label>
+        <input id="reservation-court" class="input-base" type="search" formControlName="nombreCancha" placeholder="Nombre de la cancha" maxlength="120" />
+        <app-form-error [control]="filtrosForm.controls.nombreCancha" />
+      </div>
+      <div class="filter-wide"><label for="reservation-code" class="form-label">Código de reserva</label>
+        <input id="reservation-code" class="input-base" type="text" formControlName="codigoReserva" placeholder="Ej. RES-2026-0001" maxlength="60" />
+        <app-form-error [control]="filtrosForm.controls.codigoReserva" />
+      </div>
+      <div><label for="reservation-status" class="form-label">Estado de reserva</label>
+        <select id="reservation-status" class="select-base" formControlName="codigoEstado"><option value="">Todos los estados</option>
+          @for (estado of estadosReserva; track estado.value) { <option [value]="estado.value">{{ estado.label }}</option> }
         </select>
       </div>
-
-      <!-- Estado de Pago -->
-      <div>
-        <label class="form-label">
-          Estado de Pago
-        </label>
-        <select class="select-base" formControlName="estadoPago">
-          <option value="">Todos</option>
-          @for (estado of estadosPago; track estado.value) {
-            <option [value]="estado.value">{{ estado.label }}</option>
-          }
+      <div><label for="reservation-payment" class="form-label">Estado de pago</label>
+        <select id="reservation-payment" class="select-base" formControlName="estadoPago"><option value="">Todos los pagos</option>
+          @for (estado of estadosPago; track estado) { <option [value]="estado">{{ estado }}</option> }
         </select>
       </div>
-
-      <!-- Código de Reserva -->
-      <div>
-        <label class="form-label">
-          Código de Reserva
-        </label>
-        <input class="input-base" formControlName="codigoReserva" type="text" placeholder="Ej: RES-2025-0001" />
+      <div><label for="reservation-from" class="form-label">Desde</label><input id="reservation-from" type="date" class="input-base" formControlName="fechaDesde" [max]="filtrosForm.controls.fechaHasta.value" /></div>
+      <div><label for="reservation-until" class="form-label">Hasta</label><input id="reservation-until" type="date" class="input-base" formControlName="fechaHasta" [min]="filtrosForm.controls.fechaDesde.value" /></div>
+      <div class="filters-actions">
+        <button type="button" class="btn-outline-primary" (click)="onLimpiar()">Limpiar</button>
+        <button type="submit" class="btn-primary"><mat-icon aria-hidden="true">search</mat-icon>Aplicar filtros</button>
       </div>
-
-      <!-- Nombre de Cancha -->
-      <div>
-        <label class="form-label">
-          Nombre de Cancha
-        </label>
-        <input class="input-base" formControlName="nombreCancha" type="text" placeholder="Buscar por cancha" />
-      </div>
-
-      <!-- Fecha Desde -->
-      <div>
-        <label class="form-label">
-          Fecha Desde
-        </label>
-        <input class="input-base" formControlName="fechaDesde" type="date" />
-      </div>
-
-      <!-- Fecha Hasta -->
-      <div>
-        <label class="form-label">
-          Fecha Hasta
-        </label>
-        <input class="input-base" formControlName="fechaHasta" type="date" />
-      </div>
-
     </div>
-
-    <!-- Botones -->
-    <div class="flex flex-col sm:flex-row gap-3 justify-end">
-      <button
-        type="button"
-        class="btn-outline-primary"
-        (click)="onLimpiar()"
-        [disabled]="!hasFiltrosActivos()">
-        <mat-icon class="icon-sm">filter_list_off</mat-icon>
-        Limpiar
-      </button>
-      <button
-        type="submit"
-        class="btn-primary">
-        <mat-icon class="icon-sm">search</mat-icon>
-        Aplicar Filtros
-      </button>
-    </div>
+    <app-form-error [control]="filtrosForm" [messages]="{ invalidDate: 'La fecha final debe ser igual o posterior a la fecha inicial.' }" />
   </form>
-</div>
+</section>

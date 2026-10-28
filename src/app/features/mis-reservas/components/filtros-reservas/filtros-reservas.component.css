@@ -1,1 +1,22 @@
 @reference "../../../../../styles.css";
+
+:host { display: block; }
+.filters-card { padding: 18px; }
+.filters-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.filters-heading h2 { margin: 0 0 4px; font-size: .95rem; color: var(--color-neutral-900); }
+.filters-heading p { margin: 0; font-size: .8rem; color: var(--color-neutral-500); }
+.filters-heading mat-icon { color: var(--color-primary-700); }
+.filters-grid { display: grid; grid-template-columns: minmax(180px, 1.3fr) minmax(160px, 1fr) repeat(2, minmax(145px, 1fr)); gap: 14px; align-items: start; }
+.filters-grid > div { min-width: 0; }
+.filters-grid :is(input, select) { width: 100%; min-width: 0; min-height: 42px; box-sizing: border-box; }
+.filters-grid .form-label { font-size: .78rem; font-weight: 600; }
+.filters-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; grid-column: span 2; align-self: end; }
+.filters-actions button { min-height: 42px; }
+@media (max-width: 900px) { .filters-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) {
+  .filters-card { padding: 14px; }
+  .filters-grid { gap: 12px 10px; }
+  .filter-wide { grid-column: 1 / -1; }
+  .filters-grid :is(input, select) { font-size: .8rem; }
+  .filters-actions button { flex: 1; min-height: 44px; }
+}

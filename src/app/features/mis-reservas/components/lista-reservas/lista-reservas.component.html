@@ -1,299 +1,99 @@
-<!-- Mis Reservas Page -->
-<div class="page-wrapper">
-  <div class="page-container">
-
-    <!-- Page Header -->
-    <div class="section-spacing">
-      <div class="flex items-center gap-3 sm:gap-4 mb-6">
-        <div class="flex-1">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <button mat-icon-button routerLink="/">
-                <mat-icon>arrow_back</mat-icon>
-              </button>
-              <div class="flex-1">
-                <h1 class="title-main text-primary-600">Mis Reservas</h1>
-                <p class="text-base text-neutral-600">Historial completo de tus reservas</p>
-              </div>
-            </div>
-            <button class="btn-primary" (click)="toggleFiltros()">
-              <mat-icon class="icon-sm">{{ mostrarFiltros ? 'filter_list_off' : 'filter_list' }}</mat-icon>
-              {{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
-            </button>
-          </div>
-        </div>
+<main class="page-wrapper reservations-page">
+  <div class="page-container reservations-container">
+    <header class="reservations-header">
+      <div class="header-title"><a routerLink="/" class="back-link" aria-label="Volver al inicio"><mat-icon>arrow_back</mat-icon></a>
+        <div><span class="page-eyebrow">Tu actividad</span><h1 class="title-main">Mis reservas</h1><p>Horarios, pagos y confirmaciones en un solo lugar.</p></div>
       </div>
+      <a routerLink="/cancha/canchas" class="btn-primary new-reservation" aria-label="Buscar una cancha para reservar"><mat-icon aria-hidden="true">add</mat-icon><span>Buscar cancha</span></a>
+    </header>
 
-      <!-- Filtros Component -->
-      @if (mostrarFiltros) {
-        <div class="animate-fade-in-up mb-6">
-          <app-filtros-reservas
-            [filtrosActivos]="filtrosActivos"
-            (filtrosChange)="onFiltrosChange($event)"
-            (limpiarFiltros)="onLimpiarFiltros()">
-          </app-filtros-reservas>
-        </div>
-      }
+    <section class="reservations-toolbar" aria-label="Buscar y filtrar reservas">
+      <div class="status-shortcuts scrollbar-thin" role="group" aria-label="Filtrar por estado de reserva">
+        <button type="button" [class.is-active]="!filtrosActivos().codigoEstado" [attr.aria-pressed]="!filtrosActivos().codigoEstado" (click)="seleccionarEstado()">Todas</button>
+        @for (estado of estadosReserva; track estado.value) {
+          <button type="button" [class.is-active]="filtrosActivos().codigoEstado === estado.value" [attr.aria-pressed]="filtrosActivos().codigoEstado === estado.value" (click)="seleccionarEstado(estado.value)">{{ estado.tab }}</button>
+        }
+      </div>
+      <div class="toolbar-actions">
+        <button type="button" class="refresh-button" [disabled]="isLoading()" aria-label="Actualizar reservas" (click)="loadReservas()"><mat-icon>{{ isLoading() ? 'hourglass_top' : 'refresh' }}</mat-icon></button>
+        <button type="button" class="btn-outline-primary filters-toggle" [attr.aria-expanded]="mostrarFiltros()" [attr.aria-controls]="mostrarFiltros() ? 'reservation-filters' : null" (click)="toggleFiltros()">
+          <mat-icon aria-hidden="true">tune</mat-icon>Filtros @if (cantidadFiltros()) { <span>{{ cantidadFiltros() }}</span> }
+        </button>
+      </div>
+    </section>
+
+    @if (mostrarFiltros()) {
+      <div id="reservation-filters" class="filters-panel"><app-filtros-reservas [filtrosActivos]="filtrosActivos()" (filtrosChange)="onFiltrosChange($event)" (limpiarFiltros)="onLimpiarFiltros()" /></div>
+    }
+    @if (chipsFiltros().length || cantidadFiltros()) {
+      <div class="filter-chips" aria-label="Filtros aplicados">
+        @for (chip of chipsFiltros(); track chip.key) {
+          <button type="button" [attr.aria-label]="'Quitar filtro ' + chip.label" (click)="quitarFiltro(chip.key)"><span>{{ chip.label }}</span><mat-icon aria-hidden="true">close</mat-icon></button>
+        }
+        <button type="button" class="clear-all" (click)="onLimpiarFiltros()">Limpiar filtros</button>
+      </div>
+    }
+
+    <div class="results-heading" #resultsHeading aria-live="polite">
+      @if (isLoading()) { <p>Buscando tus reservas…</p> }
+      @else if (!error()) { <p><b>{{ totalItems() }}</b> {{ totalItems() === 1 ? 'reserva encontrada' : 'reservas encontradas' }}</p><span>Más recientes primero</span> }
     </div>
 
-    <!-- Loading State -->
     @if (isLoading()) {
-      <div class="loading-state">
-        <mat-spinner diameter="60" color="primary" class="loading-spinner"></mat-spinner>
-        <p class="loading-text">Cargando tus reservas...</p>
+      <div class="reservation-skeletons" aria-busy="true" aria-label="Cargando reservas">
+        @for (item of [1, 2, 3]; track item) { <div class="content-card reservation-skeleton" aria-hidden="true"><span></span><div><i></i><i></i><i></i></div></div> }
       </div>
-    }
-
-    <!-- Empty State -->
-    @if (!isLoading() && reservas().length === 0) {
-      <div class="empty-state">
-        <mat-icon class="empty-state-icon">event_busy</mat-icon>
-        <h3 class="empty-state-title">No tienes reservas</h3>
-        <p class="empty-state-description">
-          @if (hasFiltros()) {
-            No se encontraron reservas con los filtros aplicados. Intenta con otros criterios de búsqueda.
-          } @else {
-            Aún no has realizado ninguna reserva. ¡Busca una cancha y crea tu primera reserva!
-          }
-        </p>
-        @if (hasFiltros()) {
-          <button class="btn-secondary" (click)="onLimpiarFiltros()">
-            <mat-icon class="icon-sm">filter_list_off</mat-icon>
-            Limpiar Filtros
-          </button>
-        } @else {
-          <button class="btn-primary" routerLink="/">
-            <mat-icon class="icon-sm">search</mat-icon>
-            Buscar Canchas
-          </button>
-        }
-      </div>
-    }
-
-    <!-- Reservas List -->
-    @if (!isLoading() && reservas().length > 0) {
-      <div class="space-y-4">
-        @for (reserva of reservas(); track reserva.idReserva) {
-          <!-- ===== MOBILE CARD (< 640px) ===== -->
-          <div class="content-card cursor-pointer sm:hidden" (click)="verDetalle(reserva)">
-            <!-- Nombre + Estado -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-              <h5 class="text-base font-bold text-primary-600 leading-tight m-0 flex-1">
-                {{ reserva.nombreCancha }}
-              </h5>
-              <span class="inline-flex items-center gap-1" [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
-                <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
-                {{ reserva.estadoReserva }}
-              </span>
-            </div>
-
-            <!-- Dirección -->
-            <p class="text-sm text-neutral-600 flex items-center gap-1 mb-3">
-              <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
-              {{ reserva.direccionCancha }}
-            </p>
-
-            <!-- Código + Fecha (misma fila) -->
-            <div class="flex items-center justify-between text-sm mb-2">
-              <div class="flex items-center gap-2">
-                <mat-icon class="icon-sm icon-primary">confirmation_number</mat-icon>
-                <strong class="text-neutral-800">{{ reserva.codigoReserva }}</strong>
+    } @else if (error()) {
+      <section class="content-card empty-state result-message" role="alert"><mat-icon class="empty-state-icon" aria-hidden="true">cloud_off</mat-icon>
+        <h2 class="empty-state-title">No pudimos mostrar tus reservas</h2><p class="empty-state-description">{{ error() }}</p>
+        @if (requiereSesion()) { <a routerLink="/auth/login" class="btn-primary">Iniciar sesión</a> }
+        @else { <button type="button" class="btn-primary" (click)="loadReservas()"><mat-icon aria-hidden="true">refresh</mat-icon>Reintentar</button> }
+      </section>
+    } @else if (!reservasVista().length) {
+      <section class="content-card empty-state result-message"><mat-icon class="empty-state-icon" aria-hidden="true">event_note</mat-icon>
+        <h2 class="empty-state-title">{{ cantidadFiltros() ? 'No encontramos reservas con esos filtros' : 'Tu próxima experiencia empieza aquí' }}</h2>
+        <p class="empty-state-description">{{ cantidadFiltros() ? 'Prueba con otra cancha, estado o rango de fechas.' : 'Cuando reserves una cancha, podrás consultar aquí tus horarios y pagos.' }}</p>
+        @if (cantidadFiltros()) { <button type="button" class="btn-outline-primary" (click)="onLimpiarFiltros()">Limpiar filtros</button> }
+        @else { <a routerLink="/cancha/canchas" class="btn-primary"><mat-icon aria-hidden="true">search</mat-icon>Encontrar una cancha</a> }
+      </section>
+    } @else {
+      <section class="reservations-list" aria-label="Listado de reservas">
+        @for (item of reservasVista(); track item.reserva.idReserva) {
+          @let reserva = item.reserva;
+          <article class="content-card reservation-card" [class.is-urgent]="item.vencimiento?.urgente">
+            <button type="button" class="reservation-open" aria-haspopup="dialog" [attr.aria-label]="'Ver detalle de la reserva ' + reserva.codigoReserva" (click)="verDetalle(reserva)"></button>
+            <div class="reservation-date" aria-hidden="true"><b>{{ item.dia }}</b><span>{{ item.mes }}</span></div>
+            <div class="reservation-info">
+              <div class="reservation-heading"><div><p class="reservation-code">{{ reserva.codigoReserva }}</p><h2>{{ reserva.nombreCancha }}</h2></div>
+                <span class="reservation-status {{ item.estado.cssClass }}"><mat-icon aria-hidden="true">{{ item.estado.icon }}</mat-icon>{{ item.estado.label }}</span>
               </div>
-              <div class="flex items-center gap-2">
-                <mat-icon class="icon-sm icon-primary">calendar_today</mat-icon>
-                <strong class="text-neutral-800">{{ formatFecha(reserva.fecha) }}</strong>
+              <p class="court-address"><mat-icon aria-hidden="true">location_on</mat-icon><span>{{ reserva.direccionCancha || 'Dirección no disponible' }}</span></p>
+              <div class="reservation-facts"><span><mat-icon aria-hidden="true">calendar_today</mat-icon><time [attr.datetime]="reserva.fecha">{{ item.fechaCorta }}</time></span>
+                <span><mat-icon aria-hidden="true">schedule</mat-icon>{{ item.horarios }}</span>
               </div>
             </div>
-
-            <!-- Horarios -->
-            <div class="flex items-center gap-2 text-sm mb-3">
-              <mat-icon class="icon-sm">schedule</mat-icon>
-              <strong class="text-neutral-800">{{ formatHorarios(reserva) }}</strong>
+            <div class="reservation-finance"><span class="total-label">Total de la reserva</span><strong>{{ reserva.monto | currency:'PEN':'S/ ':'1.2-2' }}</strong>
+              <span class="payment-status {{ item.pago.cssClass }}">{{ item.pagoTexto }}</span>
+              @if (reserva.montoPendiente > 0) { <small>Saldo: {{ reserva.montoPendiente | currency:'PEN':'S/ ':'1.2-2' }}</small> }
             </div>
-
-            <!-- Precio + Estado Pago (misma fila) -->
-            <div class="flex items-center justify-between pt-3 border-t border-neutral-200">
-              <span class="text-lg font-bold text-primary-600">S/ {{ reserva.monto.toFixed(2) }}</span>
-              <span
-                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                [class]="getEstadoPago(reserva.estadoPago).cssClass">
-                {{ reserva.estadoPago }}
-              </span>
-            </div>
-
-            <!-- Alerta expiración -->
-            @if (reserva.estaPendiente && reserva.fechaExpiracionPreReserva) {
-              <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-2">
-                <div class="flex items-center gap-2 text-xs">
-                  @if (isProximaExpirar(reserva)) {
-                    <span class="font-semibold text-amber-800">¡Expira pronto! Quedan {{ getHorasRestantes(reserva) }}h</span>
-                  } @else {
-                    <span class="text-amber-700">Expira: {{ formatFecha(reserva.fechaExpiracionPreReserva) }}</span>
-                  }
-                </div>
-              </div>
+            @if (item.vencimiento; as vencimiento) {
+              <div class="reservation-expiry" [class.expiry-urgent]="vencimiento.urgente"><mat-icon aria-hidden="true">schedule</mat-icon><span>{{ vencimiento.texto }}</span></div>
             }
-          </div>
-
-          <!-- ===== DESKTOP CARD (≥ 640px) ===== -->
-          <div class="content-card cursor-pointer hidden sm:block" (click)="verDetalle(reserva)">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-
-              <!-- Columna Izquierda: Info Principal -->
-              <div class="lg:col-span-7 p-2">
-                <!-- Header con Estado -->
-                <div class="flex items-start justify-between">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <h5 class="text-lg font-bold text-primary-600 leading-none m-0">
-                        {{ reserva.nombreCancha }}
-                      </h5>
-                      @if (reserva.estaPendiente && isProximaExpirar(reserva)) {
-                        <mat-icon class="text-amber-600 icon-sm animate-pulse">warning</mat-icon>
-                      }
-                    </div>
-                    <p class="text-sm text-neutral-600 flex items-center gap-1">
-                      <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
-                      {{ reserva.direccionCancha }}
-                    </p>
-                  </div>
-
-                  <!-- Badge de Estado -->
-                  <span class="inline-flex items-center gap-1" [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass">
-                    <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
-                    {{ reserva.estadoReserva }}
-                  </span>
-                </div>
-
-                <!-- Detalles en Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mt-3">
-                  <div class="flex items-center gap-2">
-                    <mat-icon class="icon-sm icon-primary">confirmation_number</mat-icon>
-                    <span class="text-neutral-600">Código:</span>
-                    <strong class="text-neutral-800">{{ reserva.codigoReserva }}</strong>
-                  </div>
-
-                  <div class="flex items-center gap-2">
-                    <mat-icon class="icon-sm icon-primary">calendar_today</mat-icon>
-                    <span class="text-neutral-600">Fecha:</span>
-                    <strong class="text-neutral-800">{{ formatFecha(reserva.fecha) }}</strong>
-                  </div>
-
-                  <div class="flex items-center gap-2 sm:col-span-2">
-                    <mat-icon class="icon-sm icon-primary">schedule</mat-icon>
-                    <span class="text-neutral-600">Horarios:</span>
-                    <strong class="text-neutral-800">{{ formatHorarios(reserva) }}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Columna Derecha: Pago e Info Adicional -->
-              <div class="lg:col-span-5 flex flex-col justify-between">
-                <!-- Info de Pago -->
-                <div class="bg-neutral-50 rounded-lg p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm text-neutral-600">Monto Total</span>
-                    <span class="text-xl font-bold text-primary-600">S/ {{ reserva.monto.toFixed(2) }}</span>
-                  </div>
-
-                  <hr class="border-neutral-200 my-2" />
-
-                  <div class="space-y-1 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-neutral-600">Adelanto:</span>
-                      <span class="font-semibold" [class.text-green-600]="reserva.montoAdelanto > 0">
-                        S/ {{ reserva.montoAdelanto.toFixed(2) }}
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-neutral-600">Pendiente:</span>
-                      <span class="font-semibold" [class.text-amber-600]="reserva.montoPendiente > 0">
-                        S/ {{ reserva.montoPendiente.toFixed(2) }}
-                      </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                      <span class="text-neutral-600">Estado Pago:</span>
-                      <span
-                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                        [class]="getEstadoPago(reserva.estadoPago).cssClass">
-                        {{ reserva.estadoPago }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Alertas especiales -->
-                @if (reserva.estaPendiente && reserva.fechaExpiracionPreReserva) {
-                  <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    <div class="flex items-center justify-between gap-2">
-                      <div class="flex-1 text-xs">
-                        @if (isProximaExpirar(reserva)) {
-                          <p class="font-semibold text-amber-800">¡Expira pronto!</p>
-                          <p class="text-amber-700">Quedan {{ getHorasRestantes(reserva) }} horas</p>
-                        } @else {
-                          <p class="text-amber-700">Expira: {{ formatFecha(reserva.fechaExpiracionPreReserva) }}</p>
-                        }
-                      </div>
-                      @if (reserva.telefonoCancha) {
-                        <a
-                          href="https://wa.me/51{{ reserva.telefonoCancha }}"
-                          target="_blank"
-                          class="flex items-center justify-center gap-1 text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors flex-shrink-0"
-                          (click)="$event.stopPropagation()">
-                          <mat-icon class="icon-sm">chat</mat-icon>
-                          Contactar
-                        </a>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-
-            </div>
-
-            <!-- Acción flotante -->
-            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-              <mat-icon class="text-primary-600">visibility</mat-icon>
-            </div>
-          </div>
+          </article>
         }
-
-        <!-- Paginación Custom -->
-        @if (totalPages > 1) {
-          <div class="flex items-center justify-center gap-2 mt-6">
-            <button
-              class="btn-outline-primary"
-              [disabled]="pageIndex === 0"
-              (click)="onPageChange(0)">
-              <mat-icon class="icon-sm">first_page</mat-icon>
-            </button>
-            <button
-              class="btn-outline-primary"
-              [disabled]="pageIndex === 0"
-              (click)="onPageChange(pageIndex - 1)">
-              <mat-icon class="icon-sm">chevron_left</mat-icon>
-            </button>
-
-            <span class="text-sm text-neutral-600 mx-2">
-              Página {{ pageIndex + 1 }} de {{ totalPages }}
-            </span>
-
-            <button
-              class="btn-outline-primary"
-              [disabled]="pageIndex >= totalPages - 1"
-              (click)="onPageChange(pageIndex + 1)">
-              <mat-icon class="icon-sm">chevron_right</mat-icon>
-            </button>
-            <button
-              class="btn-outline-primary"
-              [disabled]="pageIndex >= totalPages - 1"
-              (click)="onPageChange(totalPages - 1)">
-              <mat-icon class="icon-sm">last_page</mat-icon>
-            </button>
-          </div>
-        }
-      </div>
+      </section>
     }
 
+    @if (totalPages() > 1 && !error()) {
+      <nav class="reservations-pagination" aria-label="Paginación de reservas">
+        <p>{{ rangoResultados() }} reservas</p>
+        <div><button type="button" class="btn-outline-primary pagination-edge" aria-label="Primera página" [disabled]="pageIndex() === 0 || isLoading()" (click)="onPageChange(0)"><mat-icon>first_page</mat-icon></button>
+          <button type="button" class="btn-outline-primary" aria-label="Página anterior" [disabled]="pageIndex() === 0 || isLoading()" (click)="onPageChange(pageIndex() - 1)"><mat-icon>chevron_left</mat-icon></button>
+          <span>Página <b>{{ pageIndex() + 1 }}</b> de {{ totalPages() }}</span>
+          <button type="button" class="btn-outline-primary" aria-label="Página siguiente" [disabled]="pageIndex() >= totalPages() - 1 || isLoading()" (click)="onPageChange(pageIndex() + 1)"><mat-icon>chevron_right</mat-icon></button>
+          <button type="button" class="btn-outline-primary pagination-edge" aria-label="Última página" [disabled]="pageIndex() >= totalPages() - 1 || isLoading()" (click)="onPageChange(totalPages() - 1)"><mat-icon>last_page</mat-icon></button>
+        </div>
+      </nav>
+    }
   </div>
-</div>
+</main>

@@ -1,220 +1,67 @@
-<!-- Header (fijo) -->
-<div mat-dialog-title class="!flex !items-center !justify-between">
-  <div class="flex-1">
-    <h2 class="title-main text-neutral-800 mb-2">
-      {{ reserva.nombreCancha }}
-    </h2>
-    <p class="text-sm text-neutral-600 flex items-center gap-1">
-      <mat-icon class="icon-sm icon-primary">location_on</mat-icon>
-      {{ reserva.direccionCancha }}
-    </p>
+<div class="reservation-detail">
+  <header class="detail-header">
+    <div><span class="detail-eyebrow">Detalle de tu reserva</span><h2 mat-dialog-title id="reservation-detail-title">{{ reserva.nombreCancha }}</h2><p>{{ reserva.codigoReserva }}</p></div>
+    <button type="button" class="detail-close" aria-label="Cerrar detalle de reserva" (click)="onClose()"><mat-icon>close</mat-icon></button>
+  </header>
+
+  <div mat-dialog-content class="detail-body">
+    <div class="detail-statuses">
+      <span class="detail-status {{ vista.estado.cssClass }}"><mat-icon aria-hidden="true">{{ vista.estado.icon }}</mat-icon>{{ vista.estado.label }}</span>
+      <span class="detail-payment-status {{ vista.pago.cssClass }}">{{ vista.pagoTexto }}</span>
+    </div>
+
+    @if (vista.vencimiento; as vencimiento) {
+      <section class="reservation-notice pending-notice" [class.urgent-notice]="vencimiento.urgente" aria-label="Plazo de confirmación">
+        <mat-icon aria-hidden="true">schedule</mat-icon><div><h3>{{ vencimiento.texto }}</h3>
+          @if (vencimiento.plazoCumplido) { <p>El plazo indicado ha terminado. Actualiza tus reservas para comprobar su estado.</p> }
+          @else { <p>El operador debe confirmar tu reserva antes del <strong>{{ vencimiento.fecha }}</strong>.</p> }
+          <button type="button" class="notice-refresh" (click)="actualizarEstado()"><mat-icon aria-hidden="true">refresh</mat-icon>Actualizar estado</button>
+        </div>
+      </section>
+    } @else if (reserva.estaConfirmada) {
+      <section class="reservation-notice confirmed-notice"><mat-icon aria-hidden="true">check_circle</mat-icon><div><h3>Todo listo para jugar</h3><p>Tu reserva está confirmada. Revisa tu horario y llega con anticipación.</p></div></section>
+    } @else if (reserva.estaCancelada) {
+      <section class="reservation-notice cancelled-notice"><mat-icon aria-hidden="true">cancel</mat-icon><div><h3>Reserva cancelada</h3><p>Si necesitas revisar un pago o tienes alguna consulta, contacta a la cancha.</p></div></section>
+    } @else if (reserva.estaExpirada) {
+      <section class="reservation-notice expired-notice"><mat-icon aria-hidden="true">event_busy</mat-icon><div><h3>Esta pre-reserva expiró</h3><p>No fue confirmada dentro del plazo. Puedes consultar la cancha para elegir otro horario.</p></div></section>
+    }
+
+    <div class="detail-layout">
+      <section class="content-card booking-section" aria-labelledby="reservation-schedule-title">
+        <h3 id="reservation-schedule-title"><mat-icon aria-hidden="true">event_available</mat-icon>Fecha y horario</h3>
+        <time [attr.datetime]="reserva.fecha" class="booking-date">{{ vista.fechaLarga }}</time>
+        <div class="schedule-ranges" aria-label="Horarios reservados">
+          @for (rango of vista.rangos; track rango.inicio) { <span>{{ rango.inicio }} – {{ rango.fin }}</span> }
+          @empty { <p>Horario no disponible</p> }
+        </div>
+        @if (vista.duracion) { <p class="booking-duration">Duración: <b>{{ vista.duracion }}</b></p> }
+      </section>
+
+      <section class="content-card payment-section" aria-labelledby="reservation-payment-title">
+        <h3 id="reservation-payment-title"><mat-icon aria-hidden="true">account_balance_wallet</mat-icon>Resumen de pago</h3>
+        <dl class="payment-breakdown">
+          <div class="payment-total"><dt>Total de la reserva</dt><dd>{{ reserva.monto | currency:'PEN':'S/ ':'1.2-2' }}</dd></div>
+          <div><dt>Adelanto registrado</dt><dd>{{ reserva.montoAdelanto | currency:'PEN':'S/ ':'1.2-2' }}</dd></div>
+          <div><dt>Saldo pendiente</dt><dd [class.has-balance]="reserva.montoPendiente > 0">{{ reserva.montoPendiente | currency:'PEN':'S/ ':'1.2-2' }}</dd></div>
+          @if (reserva.numeroRecibo) { <div><dt>N.º de recibo</dt><dd>{{ reserva.numeroRecibo }}</dd></div> }
+        </dl>
+      </section>
+
+      <section class="content-card location-section" aria-labelledby="reservation-location-title">
+        <div class="location-heading"><mat-icon aria-hidden="true">location_on</mat-icon><div><h3 id="reservation-location-title">Ubicación y contacto</h3><p>{{ reserva.direccionCancha || 'Dirección no disponible' }}</p></div></div>
+        @if (reserva.telefonoCancha) { <p class="court-phone"><mat-icon aria-hidden="true">phone</mat-icon>{{ reserva.telefonoCancha }}</p> }
+      </section>
+    </div>
+    <p class="created-at">Reserva creada el {{ vista.fechaCreacion }}</p>
   </div>
-  <button mat-icon-button (click)="onClose()">
-    <mat-icon>close</mat-icon>
-  </button>
+
+  <footer class="detail-footer">
+    @if (reserva.idCancha > 0) { <a [routerLink]="['/cancha', reserva.idCancha]" class="btn-outline-primary" (click)="onClose()"><mat-icon aria-hidden="true">sports_soccer</mat-icon>Ver cancha</a> }
+    @if (vista.contacto) {
+      <a [href]="vista.contacto" target="_blank" rel="noopener noreferrer" class="btn-outline-primary contact-button" aria-label="Contactar con la cancha por WhatsApp (abre en otra pestaña)">
+        <span class="contact-icon" aria-hidden="true"><mat-icon svgIcon="whatsapp"></mat-icon></span>
+        <span class="contact-label">Contactar cancha</span>
+      </a>
+    } @else { <button type="button" class="btn-primary" (click)="onClose()">Entendido</button> }
+  </footer>
 </div>
-
-<!-- Contenido scrolleable -->
-<div mat-dialog-content class="px-6">
-  <!-- Estado Badge -->
-  <div class="flex justify-center mb-4">
-    <span [class]="getEstadoReserva(reserva.codigoEstadoReserva).cssClass" class="text-lg px-6 py-2 inline-flex items-center gap-2">
-      <mat-icon class="icon-sm">{{ getEstadoReserva(reserva.codigoEstadoReserva).icon }}</mat-icon>
-      {{ reserva.estadoReserva }}
-    </span>
-  </div>
-
-  <!-- Información Principal -->
-  <div class="space-y-4 mb-4">
-    <!-- Código de Reserva -->
-    <div class="bg-primary-50 rounded-lg p-4 text-center">
-      <p class="text-sm text-neutral-600 mb-1">Código de Reserva</p>
-      <p class="text-2xl font-bold text-primary-600">{{ reserva.codigoReserva }}</p>
-    </div>
-
-    <!-- Fecha y Horarios -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-        <div class="p-2 bg-primary-100 rounded-lg">
-          <mat-icon class="icon-primary">calendar_today</mat-icon>
-        </div>
-        <div class="flex-1">
-          <p class="text-xs text-neutral-500">Fecha</p>
-          <p class="font-semibold text-neutral-800">{{ formatFecha(reserva.fecha) }}</p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-        <div class="p-2 bg-primary-100 rounded-lg">
-          <mat-icon class="icon-primary">event</mat-icon>
-        </div>
-        <div class="flex-1">
-          <p class="text-xs text-neutral-500">Fecha de Creación</p>
-          <p class="font-semibold text-neutral-800">{{ formatFechaHoraCompleta(reserva.fechaCreacion) }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Horarios -->
-    <div class="p-4 bg-neutral-50 rounded-lg">
-      <div class="flex items-center gap-2 mb-3">
-        <mat-icon class="icon-primary">schedule</mat-icon>
-        <p class="font-semibold text-neutral-800">Horarios Reservados</p>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        @for (horario of reserva.horarios; track $index) {
-          <div class="bg-white border border-neutral-200 rounded-lg px-3 py-2 text-sm font-medium">
-            {{ horario.horaInicio.substring(0, 5) }} - {{ horario.horaFin.substring(0, 5) }}
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <hr class="border-neutral-200 my-4" />
-
-  <!-- Información de Pago -->
-  <div class="bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-lg p-4 mb-4">
-    <div class="flex items-center gap-2 mb-3">
-      <mat-icon class="icon-accent">payments</mat-icon>
-      <p class="font-bold text-neutral-800">Información de Pago</p>
-    </div>
-
-    <div class="space-y-3">
-      <div class="flex justify-between items-center">
-        <span class="text-neutral-600">Monto Total:</span>
-        <span class="text-2xl font-bold text-accent-600">S/ {{ reserva.monto.toFixed(2) }}</span>
-      </div>
-
-      <hr class="border-neutral-200 my-2" />
-
-      <div class="flex justify-between">
-        <span class="text-neutral-600">Adelanto:</span>
-        <span class="font-semibold" [class.text-green-600]="reserva.montoAdelanto > 0">
-          S/ {{ reserva.montoAdelanto.toFixed(2) }}
-        </span>
-      </div>
-
-      <div class="flex justify-between">
-        <span class="text-neutral-600">Pendiente:</span>
-        <span class="font-semibold" [class.text-amber-600]="reserva.montoPendiente > 0">
-          S/ {{ reserva.montoPendiente.toFixed(2) }}
-        </span>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <span class="text-neutral-600">Estado de Pago:</span>
-        <span
-          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-          [class]="getEstadoPago(reserva.estadoPago).cssClass">
-          {{ reserva.estadoPago }}
-        </span>
-      </div>
-
-      @if (reserva.numeroRecibo) {
-        <div class="flex justify-between">
-          <span class="text-neutral-600">N° Recibo:</span>
-          <span class="font-semibold text-neutral-800">{{ reserva.numeroRecibo }}</span>
-        </div>
-      }
-    </div>
-  </div>
-
-  <!-- Alertas según estado -->
-  @if (reserva.estaPendiente && reserva.fechaExpiracionPreReserva) {
-    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-amber-600 mt-0.5">schedule</mat-icon>
-        <div class="flex-1">
-          <p class="font-bold text-amber-800 mb-1">
-            @if (isProximaExpirar()) {
-              ¡Tu reserva expira pronto!
-            } @else {
-              Pre-Reserva Pendiente
-            }
-          </p>
-          <p class="text-sm text-amber-700">
-            Expira el: <strong>{{ formatFechaHoraCompleta(reserva.fechaExpiracionPreReserva) }}</strong>
-          </p>
-          @if (isProximaExpirar()) {
-            <p class="text-sm text-amber-700 mt-1">
-              Quedan aproximadamente <strong>{{ getHorasRestantes() }} horas</strong>
-            </p>
-          }
-          <p class="text-xs text-amber-600 mt-2">
-            El operador debe confirmar tu reserva antes de esta fecha.
-          </p>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (reserva.estaConfirmada) {
-    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-green-600 mt-0.5">check_circle</mat-icon>
-        <div class="flex-1">
-          <p class="font-bold text-green-800 mb-1">Reserva Confirmada</p>
-          <p class="text-sm text-green-700">
-            Tu reserva ha sido confirmada por el operador. Recibirás un recordatorio 1 hora antes de tu reserva.
-          </p>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (reserva.estaCancelada) {
-    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-red-600 mt-0.5">cancel</mat-icon>
-        <div class="flex-1">
-          <p class="font-bold text-red-800 mb-1">Reserva Cancelada</p>
-          <p class="text-sm text-red-700">
-            Esta reserva ha sido cancelada. Si tienes dudas, contacta con el operador.
-          </p>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (reserva.estaExpirada) {
-    <div class="bg-neutral-100 border-l-4 border-neutral-400 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <mat-icon class="text-neutral-600 mt-0.5">event_busy</mat-icon>
-        <div class="flex-1">
-          <p class="font-bold text-neutral-700 mb-1">Reserva Expirada</p>
-          <p class="text-sm text-neutral-600">
-            Esta pre-reserva expiró porque no fue confirmada a tiempo.
-          </p>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Contacto -->
-  @if (reserva.telefonoCancha) {
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-      <div class="flex items-center gap-3">
-        <mat-icon class="text-blue-600">phone</mat-icon>
-        <div class="flex-1">
-          <p class="text-sm text-neutral-600">Teléfono de la Cancha</p>
-          <p class="font-bold text-neutral-800">{{ reserva.telefonoCancha }}</p>
-        </div>
-        <a
-          href="https://wa.me/51{{ reserva.telefonoCancha }}"
-          target="_blank"
-          class="btn-primary">
-          <mat-icon class="icon-sm">chat</mat-icon>
-          Contactar
-        </a>
-      </div>
-    </div>
-  }
-</div>
-
-<!-- Footer (fijo) 
-<div mat-dialog-actions class="flex justify-end p-6 pt-0">
-  <button class="btn-secondary" (click)="onClose()">
-    Cerrar
-  </button>
-</div>-->
