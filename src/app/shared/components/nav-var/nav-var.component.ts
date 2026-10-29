@@ -8,12 +8,11 @@ import { filter, finalize } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { User } from 'app/features/auth/models/user';
 import { BaseComponent } from '@base/components/base-component/base.component';
-import { SessionWarningComponent } from '../session-warning/session-warning.component';
 
 @Component({
   selector: 'app-nav-var',
   standalone: true,
-  imports: [CommonModule, RouterModule, CdkMenuModule, DialogModule, SessionWarningComponent],
+  imports: [CommonModule, RouterModule, CdkMenuModule, DialogModule],
   templateUrl: './nav-var.component.html',
   styleUrl: './nav-var.component.css'
 })

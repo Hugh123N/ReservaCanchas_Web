@@ -387,24 +387,33 @@ PlanesCatalogoComponent
 ### 4.3 Mantenimiento de Sesión (KeepAlive)
 
 ```
-1. AuthService.keepAlive() se ejecuta periódicamente
-   ├── Decodifica payload del JWT (sin verificar firma)
-   ├── Si faltan ≤ 5 minutos para expirar:
-   │   └── UsersService.renewSession() → nuevo access_token
-   └── Reemplaza token en localStorage
+1. AppComponent inicia AuthService.initializeSession() al cargar la aplicación
+   ├── Restaura el JWT válido guardado y comprueba exp inmediatamente
+   ├── SessionExpiryService vigila el reloj cada segundo fuera de Angular
+   └── A ≤ 5 minutos muestra SessionWarningComponent global, independiente del navbar
+2. "Mantener sesión" ejecuta keepAlive(): Observable<boolean>
+   ├── Comparte una solicitud; timeout de 15 segundos sin bloquear la pantalla
+   ├── Conserva la vigilancia durante la renovación y permite reintentar ante fallo
+   ├── Valida identidad, UserIdNegocio y que exp aumente antes de guardar el JWT
+   └── Ignora respuestas de sesiones anteriores o que ya expiraron
+3. Al vencer, cerrar manualmente o recibir 401 autenticado: logoutSession()
+4. storage, focus y visibilitychange sincronizan otras pestañas y suspensión del navegador
 ```
 
 ### 4.4 Logout
 
 ```
 1. AuthService.logOut() / logoutSession()
-   ├── Si logoutSession(): extrae LogId del JWT
-   │   └── UsersService.logoutSession(logId)
-   ├── Limpia favoritos (dynamic import)
+   ├── Cancela renovación y detiene la vigilancia de forma inmediata e idempotente
    ├── Remueve token de localStorage
    ├── Limpia sessionStorage
+   ├── Notifica perfil vacío y cierra diálogos abiertos
+   ├── Limpia favoritos (dynamic import protegido contra sesiones posteriores)
    └── Navega a /auth/login
 ```
+
+El cierre es local: los métodos de logout de UsersService son simulados y no revocan JWT en el servidor.
+Ver [FLUJO-AUTO-LOGOUT.md](FLUJO-AUTO-LOGOUT.md) para pruebas y casos cubiertos.
 
 ---
 

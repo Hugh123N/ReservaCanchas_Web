@@ -7,7 +7,7 @@ export class User {
     telefono: string = '';
     accessToken: string = '';
     refreshToken: string = '';
-    roles: number[] = [];
+    roles: string[] = [];
     pic: string = '';
     fullname: string = '';
     occupation: string = '';

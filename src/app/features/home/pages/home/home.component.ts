@@ -47,7 +47,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   // Mientras no existan los .webp en assets/banners, cada slide muestra su gradiente de respaldo
   readonly slides = [
     { id: 1, cssClass: 's1', desktop: 'assets/banners/banner1-desktop.webp', mobile: 'assets/banners/banner1-mobile.webp' },
-    { id: 2, cssClass: 's2', desktop: 'assets/banners/banner2-desktop.webp', mobile: 'assets/banners/banner2-mobile.webp' },
+    { id: 2, cssClass: 's2', desktop: 'assets/banners/banner2-desktop.webp', mobile: 'assets/banners/banner2-mobile.webp' }, //.webp
     { id: 3, cssClass: 's3', desktop: 'assets/banners/banner3-desktop.webp', mobile: 'assets/banners/banner3-mobile.webp' },
   ];
   currentSlide = 0;

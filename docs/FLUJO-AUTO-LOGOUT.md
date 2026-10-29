@@ -1,159 +1,43 @@
-# Flujo de Auto-Logout por Expiración de Token
+# Vigilancia, renovación y cierre de sesión
 
-## Objetivo
+## Responsabilidades
 
-Implementar un sistema de cierre de sesión automático que:
-1. Detecte la expiración del token JWT
-2. Muestre una notificación 5 minutos antes de la expiración
-3. Cierre sesión automáticamente cuando el token expire
+| Elemento | Responsabilidad |
+|----------|-----------------|
+| `AppComponent` | Inicializa la sesión, contiene el aviso global y cierra diálogos al terminar la sesión |
+| `AuthService` | Restaura, renueva y limpia la sesión; sincroniza otras pestañas |
+| `SessionExpiryService` | Calcula tiempo absoluto, muestra aviso a cinco minutos y emite expiración |
+| `session-token.utils.ts` | Decodifica claims, normaliza negocio/roles y rechaza JWT vencido o inválido |
+| `SessionWarningComponent` | Acciones "Mantener sesión" y "Cerrar ahora", progreso y error recuperable |
+| `tokenInterceptor` / `AuthGuard` | Rechazan credenciales vencidas y dirigen al login cuando corresponde |
 
----
+El aviso vive en `app.component.html`, fuera del router outlet, para estar disponible también en reservas, pago y mapa.
 
-## Componentes Involucrados
+## Flujo
 
-| Componente | Tipo | Ubicación | Responsabilidad |
-|------------|------|-----------|-----------------|
-| `AlertBannerComponent` | Componente genérico | `src/app/shared/components/alert-banner/` | Banner reutilizable para cualquier notificación |
-| `SessionWarningComponent` | Wrapper | `src/app/shared/components/session-warning/` | Usa AlertBanner para sesión |
-| `SessionExpiryService` | Servicio | `src/app/core/services/` | Detectar expiración, emitir eventos |
-| `AuthService` | Servicio | `src/app/core/auth/services/` | Integrar vigilancia, ejecutar logout |
-| `NavVarComponent` | Componente | `src/app/shared/components/` | Contenedor del warning |
+1. Al arrancar, `initializeSession()` registra listeners una sola vez y comprueba el token guardado. Un JWT válido restaura perfil y vigilancia; uno inválido se limpia y redirige al login.
+2. Login guarda un token válido e inicia la misma vigilancia. El intervalo único comprueba cada segundo fuera de Angular; actualiza signals solo al cambiar minutos/aviso.
+3. Al quedar cinco minutos aparece el aviso. No hay renovación automática por actividad ni por mostrar el aviso.
+4. "Mantener sesión" suscribe `keepAlive()`. Se comparte una única petición a `GET /Usuario/renew-session`, con timeout de 15 segundos, conservando la vigilancia del token original.
+5. La respuesta solo se acepta si la sesión original sigue vigente y coincide con la almacenada, y el token nuevo conserva identidad/negocio y extiende `exp`.
+6. Una renovación exitosa actualiza localStorage y reinicia la vigilancia. Un error recuperable conserva el aviso y permite reintentar. La petición usa `SKIP_LOADING` para mantener accesible el botón de cierre.
+7. Expiración, "Cerrar ahora" o un 401 autenticado ejecutan el mismo cierre inmediato e idempotente: cancelar renovación, detener reloj, eliminar token/sessionStorage, vaciar perfil, cerrar diálogos, limpiar favoritos y navegar a `/auth/login`.
+8. `storage` adopta renovaciones y cierres de otras pestañas; `focus` y `visibilitychange` comprueban el reloj tras suspensión. Las respuestas tardías de tokens anteriores no reemplazan ni cierran la sesión actual.
 
----
+## Contrato con API
 
-## Diagrama de Flujo
+- La API verifica firma y autorización. La decodificación del frontend solo controla su estado local.
+- La renovación conserva `UserIdNegocio` del principal autenticado; `ApplicationCode` se incluye en tokens nuevos y se conserva al renovar.
+- La lectura de negocio admite claims vacíos sin lanzar errores de conversión.
+- El cierre es local: los métodos simulados de logout de `UsersService` no revocan un JWT en servidor.
+- En SSR no se accede a storage ni se programan timers; la sesión se restaura en navegador.
 
-```
-1. USUARIO HACE LOGIN
-   │
-   ▼
-   AuthService.logIn(token)
-   │
-   ├──→ Guarda token en localStorage
-   ├──→ Carga perfil de usuario
-   └──→ SessionExpiryService.startWatching(token)
-        │
-        ├──→ Decodifica JWT (jwtDecode)
-        ├──→ Obtiene fecha de expiración (exp)
-        └──→ Inicia intervalo de verificación (30 segundos)
+## Verificación
 
-2. VERIFICACIÓN PERIÓDICA (cada 30 segundos)
-   │
-   ▼
-   SessionExpiryService.checkExpiration()
-   │
-   ├──→ Calcula tiempo restante: exp - now
-   │
-   ├──→ Si tiempo > 5 minutos → No hace nada
-   │
-   ├──→ Si tiempo ≤ 5 minutos
-   │    ├──→ showWarning = true (muestra notificación)
-   │    └──→ Inicia countdown visual
-   │
-   └──→ Si tiempo ≤ 0 (expirado)
-        ├──→ sessionExpired$.next()
-        └──→ AuthService.logoutSession()
+Desde la raíz de cada frontend:
 
-3. NOTIFICACIÓN VISIBLE (5 minutos antes)
-   │
-   ▼
-   SessionWarningComponent aparece debajo del Nav
-   │
-   ├──→ Botón "Mantener sesión"
-   │    └──→ AuthService.keepAlive() → Renueva token
-   │
-   └──→ Botón "Cerrar ahora"
-        └──→ AuthService.logoutSession()
-
-4. TOKEN EXPIRA (tiempo = 0)
-   │
-   ▼
-   SessionExpiryService → sessionExpired$.next()
-   │
-   ▼
-   AuthService.logoutSession()
-   │
-   ├──→ Limpia favoritos
-   ├──→ Remueve token de localStorage
-   ├──→ Limpia sessionStorage
-   └──→ Navega a /auth/login
+```bash
+npm exec ng test -- --watch=false --browsers=ChromeHeadless --include="src/app/core/auth/services/*.spec.ts" --include="src/app/app.component.spec.ts"
 ```
 
----
-
-## Archivos a Crear/Modificar
-
-### Archivos a Crear
-| Archivo | Propósito |
-|---------|-----------|
-| `src/app/shared/components/alert-banner/alert-banner.component.ts` | Componente genérico reutilizable |
-| `src/app/shared/components/alert-banner/alert-banner.component.css` | Estilos del componente genérico |
-| `src/app/shared/components/session-warning/session-warning.component.ts` | Wrapper para sesión |
-| `src/app/shared/components/session-warning/session-warning.component.html` | Template de sesión |
-| `src/app/core/services/session-expiry.service.ts` | Servicio de vigilancia |
-
-### Archivos a Modificar
-| Archivo | Cambios |
-|---------|---------|
-| `src/app/core/auth/services/auth.service.ts` | Integrar SessionExpiryService |
-| `src/app/shared/components/nav-var/nav-var.component.html` | Agregar `<app-session-warning>` |
-| `src/styles.css` | Agregar estilos de alert-banner |
-
----
-
-## Uso del AlertBannerComponent (Genérico)
-
-### Tipos de banner disponibles
-- `warning` → Amarillo (para advertencias)
-- `error` → Rojo (para errores)
-- `info` → Azul (para información)
-- `success` → Verde (para éxitos)
-
-### Ejemplos de uso
-
-```html
-<!-- Advertencia de sesión -->
-<app-alert-banner
-  [type]="'warning'"
-  [icon]="'warning'"
-  [visible]="showWarning"
-  [actions]="[
-    { label: 'Mantener sesión', action: 'extend' },
-    { label: 'Cerrar ahora', action: 'logout' }
-  ]"
-  (actionClick)="onAction($event)">
-  Tu sesión expira en 5 minutos
-</app-alert-banner>
-
-<!-- Error de conexión -->
-<app-alert-banner
-  [type]="'error'"
-  [icon]="'wifi_off'"
-  [visible]="!isConnected"
-  [actions]="[{ label: 'Reintentar', action: 'retry' }]"
-  (actionClick)="onRetry()">
-  Sin conexión a internet
-</app-alert-banner>
-
-<!-- Éxito (auto-dismiss 3 segundos) -->
-<app-alert-banner
-  [type]="'success'"
-  [icon]="'check_circle'"
-  [visible]="showSuccess"
-  [duration]="3000">
-  Cambios guardados exitosamente
-</app-alert-banner>
-```
-
----
-
-## Checklist de Implementación
-
-- [ ] Crear documentación FLUJO-AUTO-LOGOUT.md
-- [ ] Crear AlertBannerComponent (genérico)
-- [ ] Crear SessionWarningComponent (wrapper)
-- [ ] Crear SessionExpiryService
-- [ ] Modificar AuthService (integrar servicio)
-- [ ] Modificar NavVarComponent (agregar warning)
-- [ ] Agregar estilos en styles.css
-- [ ] Probar flujo completo
+Las pruebas cubren restauración, JWT inválidos/vencidos, aviso y cierre por reloj, renovación concurrente, reintento, timeout, respuestas inconsistentes, ambos botones, cancelación HTTP, 401 antiguos, guard, aviso global, cierre de diálogos y sincronización entre pestañas.

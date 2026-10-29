@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { SKIP_LOADING } from '@core/interceptors/loading.interceptor';
 import { LoginModel } from '../models/login.model';
 import { GetUserModel } from '../models/get-user.model';
 import { SearchUserModel } from '../models/search-user.model';
@@ -50,7 +51,8 @@ export class UsersService extends BaseService {
   }
 
   renewSession(): Observable<ResponseDto<AccessTokenModel>> {
-    return this.getRequest<ResponseDto<AccessTokenModel>>(`/renew-session`);
+    // El aviso muestra su propio progreso y permite cerrar mientras se renueva.
+    return this.getRequest<ResponseDto<AccessTokenModel>>(`/renew-session`, new HttpContext().set(SKIP_LOADING, true));
   }
 
   forgotPassword(email: string, host: string): Observable<ResponseBaseDto> {

@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ConfigService } from '@core/services/config.service';
 import { Observable } from 'rxjs';
@@ -16,8 +16,8 @@ export class BaseService {
     return `${this.configService.apiUrl}${this.path}`;
   }
 
-  getRequest<TResponse>(resource: string): Observable<TResponse> {
-    return this.http.get<TResponse>(`${this.baseUrl}${resource}`, { headers: this.getHeaders() });
+  getRequest<TResponse>(resource: string, context?: HttpContext): Observable<TResponse> {
+    return this.http.get<TResponse>(`${this.baseUrl}${resource}`, { headers: this.getHeaders(), context });
   }
 
   getRequestFile(resource: string, fileName: string): void {

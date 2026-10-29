@@ -1,0 +1,11 @@
+.session-warning { position: fixed; z-index: 1500; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); box-sizing: border-box; width: min(420px, calc(100vw - 32px)); padding: 18px; border: 1px solid var(--color-accent-300); border-radius: 16px; background: #fff; box-shadow: 0 12px 40px rgb(15 23 42 / 22%); color: var(--color-neutral-800); }
+.session-warning-heading { display: flex; align-items: center; gap: 8px; }
+.session-warning-heading mat-icon { flex-shrink: 0; color: var(--color-accent-700); }
+.session-warning h2 { margin: 0; font-size: 1rem; line-height: 1.4; }
+.session-warning p { margin: 10px 0 0; font-size: .85rem; line-height: 1.5; }
+.session-warning .session-warning-error { padding: 8px 10px; border-radius: 8px; background: var(--color-accent-50); color: #92400e; font-size: .8rem; }
+.session-warning-actions { display: flex; gap: 8px; margin-top: 16px; }
+.session-warning-actions button { flex: 1; min-height: 44px; }
+.session-warning-actions button:disabled { opacity: .6; cursor: wait !important; }
+.session-warning-actions button:focus-visible { outline: 3px solid var(--color-accent-600); outline-offset: 2px; }
+@media (max-width: 400px) { .session-warning { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); padding: 14px; } .session-warning-actions button { padding-left: 10px !important; padding-right: 10px !important; } }

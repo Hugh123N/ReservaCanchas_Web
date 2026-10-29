@@ -1,116 +1,61 @@
 import { Injectable, signal, OnDestroy, NgZone, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
+import { decodeSessionToken } from '@core/auth/utils/session-token.utils';
 
 @Injectable({ providedIn: 'root' })
 export class SessionExpiryService implements OnDestroy {
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser: boolean;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly warning = signal(false);
+  private readonly minutes = signal(0);
+  private readonly expiration = signal<Date | null>(null);
+  private readonly expired$ = new Subject<void>();
+  private timer?: ReturnType<typeof setInterval>;
+  readonly showWarning = this.warning.asReadonly();
+  readonly minutesRemaining = this.minutes.asReadonly();
+  readonly tokenExpiration = this.expiration.asReadonly();
+  readonly sessionExpired = this.expired$.asObservable();
 
-  private _showWarning = signal<boolean>(false);
-  private _minutesRemaining = signal<number>(0);
-  private _tokenExpiration = signal<Date | null>(null);
-
-  readonly showWarning = this._showWarning.asReadonly();
-  readonly minutesRemaining = this._minutesRemaining.asReadonly();
-  readonly tokenExpiration = this._tokenExpiration.asReadonly();
-
-  private sessionExpired$ = new Subject<void>();
-  sessionExpired = this.sessionExpired$.asObservable();
-
-  private readonly WARNING_MINUTES = 5;
-  private checkInterval: any = null;
-  private countdownInterval: any = null;
-
-  constructor(private ngZone: NgZone) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+  constructor(private ngZone: NgZone) {}
 
   startWatching(token: string): void {
     if (!this.isBrowser) return;
-
     this.stopWatching();
+    const claims = decodeSessionToken(token);
+    if (!claims) {
+      this.ngZone.run(() => this.expired$.next());
+      return;
+    }
+    this.expiration.set(new Date(claims.exp * 1000));
+    this.checkNow();
+    if (this.expiration()) {
+      this.ngZone.runOutsideAngular(() => { this.timer = setInterval(() => this.checkNow(), 1000); });
+    }
+  }
 
-    try {
-      const decoded: any = jwtDecode(token);
-      const exp = decoded.exp * 1000;
-      this._tokenExpiration.set(new Date(exp));
-
-      this.ngZone.runOutsideAngular(() => {
-        this.checkInterval = setInterval(() => {
-          this.checkExpiration(exp);
-        }, 30000);
-      });
-
-      this.checkExpiration(exp);
-    } catch (error) {
-      console.error('Error al decodificar token:', error);
+  checkNow(): void {
+    const expiration = this.expiration();
+    if (!expiration) return;
+    const timeLeft = expiration.getTime() - Date.now();
+    if (timeLeft <= 0) {
+      this.stopWatching();
+      this.ngZone.run(() => this.expired$.next());
+      return;
+    }
+    const minutes = Math.ceil(timeLeft / 60_000);
+    const warning = timeLeft <= 5 * 60_000;
+    if (minutes !== this.minutes() || warning !== this.warning()) {
+      this.ngZone.run(() => { this.minutes.set(minutes); this.warning.set(warning); });
     }
   }
 
   stopWatching(): void {
-    if (this.checkInterval) {
-      clearInterval(this.checkInterval);
-      this.checkInterval = null;
-    }
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-      this.countdownInterval = null;
-    }
-    this._showWarning.set(false);
-    this._minutesRemaining.set(0);
-    this._tokenExpiration.set(null);
+    if (this.timer !== undefined) clearInterval(this.timer);
+    this.timer = undefined;
+    this.warning.set(false);
+    this.minutes.set(0);
+    this.expiration.set(null);
   }
 
-  private checkExpiration(expTimestamp: number): void {
-    const now = Date.now();
-    const timeLeft = expTimestamp - now;
-    const minutesLeft = Math.ceil(timeLeft / 60000);
-
-    if (timeLeft <= 0) {
-      this.stopWatching();
-      this.ngZone.run(() => {
-        this.sessionExpired$.next();
-      });
-      return;
-    }
-
-    if (minutesLeft <= this.WARNING_MINUTES && !this._showWarning()) {
-      this._showWarning.set(true);
-      this.startCountdown(timeLeft);
-    }
-
-    this._minutesRemaining.set(minutesLeft);
-  }
-
-  private startCountdown(timeLeftMs: number): void {
-    let remaining = timeLeftMs;
-
-    this.ngZone.runOutsideAngular(() => {
-      this.countdownInterval = setInterval(() => {
-        remaining -= 60000;
-        const minutes = Math.ceil(remaining / 60000);
-
-        this._minutesRemaining.set(minutes > 0 ? minutes : 0);
-
-        if (remaining <= 0) {
-          this.stopWatching();
-          this.ngZone.run(() => {
-            this.sessionExpired$.next();
-          });
-        }
-      }, 60000);
-    });
-  }
-
-  hideWarning(): void {
-    this._showWarning.set(false);
-
-    
-  }
-
-  ngOnDestroy(): void {
-    this.stopWatching();
-  }
+  ngOnDestroy(): void { this.stopWatching(); this.expired$.complete(); }
 }

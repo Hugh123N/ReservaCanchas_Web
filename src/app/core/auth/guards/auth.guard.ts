@@ -1,6 +1,6 @@
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 /**
@@ -19,7 +19,7 @@ import { AuthService } from '../services/auth.service';
 export const AuthGuard: CanActivateFn = (
   _route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
-): boolean => {
+): boolean | UrlTree => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
@@ -35,11 +35,7 @@ export const AuthGuard: CanActivateFn = (
     return true;
   }
 
-  // No autenticado: Guardar URL destino para redirigir después del login
-  const returnUrl = state.url;
-  sessionStorage.setItem('redirect_after_login', returnUrl);
-
-  // Redirigir a login
-  router.navigate(['/401']);
-  return false;
+  authService.logoutSession({ redirect: false });
+  sessionStorage.setItem('redirect_after_login', state.url);
+  return router.createUrlTree(['/auth/login']);
 };

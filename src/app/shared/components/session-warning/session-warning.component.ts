@@ -1,63 +1,34 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AlertBannerComponent, AlertAction } from '../alert-banner/alert-banner.component';
+import { ChangeDetectionStrategy, Component, OnDestroy, inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { Subject, takeUntil } from 'rxjs';
 import { SessionExpiryService } from '@core/services/session-expiry.service';
 import { AuthService } from '@core/auth/services/auth.service';
 
 @Component({
-  selector: 'app-session-warning',
-  standalone: true,
-  imports: [CommonModule, AlertBannerComponent],
+  selector: 'app-session-warning', standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule],
   template: `
-    <app-alert-banner
-      [type]="'warning'"
-      [visible]="showWarning"
-      [template]="sessionTemplate"
-      [actions]="sessionActions"
-      (actionClick)="onSessionAction($event)">
-
-      <ng-template #sessionTemplate>
-        Tu sesión expira en <strong>{{ minutesRemaining }} minuto{{ minutesRemaining !== 1 ? 's' : '' }}</strong>
-      </ng-template>
-    </app-alert-banner>
-  `
-})
-export class SessionWarningComponent implements OnInit, OnDestroy {
-  @Output() logout = new EventEmitter<void>();
-
-  showWarning = false;
-  minutesRemaining = 0;
-
-  sessionActions: AlertAction[] = [
-    { label: 'Mantener sesión', action: 'extend', class: 'btn-outline-accent' },
-    { label: 'Cerrar ahora', action: 'logout', class: 'btn-outline-accent' }
-  ];
-
-  constructor(
-    private sessionExpiryService: SessionExpiryService,
-    private authService: AuthService
-  ) {
-    effect(() => {
-      this.showWarning = this.sessionExpiryService.showWarning();
-    });
-
-    effect(() => {
-      this.minutesRemaining = this.sessionExpiryService.minutesRemaining();
-    });
-  }
-
-  ngOnInit(): void {}
-
-  onSessionAction(action: AlertAction): void {
-    if (action.action === 'extend') {
-      this.sessionExpiryService.stopWatching();
-      this.authService.keepAlive((newToken) => {
-        this.sessionExpiryService.startWatching(newToken);
-      });
-    } else if (action.action === 'logout') {
-      this.logout.emit();
+    @if (auth.authenticated() && session.showWarning()) {
+      <aside class="session-warning" role="alert" aria-labelledby="session-warning-title">
+        <div class="session-warning-heading"><mat-icon aria-hidden="true">timer</mat-icon><h2 id="session-warning-title">Tu sesión está por vencer</h2></div>
+        <p>Se cerrará en <strong>{{ session.minutesRemaining() }} minuto{{ session.minutesRemaining() !== 1 ? 's' : '' }}</strong>. ¿Quieres mantenerla abierta?</p>
+        @if (auth.renewalError()) { <p class="session-warning-error">{{ auth.renewalError() }}</p> }
+        <div class="session-warning-actions">
+          <button type="button" class="btn-outline-primary" (click)="cerrarSesion()">Cerrar ahora</button>
+          <button type="button" class="btn-primary" [disabled]="auth.isRenewing()" [attr.aria-busy]="auth.isRenewing()" (click)="mantenerSesion()">{{ auth.isRenewing() ? 'Renovando…' : 'Mantener sesión' }}</button>
+        </div>
+      </aside>
     }
-  }
+  `,
+  styleUrl: './session-warning.component.css'
+})
+export class SessionWarningComponent implements OnDestroy {
+  readonly session = inject(SessionExpiryService);
+  readonly auth = inject(AuthService);
+  private readonly destroy$ = new Subject<void>();
 
-  ngOnDestroy(): void {}
+  mantenerSesion(): void { this.auth.keepAlive().pipe(takeUntil(this.destroy$)).subscribe(); }
+  cerrarSesion(): void { this.auth.logoutSession(); }
+  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
 }

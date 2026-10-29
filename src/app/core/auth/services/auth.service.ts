@@ -1,218 +1,209 @@
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
+import { Observable, Subject, catchError, defer, finalize, map, of, shareReplay, takeUntil, timeout } from 'rxjs';
+import { Injectable, Injector, OnDestroy, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { jwtDecode } from 'jwt-decode';
-import { map } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { User } from 'app/features/auth/models/user';
+import { AccessTokenModel } from 'app/features/auth/models/access-token.model';
 import { UsersService } from 'app/features/auth/services/users.service';
 import { ResponseBaseDto } from '@base/models/api/response-base.dto';
 import { environment } from '@environments/environment';
 import { SessionExpiryService } from '@core/services/session-expiry.service';
+import { getValidSessionClaims, SessionClaims } from '../utils/session-token.utils';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-  user$: Subject<User>;
-  access_token_key = `access_token_${environment.application.code}`;
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser: boolean;
-  private destroy$ = new Subject<void>();
+@Injectable({ providedIn: 'root' })
+export class AuthService implements OnDestroy {
+  readonly user$ = new Subject<User>();
+  readonly access_token_key = `access_token_${environment.application.code}`;
+  private readonly router = inject(Router);
+  private readonly usersService = inject(UsersService);
+  private readonly injector = inject(Injector);
+  private readonly sessionExpiryService = inject(SessionExpiryService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly destroy$ = new Subject<void>();
+  private readonly cancelRenewal$ = new Subject<void>();
+  private readonly signedIn = signal(false);
+  private readonly renewing = signal(false);
+  private readonly renewError = signal<string | null>(null);
+  readonly authenticated = this.signedIn.asReadonly();
+  readonly isRenewing = this.renewing.asReadonly();
+  readonly renewalError = this.renewError.asReadonly();
+  private initialized = false;
+  private endingSession = false;
+  private watchedToken: string | null = null;
+  private renewal$?: Observable<boolean>;
+  private sessionVersion = 0;
 
-  constructor(
-    private router: Router,
-    private usersService: UsersService,
-    private injector: Injector,
-    private sessionExpiryService: SessionExpiryService
-  ) {
-    this.user$ = new Subject<User>();
-    this.isBrowser = isPlatformBrowser(this.platformId);
+  private readonly onStorage = (event: StorageEvent): void => {
+    if ((event.storageArea === null || event.storageArea === localStorage) && (event.key === this.access_token_key || event.key === null)) this.synchronizeSession();
+  };
+  private readonly onFocus = (): void => this.synchronizeSession();
+  private readonly onVisibility = (): void => { if (document.visibilityState === 'visible') this.synchronizeSession(); };
 
-    this.sessionExpiryService.sessionExpired
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.logoutSession();
-      });
+  constructor() {
+    this.sessionExpiryService.sessionExpired.pipe(takeUntil(this.destroy$)).subscribe(() => this.synchronizeSession());
   }
 
-  public loadUserProfile() {
-    let claims = this.getUserClaims();
-    if (claims) {
-      const user = new User();
+  initializeSession(): void {
+    if (!this.isBrowser || this.initialized) return;
+    this.initialized = true;
+    window.addEventListener('storage', this.onStorage);
+    window.addEventListener('focus', this.onFocus);
+    document.addEventListener('visibilitychange', this.onVisibility);
+    this.synchronizeSession();
+  }
 
-      user.id = claims.UserId;
-      user.idUserNegocio = claims.UserIdNegocio;
-      user.email = claims.email == 'no_information' ? '' : claims.email;
-      user.username = claims.UserName;
-      user.fullname = claims.DisplayName;
-      user.telefono = claims.Telefono == 'no_information' ? '' : claims.Telefono;
-
-      this.user$.next(user);
-
-      return user;
+  private synchronizeSession(): void {
+    const token = this.getToken();
+    if (!token) {
+      if (this.watchedToken || this.signedIn()) this.logoutSession();
+      else this.sessionExpiryService.stopWatching();
+      return;
     }
-    return null;
+    if (!getValidSessionClaims(token)) { this.logoutSession(); return; }
+    if (token !== this.watchedToken) this.acceptToken(token);
+    else this.sessionExpiryService.checkNow();
   }
 
-  public getUserClaims(): any {
-    let access_token = this.getToken();
-    if (access_token) return jwtDecode(access_token);
-    return null;
+  private acceptToken(token: string): void {
+    this.cancelRenewal$.next();
+    this.renewal$ = undefined;
+    this.sessionVersion++;
+    this.endingSession = false;
+    this.watchedToken = token;
+    this.signedIn.set(true);
+    this.renewError.set(null);
+    this.sessionExpiryService.startWatching(token);
+    this.loadUserProfile();
   }
 
-  public getToken(): string | null {
-    if (!this.isBrowser) return null;
-    return localStorage.getItem(this.access_token_key);
+  loadUserProfile(): User | null {
+    const claims = this.getUserClaims();
+    if (!claims) return null;
+    const user = new User();
+    user.id = claims.UserId;
+    user.idUserNegocio = claims.UserIdNegocio;
+    user.email = claims.email === 'no_information' ? '' : claims.email;
+    user.username = claims.UserName;
+    user.fullname = claims.DisplayName;
+    user.telefono = claims.Telefono === 'no_information' ? '' : claims.Telefono;
+    user.roles = claims.Roles;
+    this.user$.next(user);
+    return user;
   }
 
-  public isAuthenticated(): boolean {
-    let claims = this.getUserClaims();
-    var isValid = claims != null && claims != undefined;
-    if (isValid /*&& claims.ApplicationCode == environment.application.code*/) {
-      return isValid;
-    } else {
-      return false;
-    }
-  }
+  getUserClaims(): SessionClaims | null { return getValidSessionClaims(this.getToken()); }
+  getToken(): string | null { return this.isBrowser ? localStorage.getItem(this.access_token_key) : null; }
+  isAuthenticated(): boolean { return this.getUserClaims() !== null; }
 
-  public async logIn(accessToken: any): Promise<void> {
+  async logIn(accessToken: AccessTokenModel): Promise<void> {
     if (!this.isBrowser) return;
-    if (accessToken) {
-      if (accessToken.access_token) {
-        localStorage.setItem(this.access_token_key, accessToken.access_token);
-        this.loadUserProfile();
-
-        this.sessionExpiryService.startWatching(accessToken.access_token);
-
-        try {
-          const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
-          const favoritosService = this.injector.get(CanchaFavoritaService);
-          await favoritosService.cargarFavoritosUsuario();
-        } catch (error) {
-          console.error('Error al cargar favoritos en login:', error);
-        }
-      }
-    }
-  }
-
-  public logOut(): Observable<ResponseBaseDto> {
-    return this.usersService.logout().pipe(
-      map((result) => {
-        if (result.isValid) {
-          this.cleanAndRedirect();
-        }
-        return result;
-      })
-    );
-  }
-
-  public logoutSession(): void {
-    let userClaims = this.getUserClaims();
-    if (userClaims) {
-      let logId = userClaims.LogId ?? userClaims.logId;
-      if (logId) {
-        this.usersService.logoutSession(logId).subscribe(
-          (_: any) => { },
-          (_: any) => { },
-          () => {
-            this.cleanAndRedirect();
-          }
-        );
-      } else {
-        this.cleanAndRedirect();
-      }
-    } else {
-      this.cleanAndRedirect();
-    }
-  }
-
-  public async cleanAndRedirect(): Promise<void> {
-    if (!this.isBrowser) return;
-    
-    this.sessionExpiryService.stopWatching();
-
+    if (!getValidSessionClaims(accessToken?.access_token)) throw new Error('La sesión recibida no es válida.');
+    localStorage.setItem(this.access_token_key, accessToken.access_token);
+    this.acceptToken(accessToken.access_token);
     try {
       const { CanchaFavoritaService } = await import('app/features/canchas/core/services/cancha-favorita.service');
-      const favoritosService = this.injector.get(CanchaFavoritaService);
-      favoritosService.limpiarFavoritos();
-    } catch (error) {
-      console.error('Error al limpiar favoritos en logout:', error);
+      if (this.getToken() === accessToken.access_token) await this.injector.get(CanchaFavoritaService).cargarFavoritosUsuario();
+    } catch {
+      // La carga de favoritos no debe impedir iniciar una sesión válida.
     }
+  }
 
+  logOut(): Observable<ResponseBaseDto> {
+    return defer(() => {
+      this.logoutSession();
+      const response = new ResponseBaseDto();
+      response.isValid = true;
+      return of(response);
+    });
+  }
+
+  logoutSession(options: { redirect?: boolean } = {}): void {
+    if (!this.isBrowser || this.endingSession) return;
+    this.endingSession = true;
+    const version = ++this.sessionVersion;
+    this.cancelRenewal$.next();
+    this.renewal$ = undefined;
+    this.sessionExpiryService.stopWatching();
+    this.watchedToken = null;
     localStorage.removeItem(this.access_token_key);
     sessionStorage.clear();
-    this.router.navigate(['auth/login']);
+    this.signedIn.set(false);
+    this.renewError.set(null);
+    this.user$.next(new User());
+    if (options.redirect !== false) void this.router.navigate(['/auth/login']);
+    // La limpieza local y la navegación son inmediatas; los datos auxiliares se limpian después.
+    void import('app/features/canchas/core/services/cancha-favorita.service').then(({ CanchaFavoritaService }) => {
+      if (version === this.sessionVersion && !this.isAuthenticated()) this.injector.get(CanchaFavoritaService).limpiarFavoritos();
+    }).catch(() => undefined);
   }
 
-  public getUserClaim(claimName: string): any {
-    return null;
+  async cleanAndRedirect(): Promise<void> { this.logoutSession(); }
+
+  keepAlive(): Observable<boolean> {
+    if (this.renewal$) return this.renewal$;
+    const originalToken = this.getToken();
+    const originalClaims = getValidSessionClaims(originalToken);
+    if (!originalClaims) { this.logoutSession(); return of(false); }
+    if (originalClaims.exp * 1000 - Date.now() > 5 * 60_000) {
+      this.synchronizeSession();
+      return of(true);
+    }
+    const request$ = defer(() => {
+      this.renewing.set(true);
+      this.renewError.set(null);
+      return this.usersService.renewSession();
+    }).pipe(
+      timeout({ first: 15_000 }),
+      map(response => {
+        if (this.getToken() !== originalToken) return false;
+        if (!getValidSessionClaims(originalToken)) { this.logoutSession(); return false; }
+        const token: unknown = response.data?.access_token;
+        const claims = typeof token === 'string' ? getValidSessionClaims(token) : null;
+        if (typeof token !== 'string' || !response.isValid || !claims || claims.exp <= originalClaims.exp || claims.UserId !== originalClaims.UserId ||
+            (originalClaims.UserIdNegocio > 0 && claims.UserIdNegocio !== originalClaims.UserIdNegocio)) {
+          this.renewError.set('No pudimos renovar tu sesión. Intenta nuevamente antes de que venza.');
+          return false;
+        }
+        localStorage.setItem(this.access_token_key, token);
+        // El nuevo token se aplica sin cancelar la respuesta que lo acaba de renovar.
+        this.sessionVersion++;
+        this.watchedToken = token;
+        this.sessionExpiryService.startWatching(token);
+        this.loadUserProfile();
+        return true;
+      }),
+      catchError((error: unknown) => {
+        if (this.getToken() === originalToken) {
+          if (error instanceof HttpErrorResponse && error.status === 401) this.logoutSession();
+          else this.renewError.set('No pudimos renovar tu sesión. Comprueba tu conexión e inténtalo de nuevo.');
+        }
+        return of(false);
+      }),
+      takeUntil(this.cancelRenewal$), takeUntil(this.destroy$),
+      finalize(() => { this.renewing.set(false); if (this.renewal$ === request$) this.renewal$ = undefined; }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.renewal$ = request$;
+    return request$;
   }
 
-  public getRoles(): string[] {
-    let claims = this.getUserClaims();
-    if (!claims) return [];
+  getUserClaim<K extends keyof SessionClaims>(claimName: K): SessionClaims[K] | undefined { return this.getUserClaims()?.[claimName]; }
+  getRoles(): string[] { return this.getUserClaims()?.Roles ?? []; }
+  hasRole(roleName: string): boolean { return this.getRoles().includes(roleName); }
+  saveCredentials(processId: string, password: string): void { if (this.isBrowser) sessionStorage.setItem(processId, password); }
+  getCredentials(processId: string): string | null { return this.isBrowser ? sessionStorage.getItem(processId) : null; }
+  getRemoveCredentials(_: string): void { if (this.isBrowser) sessionStorage.clear(); }
 
-    const roles = claims.Roles || claims.roles || claims.role;
-
-    return Array.isArray(roles)
-      ? roles
-      : roles
-        ? [roles]
-        : [];
-  }
-
-  public hasRole(roleName: string) {
-    var role = this.getRoles().find((x) => x === roleName);
-    return role !== null && role !== undefined && role !== '';
-  }
-
-  public saveCredentials(processId: string, password: string) {
-    if (!this.isBrowser) return;
-    sessionStorage.setItem(processId, password);
-  }
-
-  public getCredentials(processId: string): string | null {
-    if (!this.isBrowser) return null;
-    return sessionStorage.getItem(processId);
-  }
-
-  public getRemoveCredentials(_: string) {
-    if (!this.isBrowser) return;
-    sessionStorage.clear();
-  }
-
-  public keepAlive(onRenewed?: (newToken: string) => void): void {
-    if (!this.isBrowser) return;
-
-    let access_token = this.getToken();
-    if (access_token) {
-      let tokeninfo = JSON.parse(atob(access_token.split('.')[1]));
-      let exp = parseInt(tokeninfo.exp);
-
-      let actual = new Date();
-      let expiration = new Date(exp * 1000);
-      var seconds_between = (+expiration - +actual) / 1000;
-
-      if (seconds_between <= 300) {
-        //5 minutes before session expires
-        this.usersService.renewSession().subscribe((response: ResponseBaseDto) => {
-          if (response) {
-            if (response.data) {
-              if (response.data.access_token) {
-                localStorage.setItem(
-                  this.access_token_key,
-                  response.data.access_token
-                );
-                this.loadUserProfile();
-                if (onRenewed) {
-                  onRenewed(response.data.access_token);
-                }
-              }
-            }
-          }
-        });
-      }
+  ngOnDestroy(): void {
+    this.destroy$.next(); this.destroy$.complete();
+    this.cancelRenewal$.complete();
+    this.sessionExpiryService.stopWatching();
+    this.user$.complete();
+    if (this.isBrowser) {
+      window.removeEventListener('storage', this.onStorage);
+      window.removeEventListener('focus', this.onFocus);
+      document.removeEventListener('visibilitychange', this.onVisibility);
     }
   }
 }
