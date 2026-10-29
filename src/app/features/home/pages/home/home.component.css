@@ -1,6 +1,6 @@
 ﻿@reference "../../../../../styles.css";
 
-/* Hero Section - Carrusel de banners (mismo layout que reservafast-home.html) */
+/* Cada banner conserva su tratamiento de contraste junto a su imagen y contenido. */
 .hero-section {
   position: relative;
   height: clamp(460px, 62vh, 600px);
@@ -20,11 +20,13 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.9s;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s;
 }
 
 .slide.on {
   opacity: 1;
+  visibility: visible;
 }
 
 .slide picture,
@@ -35,18 +37,30 @@
   object-fit: cover;
 }
 
-/* Fondos de respaldo hasta que se suban assets/banners/*.webp */
-.s1 { background: linear-gradient(135deg, #065f5b, #0b3b4a); }
-.s2 { background: linear-gradient(135deg, #0c4a6e, #134e4a); }
-.s3 { background: linear-gradient(135deg, #3f3a0d, #064e3b); }
+.slide picture {
+  position: absolute;
+  inset: 0;
+}
 
-.hero-section::after {
+.s1 { background: linear-gradient(135deg, #065f5b, #0b3b4a); }
+.s2 { background: linear-gradient(135deg, #065f5b, #0b3b4a); }
+.s3 { background: linear-gradient(135deg, #073a45, #064e3b); }
+
+.slide::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(90deg, rgba(3, 30, 34, 0.85) 0%, rgba(3, 30, 34, 0.45) 55%, rgba(3, 30, 34, 0.1) 100%);
+  background: linear-gradient(90deg, rgb(3 38 43 / 80%), rgb(3 38 43 / 48%) 38%, transparent 72%);
   pointer-events: none;
+}
+
+.s2::after {
+  background: linear-gradient(90deg, rgb(3 38 43 / 96%), rgb(3 38 43 / 82%) 32%, rgb(3 38 43 / 12%) 62%, transparent 78%);
+}
+
+.s3::after {
+  background: linear-gradient(90deg, rgb(3 38 43 / 96%), rgb(3 38 43 / 82%) 32%, rgb(3 38 43 / 12%) 62%, transparent 78%);
 }
 
 .hero-txt {
@@ -63,21 +77,40 @@
   padding-bottom: 0;
 }
 
-.hero-title {
+.hero-copy {
+  width: 49%;
+  max-width: 620px;
   color: #fff;
-  font-size: clamp(2rem, 5.2vw, 3.6rem);
+}
+
+.hero-title {
+  margin: 0;
+  color: inherit;
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
   font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -1px;
-  max-width: 14ch;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.hero-title-line,
+.hero-description-detail {
+  display: block;
+}
+
+.hero-accent {
+  color: #00c8b6;
 }
 
 .hero-subtitle {
-  margin-top: 16px;
-  color: #d7f3ef;
-  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  margin: 18px 0 0;
+  color: rgb(255 255 255 / 93%);
+  font-size: clamp(1rem, 1.3vw, 1.1875rem);
   line-height: 1.5;
-  max-width: 44ch;
+  max-width: 48ch;
+}
+
+.s2 .hero-copy {
+  width: 41%;
 }
 
 .dots {
@@ -105,18 +138,53 @@
   background: #fff;
 }
 
+.dots button:focus-visible {
+  outline: 2px solid #5eead4;
+  outline-offset: 3px;
+}
+
 @media (max-width: 700px) {
   .hero-section {
     height: 520px;
   }
 
-  .hero-section::after {
-    background: linear-gradient(180deg, rgba(3, 30, 34, 0.8), rgba(3, 30, 34, 0.35));
+  .slide::after {
+    background: linear-gradient(180deg, rgb(3 38 43 / 92%), rgb(3 38 43 / 74%) 48%, rgb(3 38 43 / 8%) 100%);
   }
 
   .hero-txt {
     align-items: flex-start;
     padding: 44px 0 0;
+  }
+
+  .hero-copy {
+    width: 100%;
+    max-width: 390px;
+  }
+
+  .s2 .hero-copy {
+    width: 100%;
+    color: #fff;
+  }
+
+  .s2 picture {
+    left: 0;
+    width: 100%;
+  }
+
+  .s2 .hero-accent {
+    color: #00c8b6;
+  }
+
+  .hero-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.5rem);
+  }
+
+  .hero-subtitle,
+  .s2 .hero-subtitle {
+    margin-top: 16px;
+    color: rgb(255 255 255 / 93%);
+    font-size: 0.9375rem;
   }
 
   .dots {
@@ -204,7 +272,6 @@
 .search-bar-wrapper {
   display: block;
 }
-
 
 /* ========== TEASER DUEÑOS (FIN HOME) ========== */
 

@@ -1,37 +1,56 @@
 <app-nav-var [showOwnerNotice]="true"></app-nav-var>
 
 <!-- Hero Section - Carrusel de banners -->
-<section class="hero-section">
+<section class="hero-section" role="region" aria-roledescription="carrusel" aria-label="Encuentra tu próxima cancha">
   @for (slide of slides; track slide.id; let i = $index) {
-    <div [class]="'slide ' + slide.cssClass + (i === currentSlide ? ' on' : '')">
+    <div
+      [class]="'slide ' + slide.cssClass"
+      [class.on]="i === currentSlide()"
+      role="group"
+      aria-roledescription="diapositiva"
+      [attr.aria-label]="(i + 1) + ' de ' + slides.length + ': ' + slide.label"
+      [attr.aria-hidden]="i !== currentSlide()"
+      [attr.inert]="i === currentSlide() ? null : ''"
+    >
       <picture>
         <source media="(max-width:700px)" [attr.srcset]="slide.mobile" />
-        <img [src]="slide.desktop" alt="" (error)="onSlideImgError($event)" />
+        <img [src]="slide.desktop" alt="" width="1983" height="793"
+          [attr.fetchpriority]="i === 0 ? 'high' : 'low'" (error)="onSlideImgError($event)" />
       </picture>
+
+      <div class="hero-txt">
+        <div class="hero-container w-full">
+          <div class="hero-copy">
+            <ng-template #bannerTitle>
+              @for (line of slide.titleLines; track $index) {
+                <span class="hero-title-line">@for (part of line; track $index) {<span [class.hero-accent]="part.accent">{{ part.text }}</span>}</span>
+              }
+            </ng-template>
+            @if (i === 0) {
+              <h1 class="hero-title"><ng-container [ngTemplateOutlet]="bannerTitle" /></h1>
+            } @else {
+              <h2 class="hero-title"><ng-container [ngTemplateOutlet]="bannerTitle" /></h2>
+            }
+            <p class="hero-subtitle">
+              {{ slide.description }}
+              @if (slide.emphasis) { <strong>{{ slide.emphasis }}</strong> }
+              @if (slide.descriptionEnd) {
+                <span [class.hero-description-detail]="!slide.emphasis">{{ (slide.emphasis ? ' ' : '') + slide.descriptionEnd }}</span>
+              }
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   }
 
-  <div class="hero-txt">
-    <div class="hero-container w-full">
-      <h1 class="hero-title">
-        Reserva tu cancha
-        <span class="block">deportiva favorita</span>
-      </h1>
-      <p class="hero-subtitle">
-        Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.
-        <span class="font-semibold">La plataforma más completa</span> para deportistas y propietarios de canchas.
-      </p>
-    </div>
-  </div>
-
-  <div class="dots" role="tablist" aria-label="Banners">
+  <div class="dots" role="group" aria-label="Seleccionar banner">
     @for (slide of slides; track slide.id; let i = $index) {
       <button
         type="button"
-        role="tab"
-        [class.on]="i === currentSlide"
-        [attr.aria-label]="'Banner ' + (i + 1)"
-        [attr.aria-selected]="i === currentSlide"
+        [class.on]="i === currentSlide()"
+        [attr.aria-label]="slide.label"
+        [attr.aria-pressed]="i === currentSlide()"
         (click)="goToSlide(i)"
       ></button>
     }

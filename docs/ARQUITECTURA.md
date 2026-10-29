@@ -578,6 +578,14 @@ user$ = this.userSubject.asObservable();
 - “Buscar en esta zona” se activa con desplazamientos del usuario y conserva el encuadre al consultar. Los movimientos programáticos de selección o ajuste de resultados no activan ese aviso.
 - Los marcadores son botones accesibles. Tocar o pulsar Enter abre la selección; la navegación ocurre únicamente al activar “Ver cancha”. La ficha deja espacio para los controles y atribución de Mapbox.
 
+### 7.6 Banners del home
+
+- `HomeComponent.slides` define imagen, título segmentado y descripción de cada banner, en el orden reserva → deportes → cercanía. Los banners muestran únicamente texto, sin filas de iconos.
+- Se utilizan los seis WebP de `assets/banners/`: `<picture>` selecciona la variante móvil hasta **700px**. En el banner de deportes de escritorio, el fondo verde petróleo se limita al lado izquierdo detrás del texto blanco y turquesa, con una transición hacia las fotografías; el lado derecho conserva la imagen original y sus márgenes claros.
+- El buscador flotante conserva su posición, diseño y filtros de ciudad, deporte, fecha y hora; envía los parámetros a `/cancha/canchas`.
+- Imagen y texto cambian juntos cada cinco segundos. Se mantienen los tres puntos originales, abajo a la derecha en escritorio y arriba centrados en móvil, sin botón de pausa. Con movimiento reducido o en SSR no programa intervalos.
+- Solo el banner activo queda disponible para tecnologías de asistencia. El primer título conserva el `h1` y las imágenes son decorativas porque el contenido se renderiza como HTML.
+
 ---
 
 ## 8. Despliegue

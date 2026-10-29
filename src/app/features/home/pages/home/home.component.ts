@@ -1,33 +1,35 @@
-import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, Inject, OnInit, ViewContainerRef, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { NavVarComponent } from '@shared/components/nav-var/nav-var.component';
+import { BaseSearchComponent } from '@base/components/base-search-component/search-base.component';
+import { SeoService } from 'app/features/seo/core/services/seo.service';
 import { SearchBarComponent, SearchBarData } from '@shared/components/search-bar/search-bar.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Ubigeo } from 'app/features/canchas/core/model/ubigeo/ubigeo.model';
 import { UbigeoService } from 'app/features/canchas/core/services/ubigeo.service';
-import { BaseSearchComponent } from '@base/components/base-search-component/search-base.component';
 import { GetTipoDeporte } from 'app/features/cancha-tipo/core/model/getTipoDeporte.model';
 import { TipoDeporteService } from 'app/features/cancha-tipo/core/services/tipo-deporte.service';
-import { SeoService } from 'app/features/seo/core/services/seo.service';
+
+interface HomeBanner {
+  id: number;
+  cssClass: string;
+  desktop: string;
+  mobile: string;
+  label: string;
+  titleLines: { text: string; accent?: boolean }[][];
+  description: string;
+  emphasis?: string;
+  descriptionEnd?: string;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
-    MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatChipsModule, MatDividerModule, MatToolbarModule,
-    CommonModule, RouterModule,
-    FooterComponent, NavVarComponent, SearchBarComponent,
-    FormsModule, ReactiveFormsModule
+    MatIconModule, CommonModule, RouterModule, FooterComponent, NavVarComponent, SearchBarComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -35,22 +37,39 @@ import { SeoService } from 'app/features/seo/core/services/seo.service';
 export class HomeComponent extends BaseSearchComponent implements OnInit {
 
   selectedDate: Date | null = null;
-  selectedTime: string = '';
-  idTipoDeporte: string = '';
+  selectedTime = '';
+  idTipoDeporte = '';
   selectedUbigeo: Ubigeo | null = null;
-
   tipoDeportes: GetTipoDeporte[] = [];
   ubigeos: Ubigeo[] = [];
 
-  minDate = new Date();
-
-  // Mientras no existan los .webp en assets/banners, cada slide muestra su gradiente de respaldo
-  readonly slides = [
-    { id: 1, cssClass: 's1', desktop: 'assets/banners/banner1-desktop.webp', mobile: 'assets/banners/banner1-mobile.webp' },
-    { id: 2, cssClass: 's2', desktop: 'assets/banners/banner2-desktop.webp', mobile: 'assets/banners/banner2-mobile.webp' }, //.webp
-    { id: 3, cssClass: 's3', desktop: 'assets/banners/banner3-desktop.webp', mobile: 'assets/banners/banner3-mobile.webp' },
+  readonly slides: HomeBanner[] = [
+    {
+      id: 1, cssClass: 's1', label: 'Reserva tu cancha deportiva favorita',
+      desktop: 'assets/banners/banner1-desktop.webp', mobile: 'assets/banners/banner1-mobile.webp',
+      titleLines: [
+        [{ text: 'Reserva ' }, { text: 'tu', accent: true }, { text: ' cancha' }],
+        [{ text: 'deportiva favorita' }]
+      ],
+      description: 'Encuentra y reserva canchas de fútbol, tenis, básquetbol, pádel y más.',
+      emphasis: 'La plataforma más completa',
+      descriptionEnd: 'para deportistas y propietarios de canchas.'
+    },
+    {
+      id: 2, cssClass: 's2', label: 'Canchas para todos los deportes',
+      desktop: 'assets/banners/banner2-desktop.webp', mobile: 'assets/banners/banner2-mobile.webp',
+      titleLines: [[{ text: 'Canchas para' }], [{ text: 'todos los deportes', accent: true }]],
+      description: 'Fútbol, tenis, básquetbol, pádel, vóley y más.',
+      descriptionEnd: 'Elige tu deporte, encuentra la mejor opción y reserva en minutos.'
+    },
+    {
+      id: 3, cssClass: 's3', label: 'Canchas cerca de ti',
+      desktop: 'assets/banners/banner3-desktop.webp', mobile: 'assets/banners/banner3-mobile.webp',
+      titleLines: [[{ text: 'Canchas ' }, { text: 'cerca de ti', accent: true }]],
+      description: 'Descubre canchas en tu ciudad, compara precios, verifica disponibilidad y reserva al instante.'
+    }
   ];
-  currentSlide = 0;
+  readonly currentSlide = signal(0);
   private slideTimer: ReturnType<typeof setInterval> | null = null;
 
   readonly pasos = [
@@ -62,7 +81,7 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   constructor(
     private router: Router,
     private ubigeoService: UbigeoService,
-    private TipoDeporteService: TipoDeporteService,
+    private tipoDeporteService: TipoDeporteService,
     private seoService: SeoService,
     @Inject(ViewContainerRef) viewContainerRef: ViewContainerRef
   ) {
@@ -76,36 +95,9 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     this.startCarousel();
   }
 
-  onSearchBarSearch(searchData: SearchBarData) {
-    // Actualizar variables locales
-    this.selectedDate = searchData.fecha || null;
-    this.selectedTime = searchData.hora || '';
-    this.idTipoDeporte = searchData.idTipoDeporte || '';
-    if (searchData.ciudad && typeof searchData.ciudad === 'object') {
-      this.selectedUbigeo = searchData.ciudad;
-    } else {
-      this.selectedUbigeo = null;
-    }
-
-    this.router.navigate(['/cancha/canchas'], {
-      queryParams: {
-        fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
-        hora: this.selectedTime,
-        idTipoDeporte: this.idTipoDeporte,
-        codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
-      }
-    });
-  }
-
-  onSearchBarClear() {
-    this.selectedDate = null;
-    this.selectedTime = '';
-    this.idTipoDeporte = '';
-    this.selectedUbigeo = null;
-  }
-
   goToSlide(index: number): void {
-    this.currentSlide = index;
+    if (!Number.isInteger(index) || index < 0 || index >= this.slides.length) return;
+    this.currentSlide.set(index);
     this.startCarousel();
   }
 
@@ -115,11 +107,10 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
   }
 
   private startCarousel(): void {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     this.stopCarousel();
+    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     this.slideTimer = setInterval(() => {
-      this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+      this.currentSlide.update(index => (index + 1) % this.slides.length);
     }, 5000);
   }
 
@@ -135,27 +126,42 @@ export class HomeComponent extends BaseSearchComponent implements OnInit {
     super.ngOnDestroy();
   }
 
-  private cargarUbigeos(): void {
-    this.ubigeoService.listAll().subscribe({
-      next: (response) => {
-        if (response.isValid) {
-          this.ubigeos = response.data;
-        }
-      },
-      error: (err) => this.openAlert(err),
-    });
-  }
-  private cargarTipoDeportes(): void {
-    this.TipoDeporteService.SelectCombo().subscribe({
-      next: (response) => {
-        if (response.isValid) {
-          this.tipoDeportes = response.data;
-        }
-      },
-      error: (err) => this.openAlert(err),
+  onSearchBarSearch(searchData: SearchBarData): void {
+    this.selectedDate = searchData.fecha || null;
+    this.selectedTime = searchData.hora || '';
+    this.idTipoDeporte = searchData.idTipoDeporte || '';
+    this.selectedUbigeo = searchData.ciudad && typeof searchData.ciudad === 'object' ? searchData.ciudad : null;
+
+    void this.router.navigate(['/cancha/canchas'], {
+      queryParams: {
+        fecha: this.selectedDate ? formatDateLocal(this.selectedDate) : null,
+        hora: this.selectedTime,
+        idTipoDeporte: this.idTipoDeporte,
+        codigoUbigeo: this.selectedUbigeo?.codigoUbigeo
+      }
     });
   }
 
+  onSearchBarClear(): void {
+    this.selectedDate = null;
+    this.selectedTime = '';
+    this.idTipoDeporte = '';
+    this.selectedUbigeo = null;
+  }
+
+  private cargarUbigeos(): void {
+    this.subscriptions.push(this.ubigeoService.listAll().subscribe({
+      next: response => { if (response.isValid) this.ubigeos = response.data; },
+      error: error => this.openAlert(error)
+    }));
+  }
+
+  private cargarTipoDeportes(): void {
+    this.subscriptions.push(this.tipoDeporteService.SelectCombo().subscribe({
+      next: response => { if (response.isValid) this.tipoDeportes = response.data; },
+      error: error => this.openAlert(error)
+    }));
+  }
 }
 
 function formatDateLocal(date: Date): string {
