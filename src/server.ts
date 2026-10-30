@@ -7,6 +7,7 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getRuntimeConfig } from './runtime-config.server';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -19,10 +20,8 @@ const angularApp = new AngularNodeAppEngine();
  * y las expone al cliente Angular antes de iniciar la app.
  */
 app.get('/api/config', (req, res) => {
-  res.json({
-    apiUrl: process.env['API_URL'] ?? '',//'http://localhost:5108/api',
-    mapboxToken: process.env['MAPBOX_TOKEN'] ?? ''//'pk.eyJ1IjoiaHVnbzA5bnAiLCJhIjoiY21pMXdhMzhpMWVkcTJqb3FkanhkN3BqMyJ9.jU-LYk6hLrkk-iB01eUBFg',
-  });
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(getRuntimeConfig());
 });
 
 /**

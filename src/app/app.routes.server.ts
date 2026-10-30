@@ -25,18 +25,18 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
 
-  // Rutas estáticas - Prerender
+  // Estas páginas consultan la API y deben usar las variables del contenedor en ejecución.
   {
     path: '',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'planes',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
   {
     path: 'ayuda',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   },
 
   // Rutas SEO dinámicas - Server para resolver slugs
@@ -49,19 +49,9 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
 
-  // Rutas estáticas - Prerender
-  {
-    path: '',
-    renderMode: RenderMode.Prerender
-  },
-  {
-    path: 'planes',
-    renderMode: RenderMode.Prerender
-  },
-
-  // Todo lo demás - Prerender
+  // Evita fijar configuración de build en el estado de hidratación de otras páginas.
   {
     path: '**',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Server
   }
 ];
