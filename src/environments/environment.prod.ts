@@ -26,5 +26,8 @@ export const environment = {
 		silentRefreshRedirectUri: '/assets/silent-refresh.html',
 		clientId: 'client.id',
 		scope: 'openid profile email role client.id.resource'
+	},
+	mapbox: {
+		accessToken: '' // Register at https://www.mapbox.com/ to get your token
 	}
 };
